@@ -396,7 +396,7 @@ class Controller {
 			if (pValue > 0) {
 				if (typeof(this.pressHandlers['press']) === 'function') this.pressHandlers['press'](buttonName, pValue, pTouched, pRepeat);
 			} else {
-				if (typeof(this.pressHandlers['release']) === 'function') this.pressHandlers['release'](buttonName, pValue, pTouched);
+				if (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release'](buttonName, pValue, pTouched);
 			}
 		}
 	}
