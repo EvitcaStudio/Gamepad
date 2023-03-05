@@ -1,0 +1,32 @@
+{
+    "source": "./src",
+    "destination": "./docs",
+    "includes": ["\\.js$"],
+    "index": "./README.md",
+    "excludes": [],
+    "plugins": [
+    {
+      "name": "esdoc-standard-plugin",
+      "option": {
+        "lint": {"enable": false},
+        "coverage": {"enable": false},
+        "accessor": {"access": ["public", "protected", "private"], "autoPrivate": true},
+        "undocumentIdentifier": {"enable": true},
+        "unexportedIdentifier": {"enable": true},
+        "typeInference": {"enable": true},
+        "brand": {
+          "logo": "./evitcastudio_round_branding.png",
+          "title": "Gamepad",
+          "description": "A gamepadmanager to help with games / handling input from a controller.",
+          "repository": "https://github.com/EvitcaStudio/Gamepad",
+          "author": "https://github.com/doubleactii",
+          "image": "./evitcastudio_round_branding.png"
+        }
+      }
+    },
+    {
+        "name": "esdoc-ecmascript-proposal-plugin", 
+        "option": {"all": true}
+    }
+    ] 
+  }
