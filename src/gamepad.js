@@ -125,14 +125,12 @@ class GamepadManagerSingleton {
 	 */
 	pollGamepadState() {
 		const gamepads = navigator.getGamepads();
-		if (!gamepads) {
-			return;
-		}
+		if (!gamepads) return;
 		// Loop through all connected controllers and update their state
 		for (const gamepad of gamepads) {
-			for (const controller in this.controllers) {
-				// Can be null if disconnected during the session
-				if (gamepad) {
+			// Can be null if disconnected during the session
+			if (gamepad) {
+				for (const controller in this.controllers) {
 					// Make sure we are updating the correct controller with the right data from the gamepad at the same index
 					if (gamepad.index === this.controllers[controller].gamepad.index) {
 						this.controllers[controller].updateState(gamepad);
@@ -145,6 +143,11 @@ class GamepadManagerSingleton {
 }
 
 class Controller {
+	/**
+	 * Configuration of which buttons / analogs map to which indexes
+	 * 
+	 * @type {object}
+	 */
 	config = {
 		// Analog thumb sticks
 		axes: {
@@ -158,8 +161,26 @@ class Controller {
 	}
 	/**
 	 * The range at which axis changes are detected
+	 * 
+	 * @type {number}
 	 */
 	static AXIS_UPDATE_RANGE = 0.0; // 0.2
+	/**
+	 * The value at which holding a trigger (LT OR RT) will consider it being pressed
+	 */
+	static TRIGGER_PRESSED_VALUE = 0.12;
+	/**
+	 * Value to indicate a pressed button
+	 * 
+	 * @type {number}
+	 */
+	static PRESSED = 1.0;
+	/**
+	 * Value to indicate a button is not pressed
+	 * 
+	 * @type {number}
+	 */
+	static UNPRESSED = 0.0;
 	/**
 	 * A button map that maps common button names to the indexes the computer knows them as
 	 */
@@ -185,6 +206,8 @@ class Controller {
 	}
 	/**
 	 * A reverse map of the button names
+	 * 
+	 * @type {object}
 	 */
 	static BUTTONS_REVERSE_MAP = (() => { 
 		const reversedMap = {};
@@ -196,6 +219,8 @@ class Controller {
 	})()
 	/**
 	 * A small remapped version of the controllers button_map with PS4 alternatives
+	 * 
+	 * @type {object}
 	 */
 	static PS4_REMAPPED = {
 		'A': 'CROSS', // Main action button (⨉) PS4
@@ -208,6 +233,8 @@ class Controller {
 	 * Xbox: XBOX vendor
 	 * PC: Computer PC vendor
 	 * Android: Android device vendor
+	 * 
+	 * @type {object}
 	 */
 	static GAMEPAD_IDS = {
 		'Xbox 360 Controller (XInput STANDARD GAMEPAD)': 'Xbox',
@@ -235,6 +262,23 @@ class Controller {
 		'24C6-541A-Revolution Pro Controller': 'PS',
 		'146B-0601-PC Gamepad': 'PC'
 	};
+	/**
+	 * Object full of the currently held down buttons
+	 * 
+	 * @type {object}
+	 */
+	pressed = (() => {
+		const buttonMap = { ...Controller.BUTTONS_MAP };
+		for (const key in buttonMap) {
+			buttonMap[key] = false;
+		}
+		return buttonMap;
+	})()
+	/**
+	 * Info about the controller
+	 * 
+	 * @type {object}
+	 */
 	info = {
 		axes: null,
 		buttons: null,
@@ -285,17 +329,7 @@ class Controller {
 			// Get the button data
 			const buttonStillHeld = (newButtonState[i].pressed && this.info.previousButtonState[i]);
 			const buttonValue = newButtonState[i].value;
-			const buttonTouched = newButtonState[i].touched;
-
-			if (newButtonState[i].pressed && buttonStillHeld) {
-				this.handleButtonInput(i, buttonValue, buttonTouched, buttonStillHeld);
-			} else if (newButtonState[i].pressed && !this.info.previousButtonState[i]) {
-				// Button was pressed
-				this.handleButtonInput(i, buttonValue, buttonTouched, buttonStillHeld);
-			} else if (!newButtonState[i].pressed && this.info.previousButtonState[i]) {
-				// Button was released
-				this.handleButtonInput(i, buttonValue, buttonTouched, buttonStillHeld);
-			}
+			this.handleButtonInput(i, buttonValue, buttonStillHeld, newButtonState[i].pressed);
 			this.info.previousButtonState[i] = newButtonState[i].pressed;
 		}
 
@@ -307,11 +341,24 @@ class Controller {
 			// Check and see if the axis value changed significantly, we can tweak this value or maybe set it to a user defined value?
 			// We also check if this value is set, if not we allow it to be set with the current data
 			const axesStillHeld = (newAxesState[i] === this.info.previousAxesState[i]);
-			if (axesStillHeld || Math.abs(newAxesState[i] - this.info.previousAxesState[i]) > Controller.AXIS_UPDATE_RANGE || this.info.previousAxesState[i] === undefined) {
+			if (axesStillHeld || Math.abs(newAxesState[i] - this.info.previousAxesState[i]) >= Controller.AXIS_UPDATE_RANGE || this.info.previousAxesState[i] === undefined) {
 				this.handleAxisInput(i, newAxesState[i], axesStillHeld);
 				this.info.previousAxesState[i] = newAxesState[i];
 			}
 		}
+	}
+	/**
+	 * Gets the current buttons pressed down on the gamepad.
+	 */
+	getPressed() {
+		const buttonsDown = [];
+		for (const button in this.pressed) {
+			// If this button is currently pressed down add it to the array to return.
+			if (this.pressed[button]) {
+				buttonsDown.push(button);
+			}
+		}
+		return buttonsDown;
 	}
     /**
      * Attaches a callback to the specified event.
@@ -371,17 +418,25 @@ class Controller {
 		return this;
 	}
 	/**
+	 * Handles the input on the buttons.
+	 * 
 	 * @param {number} pButton - The button index that was pressed
 	 * @param {number} pValue - The value of the button (0 for unpressed, 1 for pressed) 0-1 for buttons that have a range
-	 * @param {number} pTouched - Whether this button is being touched at the moment https://developer.mozilla.org/en-US/docs/Web/API/GamepadButton/touched
 	 * @param {boolean} pRepeat - Whether this button is still being held from a previous frame
+	 * @param {boolean} pPressed - Whether this button is being pressed in this current frame.
 	 */
-	handleButtonInput(pButton, pValue, pTouched, pRepeat) {
+	handleButtonInput(pButton, pValue, pRepeat, pPressed) {
 		let buttonName = pButton;
+		let clampedValue = Math.floor(pValue * 100) / 100;
+
 		// Check if button is mapped
 		for (const button in this.config.buttons) {
 			if (this.config.buttons[button] === pButton) {
 				buttonName = button;
+				// Only set the value to pressed if it actually is pressed, don't set it to false via pPressed, as it will be set to false after the release event is called
+				// We also check if the value is greater or equal to the triggers pressed value. This is due to a trigger not being considered to be pressed unless its passed or at this threshold.
+				if (pPressed || clampedValue > Controller.UNPRESSED) this.pressed[buttonName] = true;
+				break;
 			}
 		}
 		// Check if any of the main buttons need to be remapped for a PlayStation controller
@@ -392,21 +447,32 @@ class Controller {
 				buttonName = Controller.PS4_REMAPPED[buttonName];
 			}
 		}
+
 		if (buttonName) {
-			if (pValue > 0) {
-				if (typeof(this.pressHandlers['press']) === 'function') this.pressHandlers['press'](buttonName, pValue, pTouched, pRepeat);
-			} else {
-				if (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release'](buttonName, pValue, pTouched);
+			// Press
+			if (clampedValue <= Controller.PRESSED && clampedValue > Controller.UNPRESSED) {
+				if (typeof(this.pressHandlers['press']) === 'function') this.pressHandlers['press'](buttonName, clampedValue, pRepeat);
+			// Release
+			} else if (clampedValue === Controller.UNPRESSED && (buttonName === 'LT' || buttonName === 'RT') && this.pressed[buttonName]) {
+				if (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release'](buttonName, clampedValue);
+				this.pressed[buttonName] = false;
+			// Release
+			} else if (clampedValue === Controller.UNPRESSED && this.pressed[buttonName]) {
+				if (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release'](buttonName, clampedValue);
+				this.pressed[buttonName] = false;
 			}
 		}
 	}
 	/**
+	 * Handles the input on the analogs.
+	 * 
 	 * @param {number} pAxis - The axis index that was moved
 	 * @param {number} pValue - The value of the axis that was moved (0-1 range)
 	 * @param {boolean} pRepeat - Whether this axes is still the same from a previous frame
 	 */
 	handleAxisInput(pAxis, pValue, pRepeat) {
 		let axisName = pAxis;
+		let clampedValue = Math.floor(pValue * 100) / 100;
 		// Check if axis is mapped
 		for (const axes in this.config.axes) {
 			if (this.config.axes[axes] === pAxis) {
@@ -414,7 +480,7 @@ class Controller {
 			}
 		}
 		if (axisName) {
-			if (typeof(this.axisHandlers['axis']) === 'function') this.axisHandlers['axis'](axisName, pValue, pRepeat);
+			if (typeof(this.axisHandlers['axis']) === 'function') this.axisHandlers['axis'](axisName, clampedValue, pRepeat);
 		}
 	}
 	/**
