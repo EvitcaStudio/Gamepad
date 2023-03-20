@@ -12,7 +12,7 @@ Supports remapping of controller buttons to match different controller layouts.
 You can create a new GamepadManager object like this:
 
 ```js
-import { GamepadManager } from './gamepadmanager.js';
+import { GamepadManager } from './gamepad.min.js';
 var gamepadManager = new GamepadManager();
 ```
 
