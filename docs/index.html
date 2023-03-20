@@ -37,7 +37,41 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="gamepad">Gamepad</h1><p>A library that helps use gamepads in games.</p>
+<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="gamepadmanager">GamepadManager</h1><p>GamepadManager is a Javascript library that provides an easy way to handle input from game controllers. It is designed to work with the Gamepad API, which is a browser API that provides access to gamepad devices. This library is useful for games and other applications that require input from a game controller.</p>
+<h1 id="features">Features</h1><p>Handles input from multiple game controllers simultaneously.
+Supports all types of game controllers supported by the Gamepad API, including Bluetooth controllers.
+Provides an easy-to-use API for accessing input from game controllers.
+Includes event handlers for detecting when game controllers are connected or disconnected.
+Supports remapping of controller buttons to match different controller layouts.</p>
+<h1 id="usage">Usage</h1><p>You can create a new GamepadManager object like this:</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">import { GamepadManager } from &apos;./gamepad.min.js&apos;;
+var gamepadManager = new GamepadManager();</code>
+</code></pre>
+<p>The GamepadManager object provides several methods for accessing input from game controllers. For example, you can get the main controller like this:</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var controller = gamepadManager.getMainController();</code>
+</code></pre>
+<p>You can also get a list of all connected controllers like this:</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var controllers = gamepadManager.getControllers();</code>
+</code></pre>
+<p>The GamepadManager object also includes event handlers for detecting when game controllers are connected or disconnected. For example, to handle the &quot;connect&quot; event, you can use the following code:</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">gamepadManager.on(&apos;connect&apos;, function(pController) {
+    // Do something when a controller is connected.
+    pController.on(&apos;press&apos;, (pButtonName, pValue, pRepeat) =&gt; {
+        // Do something when a controller presses a button
+    }).on(&apos;release&apos;, (pButtonName, pValue) =&gt; {
+        // Do something when a controller releases a button
+    }).on(&apos;axis&apos;, (pAxisName, pValue, pRepeat) =&gt; {
+        // Do something when a controller moves its analogs
+    });
+});
+
+gamepadManager.on(&apos;disconnect&apos;, function(pController) {
+    // Do something when a controller is disconnected.
+});</code>
+</code></pre>
+<h1 id="license">License</h1><p>GamepadManager does not have a license at this time. For licensing information, please contact the author.</p>
+<h1 id="author">Author</h1><p>GamepadManager was created by doubleactii.</p>
+<h1 id="todo">TODO</h1><p>Currently, Bluetooth gamepads when disconnecting (PS4 only) do not fire a disconnected event. Manually calling this.gamepad.vibrationActuator.reset() can force it to call a disconnect event, but this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. A fix needs to be found. (This is a GamepadAPI issue/OS issue/not a code-wise issue)</p>
 </div>
 </div>
 
