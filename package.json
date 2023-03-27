@@ -1,0 +1,22 @@
+{
+  "name": "gamepad",
+  "version": "1.0.0",
+  "description": "A gamepadmanager to help with games / handling input from a controller",
+  "main": "gamepad.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EvitcaStudio/Gamepad.git"
+  },
+  "author": "https://github.com/doubleactii",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/EvitcaStudio/Gamepad/issues"
+  },
+  "homepage": "https://github.com/EvitcaStudio/Gamepad#readme"
+}
