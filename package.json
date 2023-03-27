@@ -7,7 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-dist": "uglifyjs src/gamepad.mjs -m -c --comments -o dist/gamepad.min.mjs && esdoc -c esdoc.json"
   },
   "repository": {
     "type": "git",
