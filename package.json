@@ -18,5 +18,11 @@
   "bugs": {
     "url": "https://github.com/EvitcaStudio/Gamepad/issues"
   },
-  "homepage": "https://github.com/EvitcaStudio/Gamepad#readme"
+  "homepage": "https://github.com/EvitcaStudio/Gamepad#readme",
+  "devDependencies": {
+    "esdoc": "^1.1.0",
+    "esdoc-ecmascript-proposal-plugin": "^1.0.0",
+    "esdoc-standard-plugin": "^1.0.0",
+    "uglify-js": "^3.17.4"
+  }
 }
