@@ -1,20 +1,20 @@
 window.esdocSearchIndex = [
   [
-    "./src/gamepad.js~controller",
-    "class/src/gamepad.js~Controller.html",
-    "<span>Controller</span> <span class=\"search-result-import-path\">./src/gamepad.js</span>",
+    "gamepad/src/gamepad.mjs~controller",
+    "class/src/gamepad.mjs~Controller.html",
+    "<span>Controller</span> <span class=\"search-result-import-path\">gamepad/src/gamepad.mjs</span>",
     "class"
   ],
   [
-    "./src/gamepad.js~gamepadmanager",
+    "gamepad/src/gamepad.mjs~gamepadmanager",
     "variable/index.html#static-variable-GamepadManager",
-    "<span>GamepadManager</span> <span class=\"search-result-import-path\">./src/gamepad.js</span>",
+    "<span>GamepadManager</span> <span class=\"search-result-import-path\">gamepad/src/gamepad.mjs</span>",
     "variable"
   ],
   [
-    "./src/gamepad.js~gamepadmanagersingleton",
-    "class/src/gamepad.js~GamepadManagerSingleton.html",
-    "<span>GamepadManagerSingleton</span> <span class=\"search-result-import-path\">./src/gamepad.js</span>",
+    "gamepad/src/gamepad.mjs~gamepadmanagersingleton",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html",
+    "<span>GamepadManagerSingleton</span> <span class=\"search-result-import-path\">gamepad/src/gamepad.mjs</span>",
     "class"
   ],
   [
@@ -300,231 +300,231 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
-    "src/gamepad.js",
-    "file/src/gamepad.js.html",
-    "src/gamepad.js",
+    "src/gamepad.mjs",
+    "file/src/gamepad.mjs.html",
+    "src/gamepad.mjs",
     "file"
   ],
   [
-    "src/gamepad.js~controller#axishandlers",
-    "class/src/gamepad.js~Controller.html#instance-member-axisHandlers",
-    "src/gamepad.js~Controller#axisHandlers",
+    "src/gamepad.mjs~controller#axishandlers",
+    "class/src/gamepad.mjs~Controller.html#instance-member-axisHandlers",
+    "src/gamepad.mjs~Controller#axisHandlers",
     "member"
   ],
   [
-    "src/gamepad.js~controller#config",
-    "class/src/gamepad.js~Controller.html#instance-member-config",
-    "src/gamepad.js~Controller#config",
+    "src/gamepad.mjs~controller#config",
+    "class/src/gamepad.mjs~Controller.html#instance-member-config",
+    "src/gamepad.mjs~Controller#config",
     "member"
   ],
   [
-    "src/gamepad.js~controller#constructor",
-    "class/src/gamepad.js~Controller.html#instance-constructor-constructor",
-    "src/gamepad.js~Controller#constructor",
+    "src/gamepad.mjs~controller#constructor",
+    "class/src/gamepad.mjs~Controller.html#instance-constructor-constructor",
+    "src/gamepad.mjs~Controller#constructor",
     "method"
   ],
   [
-    "src/gamepad.js~controller#gamepad",
-    "class/src/gamepad.js~Controller.html#instance-member-gamepad",
-    "src/gamepad.js~Controller#gamepad",
+    "src/gamepad.mjs~controller#gamepad",
+    "class/src/gamepad.mjs~Controller.html#instance-member-gamepad",
+    "src/gamepad.mjs~Controller#gamepad",
     "member"
   ],
   [
-    "src/gamepad.js~controller#getpressed",
-    "class/src/gamepad.js~Controller.html#instance-method-getPressed",
-    "src/gamepad.js~Controller#getPressed",
+    "src/gamepad.mjs~controller#getpressed",
+    "class/src/gamepad.mjs~Controller.html#instance-method-getPressed",
+    "src/gamepad.mjs~Controller#getPressed",
     "method"
   ],
   [
-    "src/gamepad.js~controller#handleaxisinput",
-    "class/src/gamepad.js~Controller.html#instance-method-handleAxisInput",
-    "src/gamepad.js~Controller#handleAxisInput",
+    "src/gamepad.mjs~controller#handleaxisinput",
+    "class/src/gamepad.mjs~Controller.html#instance-method-handleAxisInput",
+    "src/gamepad.mjs~Controller#handleAxisInput",
     "method"
   ],
   [
-    "src/gamepad.js~controller#handlebuttoninput",
-    "class/src/gamepad.js~Controller.html#instance-method-handleButtonInput",
-    "src/gamepad.js~Controller#handleButtonInput",
+    "src/gamepad.mjs~controller#handlebuttoninput",
+    "class/src/gamepad.mjs~Controller.html#instance-method-handleButtonInput",
+    "src/gamepad.mjs~Controller#handleButtonInput",
     "method"
   ],
   [
-    "src/gamepad.js~controller#info",
-    "class/src/gamepad.js~Controller.html#instance-member-info",
-    "src/gamepad.js~Controller#info",
+    "src/gamepad.mjs~controller#info",
+    "class/src/gamepad.mjs~Controller.html#instance-member-info",
+    "src/gamepad.mjs~Controller#info",
     "member"
   ],
   [
-    "src/gamepad.js~controller#off",
-    "class/src/gamepad.js~Controller.html#instance-method-off",
-    "src/gamepad.js~Controller#off",
+    "src/gamepad.mjs~controller#off",
+    "class/src/gamepad.mjs~Controller.html#instance-method-off",
+    "src/gamepad.mjs~Controller#off",
     "method"
   ],
   [
-    "src/gamepad.js~controller#on",
-    "class/src/gamepad.js~Controller.html#instance-method-on",
-    "src/gamepad.js~Controller#on",
+    "src/gamepad.mjs~controller#on",
+    "class/src/gamepad.mjs~Controller.html#instance-method-on",
+    "src/gamepad.mjs~Controller#on",
     "method"
   ],
   [
-    "src/gamepad.js~controller#presshandlers",
-    "class/src/gamepad.js~Controller.html#instance-member-pressHandlers",
-    "src/gamepad.js~Controller#pressHandlers",
+    "src/gamepad.mjs~controller#presshandlers",
+    "class/src/gamepad.mjs~Controller.html#instance-member-pressHandlers",
+    "src/gamepad.mjs~Controller#pressHandlers",
     "member"
   ],
   [
-    "src/gamepad.js~controller#pressed",
-    "class/src/gamepad.js~Controller.html#instance-member-pressed",
-    "src/gamepad.js~Controller#pressed",
+    "src/gamepad.mjs~controller#pressed",
+    "class/src/gamepad.mjs~Controller.html#instance-member-pressed",
+    "src/gamepad.mjs~Controller#pressed",
     "member"
   ],
   [
-    "src/gamepad.js~controller#pulse",
-    "class/src/gamepad.js~Controller.html#instance-method-pulse",
-    "src/gamepad.js~Controller#pulse",
+    "src/gamepad.mjs~controller#pulse",
+    "class/src/gamepad.mjs~Controller.html#instance-method-pulse",
+    "src/gamepad.mjs~Controller#pulse",
     "method"
   ],
   [
-    "src/gamepad.js~controller#releasehandlers",
-    "class/src/gamepad.js~Controller.html#instance-member-releaseHandlers",
-    "src/gamepad.js~Controller#releaseHandlers",
+    "src/gamepad.mjs~controller#releasehandlers",
+    "class/src/gamepad.mjs~Controller.html#instance-member-releaseHandlers",
+    "src/gamepad.mjs~Controller#releaseHandlers",
     "member"
   ],
   [
-    "src/gamepad.js~controller#type",
-    "class/src/gamepad.js~Controller.html#instance-member-type",
-    "src/gamepad.js~Controller#type",
+    "src/gamepad.mjs~controller#type",
+    "class/src/gamepad.mjs~Controller.html#instance-member-type",
+    "src/gamepad.mjs~Controller#type",
     "member"
   ],
   [
-    "src/gamepad.js~controller#updatestate",
-    "class/src/gamepad.js~Controller.html#instance-method-updateState",
-    "src/gamepad.js~Controller#updateState",
+    "src/gamepad.mjs~controller#updatestate",
+    "class/src/gamepad.mjs~Controller.html#instance-method-updateState",
+    "src/gamepad.mjs~Controller#updateState",
     "method"
   ],
   [
-    "src/gamepad.js~controller#vibrate",
-    "class/src/gamepad.js~Controller.html#instance-method-vibrate",
-    "src/gamepad.js~Controller#vibrate",
+    "src/gamepad.mjs~controller#vibrate",
+    "class/src/gamepad.mjs~Controller.html#instance-method-vibrate",
+    "src/gamepad.mjs~Controller#vibrate",
     "method"
   ],
   [
-    "src/gamepad.js~controller.axis_update_range",
-    "class/src/gamepad.js~Controller.html#static-member-AXIS_UPDATE_RANGE",
-    "src/gamepad.js~Controller.AXIS_UPDATE_RANGE",
+    "src/gamepad.mjs~controller.axis_update_range",
+    "class/src/gamepad.mjs~Controller.html#static-member-AXIS_UPDATE_RANGE",
+    "src/gamepad.mjs~Controller.AXIS_UPDATE_RANGE",
     "member"
   ],
   [
-    "src/gamepad.js~controller.buttons_map",
-    "class/src/gamepad.js~Controller.html#static-member-BUTTONS_MAP",
-    "src/gamepad.js~Controller.BUTTONS_MAP",
+    "src/gamepad.mjs~controller.buttons_map",
+    "class/src/gamepad.mjs~Controller.html#static-member-BUTTONS_MAP",
+    "src/gamepad.mjs~Controller.BUTTONS_MAP",
     "member"
   ],
   [
-    "src/gamepad.js~controller.buttons_reverse_map",
-    "class/src/gamepad.js~Controller.html#static-member-BUTTONS_REVERSE_MAP",
-    "src/gamepad.js~Controller.BUTTONS_REVERSE_MAP",
+    "src/gamepad.mjs~controller.buttons_reverse_map",
+    "class/src/gamepad.mjs~Controller.html#static-member-BUTTONS_REVERSE_MAP",
+    "src/gamepad.mjs~Controller.BUTTONS_REVERSE_MAP",
     "member"
   ],
   [
-    "src/gamepad.js~controller.gamepad_ids",
-    "class/src/gamepad.js~Controller.html#static-member-GAMEPAD_IDS",
-    "src/gamepad.js~Controller.GAMEPAD_IDS",
+    "src/gamepad.mjs~controller.gamepad_ids",
+    "class/src/gamepad.mjs~Controller.html#static-member-GAMEPAD_IDS",
+    "src/gamepad.mjs~Controller.GAMEPAD_IDS",
     "member"
   ],
   [
-    "src/gamepad.js~controller.pressed",
-    "class/src/gamepad.js~Controller.html#static-member-PRESSED",
-    "src/gamepad.js~Controller.PRESSED",
+    "src/gamepad.mjs~controller.pressed",
+    "class/src/gamepad.mjs~Controller.html#static-member-PRESSED",
+    "src/gamepad.mjs~Controller.PRESSED",
     "member"
   ],
   [
-    "src/gamepad.js~controller.ps4_remapped",
-    "class/src/gamepad.js~Controller.html#static-member-PS4_REMAPPED",
-    "src/gamepad.js~Controller.PS4_REMAPPED",
+    "src/gamepad.mjs~controller.ps4_remapped",
+    "class/src/gamepad.mjs~Controller.html#static-member-PS4_REMAPPED",
+    "src/gamepad.mjs~Controller.PS4_REMAPPED",
     "member"
   ],
   [
-    "src/gamepad.js~controller.trigger_pressed_value",
-    "class/src/gamepad.js~Controller.html#static-member-TRIGGER_PRESSED_VALUE",
-    "src/gamepad.js~Controller.TRIGGER_PRESSED_VALUE",
+    "src/gamepad.mjs~controller.trigger_pressed_value",
+    "class/src/gamepad.mjs~Controller.html#static-member-TRIGGER_PRESSED_VALUE",
+    "src/gamepad.mjs~Controller.TRIGGER_PRESSED_VALUE",
     "member"
   ],
   [
-    "src/gamepad.js~controller.unpressed",
-    "class/src/gamepad.js~Controller.html#static-member-UNPRESSED",
-    "src/gamepad.js~Controller.UNPRESSED",
+    "src/gamepad.mjs~controller.unpressed",
+    "class/src/gamepad.mjs~Controller.html#static-member-UNPRESSED",
+    "src/gamepad.mjs~Controller.UNPRESSED",
     "member"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#connecthandler",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-member-connectHandler",
-    "src/gamepad.js~GamepadManagerSingleton#connectHandler",
+    "src/gamepad.mjs~gamepadmanagersingleton#connecthandler",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-member-connectHandler",
+    "src/gamepad.mjs~GamepadManagerSingleton#connectHandler",
     "member"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#constructor",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-constructor-constructor",
-    "src/gamepad.js~GamepadManagerSingleton#constructor",
+    "src/gamepad.mjs~gamepadmanagersingleton#constructor",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-constructor-constructor",
+    "src/gamepad.mjs~GamepadManagerSingleton#constructor",
     "method"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#controllers",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-member-controllers",
-    "src/gamepad.js~GamepadManagerSingleton#controllers",
+    "src/gamepad.mjs~gamepadmanagersingleton#controllers",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-member-controllers",
+    "src/gamepad.mjs~GamepadManagerSingleton#controllers",
     "member"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#disconnecthandler",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-member-disconnectHandler",
-    "src/gamepad.js~GamepadManagerSingleton#disconnectHandler",
+    "src/gamepad.mjs~gamepadmanagersingleton#disconnecthandler",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-member-disconnectHandler",
+    "src/gamepad.mjs~GamepadManagerSingleton#disconnectHandler",
     "member"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#getcontrollers",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-method-getControllers",
-    "src/gamepad.js~GamepadManagerSingleton#getControllers",
+    "src/gamepad.mjs~gamepadmanagersingleton#getcontrollers",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-getControllers",
+    "src/gamepad.mjs~GamepadManagerSingleton#getControllers",
     "method"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#getmaincontroller",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-method-getMainController",
-    "src/gamepad.js~GamepadManagerSingleton#getMainController",
+    "src/gamepad.mjs~gamepadmanagersingleton#getmaincontroller",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-getMainController",
+    "src/gamepad.mjs~GamepadManagerSingleton#getMainController",
     "method"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#handlegamepadconnected",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-method-handleGamepadConnected",
-    "src/gamepad.js~GamepadManagerSingleton#handleGamepadConnected",
+    "src/gamepad.mjs~gamepadmanagersingleton#handlegamepadconnected",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-handleGamepadConnected",
+    "src/gamepad.mjs~GamepadManagerSingleton#handleGamepadConnected",
     "method"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#handlegamepaddisconnected",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-method-handleGamepadDisconnected",
-    "src/gamepad.js~GamepadManagerSingleton#handleGamepadDisconnected",
+    "src/gamepad.mjs~gamepadmanagersingleton#handlegamepaddisconnected",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-handleGamepadDisconnected",
+    "src/gamepad.mjs~GamepadManagerSingleton#handleGamepadDisconnected",
     "method"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#on",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-method-on",
-    "src/gamepad.js~GamepadManagerSingleton#on",
+    "src/gamepad.mjs~gamepadmanagersingleton#on",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-on",
+    "src/gamepad.mjs~GamepadManagerSingleton#on",
     "method"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton#pollgamepadstate",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#instance-method-pollGamepadState",
-    "src/gamepad.js~GamepadManagerSingleton#pollGamepadState",
+    "src/gamepad.mjs~gamepadmanagersingleton#pollgamepadstate",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-pollGamepadState",
+    "src/gamepad.mjs~GamepadManagerSingleton#pollGamepadState",
     "method"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton.event",
+    "src/gamepad.mjs~gamepadmanagersingleton.event",
     "typedef/index.html#static-typedef-Event",
-    "src/gamepad.js~GamepadManagerSingleton.Event",
+    "src/gamepad.mjs~GamepadManagerSingleton.Event",
     "typedef"
   ],
   [
-    "src/gamepad.js~gamepadmanagersingleton.version",
-    "class/src/gamepad.js~GamepadManagerSingleton.html#static-member-version",
-    "src/gamepad.js~GamepadManagerSingleton.version",
+    "src/gamepad.mjs~gamepadmanagersingleton.version",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#static-member-version",
+    "src/gamepad.mjs~GamepadManagerSingleton.version",
     "member"
   ]
 ]
