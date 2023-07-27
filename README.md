@@ -46,7 +46,7 @@ gamepadManager.on('disconnect', function(pController) {
 });
 ```
 # License
-GamepadManager does not have a license at this time. For licensing information, please contact the author.
+GamepadManager is free software, available under the terms of a MIT style License.
 
 # Author
 GamepadManager was created by doubleactii.
