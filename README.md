@@ -51,5 +51,7 @@ GamepadManager is free software, available under the terms of a MIT style Licens
 # Author
 GamepadManager was created by doubleactii.
 
+# [Docs](https://evitcastudio.github.io/Gamepad/)
+
 # TODO
 Currently, Bluetooth gamepads when disconnecting (PS4 only) do not fire a disconnected event. Manually calling this.gamepad.vibrationActuator.reset() can force it to call a disconnect event, but this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. A fix needs to be found. (This is a GamepadAPI issue/OS issue/not a code-wise issue)
