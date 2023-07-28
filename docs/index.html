@@ -44,7 +44,7 @@ Provides an easy-to-use API for accessing input from game controllers.
 Includes event handlers for detecting when game controllers are connected or disconnected.
 Supports remapping of controller buttons to match different controller layouts.</p>
 <h1 id="usage">Usage</h1><p>You can create a new GamepadManager object like this:</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">import { GamepadManager } from &apos;./gamepad.min.js&apos;;
+<pre><code class="lang-js"><code class="source-code prettyprint">import { GamepadManager } from &apos;./gamepad.min.mjs&apos;;
 var gamepadManager = new GamepadManager();</code>
 </code></pre>
 <p>The GamepadManager object provides several methods for accessing input from game controllers. For example, you can get the main controller like this:</p>
@@ -69,9 +69,9 @@ gamepadManager.on(&apos;disconnect&apos;, function(pController) {
     // Do something when a controller is disconnected.
 });</code>
 </code></pre>
-<h1 id="license">License</h1><p>GamepadManager does not have a license at this time. For licensing information, please contact the author.</p>
+<h1 id="license">License</h1><p>GamepadManager is free software, available under the terms of a MIT style License.</p>
 <h1 id="author">Author</h1><p>GamepadManager was created by doubleactii.</p>
-<h1 id="todo">TODO</h1><p>Currently, Bluetooth gamepads when disconnecting (PS4 only) do not fire a disconnected event. Manually calling this.gamepad.vibrationActuator.reset() can force it to call a disconnect event, but this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. A fix needs to be found. (This is a GamepadAPI issue/OS issue/not a code-wise issue)</p>
+<h1 id="-a-href--https---evitcastudio-github-io-gamepad---docs--a-"><a href="https://evitcastudio.github.io/Gamepad/">Docs</a></h1><h1 id="todo">TODO</h1><p>Currently, Bluetooth gamepads when disconnecting (PS4 only) do not fire a disconnected event. Manually calling this.gamepad.vibrationActuator.reset() can force it to call a disconnect event, but this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. A fix needs to be found. (This is a GamepadAPI issue/OS issue/not a code-wise issue)</p>
 </div>
 </div>
 
