@@ -149,22 +149,53 @@ class Controller {
 	 * @type {object}
 	 */
 	config = {
-		// Analog thumb sticks
-		axes: {
-			'LEFT_X': 0, // Left axis
-			'LEFT_Y': 1, // Left axis 
-			'RIGHT_X': 2,
-			'RIGHT_Y': 3,
-		},
 		// Buttons
 		buttons: (() => { return { ...Controller.BUTTONS_MAP }})()
 	}
+	/**
+	 * Whether the left analog is currently being held
+	 * 
+	 * @type {boolean}
+	 */
+	leftAnalogHeld = false;
+	/**
+	 * Whether the right analog is currently being held
+	 * 
+	 * @type {boolean}
+	 */
+	rightAnalogHeld = false;
+	/**
+	 * Analog thumb sticks
+	 * 
+	 * @type {object}
+	 */
+	static AXES = {
+		'LEFT_X': 0, // Left axis
+		'LEFT_Y': 1, // Left axis 
+		'RIGHT_X': 2,
+		'RIGHT_Y': 3,
+	}
+
+	static AXES_REVERSED_MAP = (() => { 
+		const reversedMap = {};
+		for (const axis in Controller.AXES) {
+			const index = Controller.AXES[axis];
+			reversedMap[index] = axis;
+		}
+		return reversedMap;
+	})()
 	/**
 	 * The range at which axis changes are detected
 	 * 
 	 * @type {number}
 	 */
 	static AXIS_UPDATE_RANGE = 0.0; // 0.2
+	/**
+	 * The range at which the analog is considered to be dropped -0.09 - 0.09
+	 * 
+	 * @type {number}
+	 */
+	static ANALOG_RELEASE_RANGE = 0.09;
 	/**
 	 * The value at which holding a trigger (LT OR RT) will consider it being pressed
 	 */
@@ -283,7 +314,8 @@ class Controller {
 		axes: null,
 		buttons: null,
 		previousButtonState: [],
-		previousAxesState: []
+		previousAxesState: [],
+		initialAxesStickDrift: []
 	}
 	/**
 	 * Object of stored callback that will call when a button is pressed
@@ -316,6 +348,7 @@ class Controller {
 	 * Update the state of this controller with the latest polled information
 	 * 
 	 * @param {Gamepad} - The gamepad with the new updated state
+	 * @param {Controller} - The gamepad controller instance
 	 */
 	updateState(pGamepad) {
 		const { buttons: newButtonState, axes: newAxesState } = pGamepad;
@@ -335,15 +368,91 @@ class Controller {
 
 		// Loop through the axis and check for changes
 		/**
-		 * Changes will almost always occur, so to prevent this spammy behavior we check in ranges. This range can be tweaked 0.2 is default
+		 * Changes will almost always occur, so to prevent this spammy behavior we check in ranges. This range can be tweaked 0.0 is default
+		 */
+		/**
+		 * @todo Stop using a for loop and check the axis manually, it is only 4. Two for left, and two for right, no loop is needed and will allow less events to be called due to it manually being checked than looped 4 times when their is 
+		 * really only two axis. 2x the events are being checked for and called.
 		 */
 		for (let i = 0; i < newAxesState.length; i++) {
 			// Check and see if the axis value changed significantly, we can tweak this value or maybe set it to a user defined value?
 			// We also check if this value is set, if not we allow it to be set with the current data
-			const axesStillHeld = (newAxesState[i] === this.info.previousAxesState[i]);
-			if (axesStillHeld || Math.abs(newAxesState[i] - this.info.previousAxesState[i]) >= Controller.AXIS_UPDATE_RANGE || this.info.previousAxesState[i] === undefined) {
-				this.handleAxisInput(i, newAxesState[i], axesStillHeld);
-				this.info.previousAxesState[i] = newAxesState[i];
+			// The current axis
+			let currentAxis = newAxesState[i];
+			// IF the analog crosses this range, then it has been "dropped".
+			if (currentAxis >= -Controller.ANALOG_RELEASE_RANGE && currentAxis <= Controller.ANALOG_RELEASE_RANGE && (currentAxis === this.info.previousAxesState[i]) && (currentAxis !== 0 && currentAxis !== -0)) {
+				this.info.previousAxesState[i] = undefined;
+				this.info.initialAxesStickDrift[i] = undefined;
+
+				switch (Controller.AXES_REVERSED_MAP[i]) {
+					case 'LEFT_X':
+					case 'LEFT_Y':
+						if (this.leftAnalogHeld) {
+							this.leftAnalogHeld = false;
+							this.handleDropAnalog('LEFT');
+						}
+						break;
+
+					case 'RIGHT_X':
+					case 'RIGHT_Y':
+						if (this.rightAnalogHeld) {
+							this.rightAnalogHeld = false;
+							this.handleDropAnalog('RIGHT');
+						}
+						break;
+				}
+			}
+			// Check if this axis has been held for more than one tick. And only if the axis is not 0. An axis of 0 means the analog is not being moved at all.
+			const axisStillHeld = (this.info.initialAxesStickDrift[i] !== currentAxis) && (currentAxis === this.info.previousAxesState[i]) && (currentAxis !== 0 && currentAxis !== -0);
+			const hasPreviousState = this.info.previousAxesState[i] !== undefined;
+			// Can only calculate this if there was a previousAxesState
+			let axisUpdateRangeMet = false;
+			// If the axis is different then the initial stick drift of the analog
+			const axisDifferentFromInitialStickDrift = (this.info.initialAxesStickDrift[i] !== undefined) && currentAxis !== this.info.initialAxesStickDrift[i];
+			// If there is a previous state then we calculate if the range the analog has moved is enough to consider it an update
+			if (hasPreviousState) {
+				axisUpdateRangeMet = Math.abs(currentAxis - this.info.previousAxesState[i]) >= Controller.AXIS_UPDATE_RANGE;
+			// If there is no previous state then this must mean the user has never touched the analog and we need to store the initial "stick drift" of this analog to check against in the future ticks to prevent non user axis changes from being called.
+			} else {
+				// In the event the analog had no previous state but the new axis is different then the stored initial stick drift then the analog has been moved
+				if (axisDifferentFromInitialStickDrift) {
+					axisUpdateRangeMet = Math.abs(currentAxis - this.info.initialAxesStickDrift[i]) >= Controller.AXIS_UPDATE_RANGE;
+				// Otherwise store the initial axis stick drift
+				} else {
+					this.info.initialAxesStickDrift[i] = currentAxis;
+				}
+			}
+
+			// If the axis is not the same as the initial stick drift then it means the user has touched the analog
+			if (axisDifferentFromInitialStickDrift) {
+				/**
+				 * @todo Simplify into a function call because this code is repeated.
+				 */
+				axisUpdateRangeMet = Math.abs(currentAxis - this.info.initialAxesStickDrift[i]) >= Controller.AXIS_UPDATE_RANGE;
+			}
+
+			// If there is user input then handle events
+			if (axisStillHeld || axisUpdateRangeMet) {
+				switch (Controller.AXES_REVERSED_MAP[i]) {
+					case 'LEFT_X':
+					case 'LEFT_Y':
+						if (!this.leftAnalogHeld && !hasPreviousState) {
+							this.leftAnalogHeld = true;
+							this.handleGrabAnalog('LEFT');
+						}
+						break;
+
+					case 'RIGHT_X':
+					case 'RIGHT_Y':
+						if (!this.rightAnalogHeld && !hasPreviousState) {
+							this.rightAnalogHeld = true;
+							this.handleGrabAnalog('RIGHT');
+						}
+						break;
+				}
+
+				this.handleAxisInput(i, currentAxis, axisStillHeld);
+				this.info.previousAxesState[i] = currentAxis;
 			}
 		}
 	}
@@ -378,6 +487,8 @@ class Controller {
 						this.releaseHandlers[pEvent] = pCallback;
 						break;
 					case 'axis':
+					case 'grab':
+					case 'drop':
 						this.axisHandlers[pEvent] = pCallback;
 						break;
 					default:
@@ -406,6 +517,8 @@ class Controller {
 						this.releaseHandlers[pEvent] = null;
 						break;
 					case 'axis':
+					case 'grab':
+					case 'drop':
 						this.axisHandlers[pEvent] = null;
 						break;
 					default:
@@ -474,14 +587,59 @@ class Controller {
 		let axisName = pAxis;
 		let clampedValue = Math.floor(pValue * 100) / 100;
 		// Check if axis is mapped
-		for (const axes in this.config.axes) {
-			if (this.config.axes[axes] === pAxis) {
+		for (const axes in Controller.AXES) {
+			if (Controller.AXES[axes] === pAxis) {
 				axisName = axes;
 			}
 		}
 		if (axisName) {
 			if (typeof(this.axisHandlers['axis']) === 'function') this.axisHandlers['axis'](axisName, clampedValue, pRepeat);
 		}
+	}
+	/**
+	 * Handles the event for when a analog is grabbed.
+	 * 
+	 * @param {string} pAnalog - Analog that was grabbed
+	 */
+	handleGrabAnalog(pAnalog) {
+		if (pAnalog) {
+			if (typeof(this.axisHandlers['grab']) === 'function') this.axisHandlers['grab'](pAnalog);
+		}
+	}
+	/**
+	 * Handles the event for when a analog is dropped.
+	 * 
+	 * @param {string} pAnalog - Analog that was dropped
+	 */
+	handleDropAnalog(pAnalog) {
+		if (pAnalog) {
+			if (typeof(this.axisHandlers['drop']) === 'function') this.axisHandlers['drop'](pAnalog);
+		}
+	}
+	/**
+	 * Whether the left analog is being held
+	 * 
+	 * @returns {boolean}
+	 */
+	isLeftAnalogHeld() {
+		return this.leftAnalogHeld;
+	}
+	/**
+	 * Whether the right analog is being held
+	 * 
+	 * @returns {boolean}
+	 */
+	isRightAnalogHeld() {
+		return this.rightAnalogHeld;
+	}
+	/**
+	 * Checks whether a button is pressed down or not
+	 * 
+	 * @param {string} pButtonName - The button to check if its pressed
+	 * @returns {boolean}
+	 */
+	isButtonPressed(pButtonName) {
+		return this.pressed[pButtonName];
 	}
 	/**
 	 * Vibrate the controller (experimental)
