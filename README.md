@@ -37,7 +37,15 @@ GamepadManager.on('connect', function(pController) {
         // Do something when a controller releases a button
     }).on('axis', (pAxisName, pValue, pRepeat) => {
         // Do something when a controller moves its analogs
-    });
+    }).on('grab', (pAnalogName) => {
+		// Do something when an analog is touched or moved from the "drop off zone" (center position)
+	}).on('drop', (pAnalogName) => {
+		// Do something when an analog is not being touched anymore or has been moved to the "drop off zone" (center position)
+	});;
+
+    pController.isLeftAnalogHeld(); // Returns a boolean
+    pController.isRightAnalogHeld(); // Returns a boolean
+    pController.isButtonPressed('A'); // Returns a boolean
 });
 
 GamepadManager.on('disconnect', function(pController) {
