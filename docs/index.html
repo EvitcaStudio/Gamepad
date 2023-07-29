@@ -44,17 +44,16 @@ Provides an easy-to-use API for accessing input from game controllers.
 Includes event handlers for detecting when game controllers are connected or disconnected.
 Supports remapping of controller buttons to match different controller layouts.</p>
 <h1 id="usage">Usage</h1><p>You can create a new GamepadManager object like this:</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">import { GamepadManager } from &apos;./gamepad.min.mjs&apos;;
-var gamepadManager = new GamepadManager();</code>
+<pre><code class="lang-js"><code class="source-code prettyprint">import { GamepadManager } from &apos;./gamepad.min.mjs&apos;;</code>
 </code></pre>
 <p>The GamepadManager object provides several methods for accessing input from game controllers. For example, you can get the main controller like this:</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">var controller = gamepadManager.getMainController();</code>
+<pre><code class="lang-js"><code class="source-code prettyprint">var controller = GamepadManager.getMainController();</code>
 </code></pre>
 <p>You can also get a list of all connected controllers like this:</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">var controllers = gamepadManager.getControllers();</code>
+<pre><code class="lang-js"><code class="source-code prettyprint">var controllers = GamepadManager.getControllers();</code>
 </code></pre>
 <p>The GamepadManager object also includes event handlers for detecting when game controllers are connected or disconnected. For example, to handle the &quot;connect&quot; event, you can use the following code:</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">gamepadManager.on(&apos;connect&apos;, function(pController) {
+<pre><code class="lang-js"><code class="source-code prettyprint">GamepadManager.on(&apos;connect&apos;, function(pController) {
     // Do something when a controller is connected.
     pController.on(&apos;press&apos;, (pButtonName, pValue, pRepeat) =&gt; {
         // Do something when a controller presses a button
@@ -65,7 +64,7 @@ var gamepadManager = new GamepadManager();</code>
     });
 });
 
-gamepadManager.on(&apos;disconnect&apos;, function(pController) {
+GamepadManager.on(&apos;disconnect&apos;, function(pController) {
     // Do something when a controller is disconnected.
 });</code>
 </code></pre>

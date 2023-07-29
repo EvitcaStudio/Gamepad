@@ -94,13 +94,100 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#static-member-AXIS_UPDATE_RANGE">AXIS_UPDATE_RANGE</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#static-member-ANALOG_RELEASE_RANGE">ANALOG_RELEASE_RANGE</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The range at which the analog is considered to be dropped -0.09 - 0.09</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#static-member-AXES">AXES</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Analog thumb sticks</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#static-member-AXES_REVERSED_MAP">AXES_REVERSED_MAP</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
         </p>
       </div>
       <div>
         
         
         
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#static-member-AXIS_UPDATE_RANGE">AXIS_UPDATE_RANGE</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The range at which axis changes are detected</p>
+</div>
       </div>
     </td>
     <td>
@@ -482,6 +569,34 @@
           
           
           
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-member-leftAnalogHeld">leftAnalogHeld</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
           <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-member-pressHandlers">pressHandlers</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
         </p>
       </div>
@@ -546,6 +661,35 @@
         
         
         <div data-ice="description"><p>Object of stored callback that will call when a button is released</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-member-rightAnalogHeld">rightAnalogHeld</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Whether the right analog is currently being held</p>
 </div>
       </div>
     </td>
@@ -690,6 +834,151 @@
           
           
           
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-method-handleDropAnalog">handleDropAnalog</a></span></span><span class="code" data-ice="signature">(pAnalog: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Handles the event for when a analog is dropped.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-method-handleGrabAnalog">handleGrabAnalog</a></span></span><span class="code" data-ice="signature">(pAnalog: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Handles the event for when a analog is grabbed.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-method-isButtonPressed">isButtonPressed</a></span></span><span class="code" data-ice="signature">(pButtonName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Checks whether a button is pressed down or not</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-method-isLeftAnalogHeld">isLeftAnalogHeld</a></span></span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Whether the left analog is being held</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-method-isRightAnalogHeld">isRightAnalogHeld</a></span></span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Whether the right analog is being held</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
           <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-method-off">off</a></span></span><span class="code" data-ice="signature">(pEvent: <span>Event[&apos;event&apos;]</span>): <span><a href="class/src/gamepad.mjs~Controller.html">Controller</a></span></span>
         </p>
       </div>
@@ -777,7 +1066,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-method-updateState">updateState</a></span></span><span class="code" data-ice="signature">(-: <span>Gamepad</span>)</span>
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html#instance-method-updateState">updateState</a></span></span><span class="code" data-ice="signature">(-: <span>Gamepad</span>, -: <span><a href="class/src/gamepad.mjs~Controller.html">Controller</a></span>)</span>
         </p>
       </div>
       <div>
@@ -830,18 +1119,106 @@
 <div data-ice="staticMemberDetails"><h2 data-ice="title">Static Public Members</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-member-AXIS_UPDATE_RANGE">
+  <h3 data-ice="anchor" id="static-member-ANALOG_RELEASE_RANGE">
     <span class="access" data-ice="access">public</span>
     <span data-ice="static">static</span>
     
     
     
     
-    <span class="code" data-ice="name">AXIS_UPDATE_RANGE</span><span class="code" data-ice="signature">: <span>*</span></span>
+    <span class="code" data-ice="name">ANALOG_RELEASE_RANGE</span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber167">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber198">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The range at which the analog is considered to be dropped -0.09 - 0.09</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-member-AXES">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">AXES</span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber172">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Analog thumb sticks</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-member-AXES_REVERSED_MAP">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">AXES_REVERSED_MAP</span><span class="code" data-ice="signature">: <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber179">source</a></span></span>
     </span>
   </h3>
 
@@ -849,6 +1226,50 @@
   
   
   
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-member-AXIS_UPDATE_RANGE">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">AXIS_UPDATE_RANGE</span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber192">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The range at which axis changes are detected</p>
+</div>
 
   
 
@@ -884,7 +1305,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber187">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber218">source</a></span></span>
     </span>
   </h3>
 
@@ -928,7 +1349,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber212">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber243">source</a></span></span>
     </span>
   </h3>
 
@@ -971,7 +1392,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber239">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber270">source</a></span></span>
     </span>
   </h3>
 
@@ -1014,7 +1435,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber177">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber208">source</a></span></span>
     </span>
   </h3>
 
@@ -1058,7 +1479,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber225">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber256">source</a></span></span>
     </span>
   </h3>
 
@@ -1102,7 +1523,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber171">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber202">source</a></span></span>
     </span>
   </h3>
 
@@ -1146,7 +1567,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber183">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber214">source</a></span></span>
     </span>
   </h3>
 
@@ -1194,7 +1615,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber311">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber343">source</a></span></span>
     </span>
   </h3>
 
@@ -1258,7 +1679,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber305">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber337">source</a></span></span>
     </span>
   </h3>
 
@@ -1346,7 +1767,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber312">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber344">source</a></span></span>
     </span>
   </h3>
 
@@ -1389,7 +1810,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber282">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber313">source</a></span></span>
     </span>
   </h3>
 
@@ -1398,6 +1819,49 @@
   
   <div data-ice="description"><p>Info about the controller</p>
 </div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-leftAnalogHeld">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">leftAnalogHeld</span><span class="code" data-ice="signature">: <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber160">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
 
   
 
@@ -1433,7 +1897,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber293">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber325">source</a></span></span>
     </span>
   </h3>
 
@@ -1476,7 +1940,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber270">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber301">source</a></span></span>
     </span>
   </h3>
 
@@ -1520,7 +1984,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber299">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber331">source</a></span></span>
     </span>
   </h3>
 
@@ -1528,6 +1992,50 @@
   
   
   <div data-ice="description"><p>Object of stored callback that will call when a button is released</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-rightAnalogHeld">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">rightAnalogHeld</span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber166">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Whether the right analog is currently being held</p>
 </div>
 
   
@@ -1564,7 +2072,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber313">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber345">source</a></span></span>
     </span>
   </h3>
 
@@ -1610,7 +2118,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber353">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber462">source</a></span></span>
     </span>
   </h3>
 
@@ -1666,7 +2174,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber473">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber586">source</a></span></span>
     </span>
   </h3>
 
@@ -1741,7 +2249,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber428">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber541">source</a></span></span>
     </span>
   </h3>
 
@@ -1812,6 +2320,313 @@
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-handleDropAnalog">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">handleDropAnalog</span><span class="code" data-ice="signature">(pAnalog: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber614">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Handles the event for when a analog is dropped.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">pAnalog</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Analog that was dropped</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-handleGrabAnalog">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">handleGrabAnalog</span><span class="code" data-ice="signature">(pAnalog: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber604">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Handles the event for when a analog is grabbed.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">pAnalog</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Analog that was grabbed</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-isButtonPressed">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">isButtonPressed</span><span class="code" data-ice="signature">(pButtonName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber641">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Checks whether a button is pressed down or not</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">pButtonName</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The button to check if its pressed</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-isLeftAnalogHeld">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">isLeftAnalogHeld</span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber624">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Whether the left analog is being held</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-isRightAnalogHeld">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">isRightAnalogHeld</span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber632">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Whether the right analog is being held</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-off">
     <span class="access" data-ice="access">public</span>
     
@@ -1823,7 +2638,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber398">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber509">source</a></span></span>
     </span>
   </h3>
 
@@ -1897,7 +2712,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber370">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber479">source</a></span></span>
     </span>
   </h3>
 
@@ -1978,7 +2793,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber518">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber676">source</a></span></span>
     </span>
   </h3>
 
@@ -2042,11 +2857,11 @@
     
     
     
-    <span class="code" data-ice="name">updateState</span><span class="code" data-ice="signature">(-: <span>Gamepad</span>)</span>
+    <span class="code" data-ice="name">updateState</span><span class="code" data-ice="signature">(-: <span>Gamepad</span>, -: <span><a href="class/src/gamepad.mjs~Controller.html">Controller</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber320">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber353">source</a></span></span>
     </span>
   </h3>
 
@@ -2071,6 +2886,13 @@
       <td data-ice="type" class="code"><span>Gamepad</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The gamepad with the new updated state</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">-</td>
+      <td data-ice="type" class="code"><span><a href="class/src/gamepad.mjs~Controller.html">Controller</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The gamepad controller instance</p>
 </td>
     </tr>
 </tbody>
@@ -2107,7 +2929,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber498">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber656">source</a></span></span>
     </span>
   </h3>
 

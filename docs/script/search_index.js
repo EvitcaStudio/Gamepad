@@ -348,9 +348,45 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/gamepad.mjs~controller#handledropanalog",
+    "class/src/gamepad.mjs~Controller.html#instance-method-handleDropAnalog",
+    "src/gamepad.mjs~Controller#handleDropAnalog",
+    "method"
+  ],
+  [
+    "src/gamepad.mjs~controller#handlegrabanalog",
+    "class/src/gamepad.mjs~Controller.html#instance-method-handleGrabAnalog",
+    "src/gamepad.mjs~Controller#handleGrabAnalog",
+    "method"
+  ],
+  [
     "src/gamepad.mjs~controller#info",
     "class/src/gamepad.mjs~Controller.html#instance-member-info",
     "src/gamepad.mjs~Controller#info",
+    "member"
+  ],
+  [
+    "src/gamepad.mjs~controller#isbuttonpressed",
+    "class/src/gamepad.mjs~Controller.html#instance-method-isButtonPressed",
+    "src/gamepad.mjs~Controller#isButtonPressed",
+    "method"
+  ],
+  [
+    "src/gamepad.mjs~controller#isleftanalogheld",
+    "class/src/gamepad.mjs~Controller.html#instance-method-isLeftAnalogHeld",
+    "src/gamepad.mjs~Controller#isLeftAnalogHeld",
+    "method"
+  ],
+  [
+    "src/gamepad.mjs~controller#isrightanalogheld",
+    "class/src/gamepad.mjs~Controller.html#instance-method-isRightAnalogHeld",
+    "src/gamepad.mjs~Controller#isRightAnalogHeld",
+    "method"
+  ],
+  [
+    "src/gamepad.mjs~controller#leftanalogheld",
+    "class/src/gamepad.mjs~Controller.html#instance-member-leftAnalogHeld",
+    "src/gamepad.mjs~Controller#leftAnalogHeld",
     "member"
   ],
   [
@@ -390,6 +426,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/gamepad.mjs~controller#rightanalogheld",
+    "class/src/gamepad.mjs~Controller.html#instance-member-rightAnalogHeld",
+    "src/gamepad.mjs~Controller#rightAnalogHeld",
+    "member"
+  ],
+  [
     "src/gamepad.mjs~controller#type",
     "class/src/gamepad.mjs~Controller.html#instance-member-type",
     "src/gamepad.mjs~Controller#type",
@@ -406,6 +448,24 @@ window.esdocSearchIndex = [
     "class/src/gamepad.mjs~Controller.html#instance-method-vibrate",
     "src/gamepad.mjs~Controller#vibrate",
     "method"
+  ],
+  [
+    "src/gamepad.mjs~controller.analog_release_range",
+    "class/src/gamepad.mjs~Controller.html#static-member-ANALOG_RELEASE_RANGE",
+    "src/gamepad.mjs~Controller.ANALOG_RELEASE_RANGE",
+    "member"
+  ],
+  [
+    "src/gamepad.mjs~controller.axes",
+    "class/src/gamepad.mjs~Controller.html#static-member-AXES",
+    "src/gamepad.mjs~Controller.AXES",
+    "member"
+  ],
+  [
+    "src/gamepad.mjs~controller.axes_reversed_map",
+    "class/src/gamepad.mjs~Controller.html#static-member-AXES_REVERSED_MAP",
+    "src/gamepad.mjs~Controller.AXES_REVERSED_MAP",
+    "member"
   ],
   [
     "src/gamepad.mjs~controller.axis_update_range",
