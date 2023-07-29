@@ -13,24 +13,23 @@ You can create a new GamepadManager object like this:
 
 ```js
 import { GamepadManager } from './gamepad.min.mjs';
-var gamepadManager = new GamepadManager();
 ```
 
 The GamepadManager object provides several methods for accessing input from game controllers. For example, you can get the main controller like this:
 
 ```js
-var controller = gamepadManager.getMainController();
+var controller = GamepadManager.getMainController();
 ```
 
 You can also get a list of all connected controllers like this:
 
 ```js
-var controllers = gamepadManager.getControllers();
+var controllers = GamepadManager.getControllers();
 ```
 The GamepadManager object also includes event handlers for detecting when game controllers are connected or disconnected. For example, to handle the "connect" event, you can use the following code:
 
 ```js
-gamepadManager.on('connect', function(pController) {
+GamepadManager.on('connect', function(pController) {
     // Do something when a controller is connected.
     pController.on('press', (pButtonName, pValue, pRepeat) => {
         // Do something when a controller presses a button
@@ -41,7 +40,7 @@ gamepadManager.on('connect', function(pController) {
     });
 });
 
-gamepadManager.on('disconnect', function(pController) {
+GamepadManager.on('disconnect', function(pController) {
     // Do something when a controller is disconnected.
 });
 ```
