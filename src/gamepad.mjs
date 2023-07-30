@@ -345,6 +345,14 @@ class Controller {
 		this.type = Controller.GAMEPAD_IDS[this.gamepad.id] ? Controller.GAMEPAD_IDS[this.gamepad.id] : 'Generic';
 	}
 	/**
+	 * Returns the type the controller is. PC / PS / Xbox / Android
+	 * 
+	 * @returns {string}
+	 */
+	getType() {
+		return this.type;
+	}
+	/**
 	 * Update the state of this controller with the latest polled information
 	 * 
 	 * @param {Gamepad} - The gamepad with the new updated state
