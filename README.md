@@ -43,9 +43,11 @@ GamepadManager.on('connect', function(pController) {
         // Do something when an analog is not being touched anymore or has been moved to the "drop off zone" (center position)
     });
 
+    pController.vibrate('dual-rumble', 0, 1000, 1, 1); // Vibrate the controller with customizable settings
     pController.isLeftAnalogHeld(); // Returns a boolean
     pController.isRightAnalogHeld(); // Returns a boolean
     pController.isButtonPressed('A'); // Returns a boolean
+    pController.getType(); // Returns the type this controller is. PC / PS / Xbox/ Android
 });
 
 GamepadManager.on('disconnect', function(pController) {
