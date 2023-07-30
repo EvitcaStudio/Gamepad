@@ -336,6 +336,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/gamepad.mjs~controller#gettype",
+    "class/src/gamepad.mjs~Controller.html#instance-method-getType",
+    "src/gamepad.mjs~Controller#getType",
+    "method"
+  ],
+  [
     "src/gamepad.mjs~controller#handleaxisinput",
     "class/src/gamepad.mjs~Controller.html#instance-method-handleAxisInput",
     "src/gamepad.mjs~Controller#handleAxisInput",

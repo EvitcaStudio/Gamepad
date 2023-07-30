@@ -67,9 +67,11 @@ Supports remapping of controller buttons to match different controller layouts.<
         // Do something when an analog is not being touched anymore or has been moved to the &quot;drop off zone&quot; (center position)
     });
 
+    pController.vibrate(&apos;dual-rumble&apos;, 0, 1000, 1, 1); // Vibrate the controller with customizable settings
     pController.isLeftAnalogHeld(); // Returns a boolean
     pController.isRightAnalogHeld(); // Returns a boolean
     pController.isButtonPressed(&apos;A&apos;); // Returns a boolean
+    pController.getType(); // Returns the type this controller is. PC / PS / Xbox/ Android
 });
 
 GamepadManager.on(&apos;disconnect&apos;, function(pController) {
