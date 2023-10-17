@@ -567,7 +567,7 @@
     "__docId__": 48,
     "kind": "file",
     "name": "src/gamepad.mjs",
-    "content": "/**\r\n * A gamepadmanager to help with games / handling input from a controller\r\n * @class GamepadManagerSingleton\r\n * @license GamepadManager does not have a license at this time. For licensing contact the author\r\n * @author https://github.com/doubleactii\r\n * @todo Currently bluetooth gamepads when disconnecting (PS4 only) do no fire a disconnected event. Manually calling `this.gamepad.vibrationActuator.reset()` can force it to call a disconnect event, but \r\n * this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. Find a fix. (This is a GamepadAPI issue/OS issue/not code wise issue)\r\n * Copyright (c) 2023 Evitca Studio\r\n */\r\nclass GamepadManagerSingleton {\r\n\t/**\r\n\t * The version of this module\r\n\t * \r\n\t * @type {string}\r\n\t */\r\n\tstatic version = '1.0.0';\r\n\t/**\r\n\t * Object containing all connected controllers\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\tcontrollers = {};\r\n\t/**\r\n\t * Object containing the callback for when a controller is connected\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\tconnectHandler = {};\r\n\t/**\r\n\t * Object containing the callback for when a controller is disconnected\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\tdisconnectHandler = {};\r\n\t/**\r\n\t * Creates the instance and assigns event handlers to gamepad events\r\n\t */\r\n\tconstructor() {\r\n\t\t// Bind this class instance to the event handlers\r\n\t\tthis.handleGamepadConnected = this.handleGamepadConnected.bind(this);\r\n\t\tthis.handleGamepadDisconnected = this.handleGamepadDisconnected.bind(this);\r\n\t\tthis.pollGamepadState = this.pollGamepadState.bind(this);\r\n\r\n\t\t// Check for gamepad support\r\n\t\tif ('getGamepads' in navigator) {\r\n\t\t\twindow.addEventListener('gamepadconnected', this.handleGamepadConnected);\r\n\t\t\twindow.addEventListener('gamepaddisconnected', this.handleGamepadDisconnected);\r\n\t\t\trequestAnimationFrame(this.pollGamepadState);\r\n\t\t} else {\r\n\t\t\tconsole.warn('Gamepad API not supported in this browser.');\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * This gets the first controller connected. This controller is dominant\r\n\t * \r\n\t * @returns {Gamepad} The first controller connected\r\n\t */\r\n\tgetMainController() {\r\n\t\treturn this.controllers['0'];\r\n\t}\r\n\t/**\r\n\t * @returns {Array} An array of all connected controllers\r\n\t */\r\n\tgetControllers() {\r\n\t\treturn { ...this.controllers };\r\n\t}\r\n    /**\r\n     * @typedef {Object} Event\r\n     * @property {string} event - The event name\r\n     * @property {function} callback - The function to be called when the event is triggered\r\n     */\r\n    /**\r\n     * Attaches a callback to the specified event.\r\n\t * \r\n     * @param {Event['event']} pEvent - The event to attach the callback to\r\n     * @param {Event['callback']} pCallback - The function to be called when the event is triggered\r\n     * @return {GamepadManagerSingleton} The GamepadManagerSingleton instance\r\n     */\r\n\ton(pEvent, pCallback) {\r\n\t\tif (typeof(pEvent) === 'string') {\r\n\t\t\tif (typeof(pCallback) === 'function') {\r\n\t\t\t\tswitch (pEvent) {\r\n\t\t\t\t\tcase 'connect':\r\n\t\t\t\t\t\tthis.connectHandler[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\r\n\t\t\t\t\tcase 'disconnect':\r\n\t\t\t\t\t\tthis.disconnectHandler[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\r\n\t\t\t\t\tdefault:\r\n\t\t\t\t\t\tconsole.error(`The event \"${pEvent}\" is not supported.`);\r\n\t\t\t\t}\r\n\t\t\t} else {\r\n\t\t\t\tconsole.error(`The callback for event \"${pEvent}\" is not a function.`);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn this;\r\n\t}\r\n\t/**\r\n\t * Listener function for when a gamepad is connected\r\n\t * \r\n\t * @param {pGamepadEvent} - A gamepad event\r\n\t */\r\n\thandleGamepadConnected(pGamepadEvent) {\r\n\t\t// Create a controller from the gamepad that was connected\r\n\t\t// This controller only saves a snapshot of the data of when it was first created, but we update it based on new polled data\r\n\t\tthis.controllers[pGamepadEvent.gamepad.index] = new Controller(pGamepadEvent.gamepad);\r\n\t\tif (typeof(this.connectHandler.connect) === 'function') this.connectHandler.connect(this.controllers[pGamepadEvent.gamepad.index]);\r\n\t}\r\n\t/**\r\n\t * Listener function for when the gamepad is disconnected\r\n\t * \r\n\t * @param {pGamepadEvent} - A gamepad event\r\n\t */\r\n\thandleGamepadDisconnected(pGamepadEvent) {\r\n\t\t// Delete the controller when it's disconnected\r\n\t\t// Maybe add a option to save gamepad info for a short while, incase it disconnected due to battery? \r\n\t\t// When reconnected it can prompt an alert that says \"restore configuration for gamepad\". This will restore that configuration to the controller.\r\n\t\tif (typeof(this.disconnectHandler.disconnect) === 'function') this.disconnectHandler.disconnect(this.controllers[pGamepadEvent.gamepad.index]);\r\n\t\tdelete this.controllers[pGamepadEvent.gamepad.index];\r\n\t}\r\n\t/**\r\n\t * Get the latest game state of the connected gamepads (Chrome only saves snapshots of the state, we have to keep polling to get updated states)\r\n\t */\r\n\tpollGamepadState() {\r\n\t\tconst gamepads = navigator.getGamepads();\r\n\t\tif (!gamepads) return;\r\n\t\t// Loop through all connected controllers and update their state\r\n\t\tfor (const gamepad of gamepads) {\r\n\t\t\t// Can be null if disconnected during the session\r\n\t\t\tif (gamepad) {\r\n\t\t\t\tfor (const controller in this.controllers) {\r\n\t\t\t\t\t// Make sure we are updating the correct controller with the right data from the gamepad at the same index\r\n\t\t\t\t\tif (gamepad.index === this.controllers[controller].gamepad.index) {\r\n\t\t\t\t\t\tthis.controllers[controller].updateState(gamepad);\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n\t\trequestAnimationFrame(this.pollGamepadState);\r\n\t}\r\n}\r\n\r\nclass Controller {\r\n\t/**\r\n\t * Configuration of which buttons / analogs map to which indexes\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tconfig = {\r\n\t\t// Buttons\r\n\t\tbuttons: (() => { return { ...Controller.BUTTONS_MAP }})()\r\n\t}\r\n\t/**\r\n\t * Whether the left analog is currently being held\r\n\t * \r\n\t * @type {boolean}\r\n\t */\r\n\tleftAnalogHeld = false;\r\n\t/**\r\n\t * Whether the right analog is currently being held\r\n\t * \r\n\t * @type {boolean}\r\n\t */\r\n\trightAnalogHeld = false;\r\n\t/**\r\n\t * Analog thumb sticks\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tstatic AXES = {\r\n\t\t'LEFT_X': 0, // Left axis\r\n\t\t'LEFT_Y': 1, // Left axis \r\n\t\t'RIGHT_X': 2,\r\n\t\t'RIGHT_Y': 3,\r\n\t}\r\n\r\n\tstatic AXES_REVERSED_MAP = (() => { \r\n\t\tconst reversedMap = {};\r\n\t\tfor (const axis in Controller.AXES) {\r\n\t\t\tconst index = Controller.AXES[axis];\r\n\t\t\treversedMap[index] = axis;\r\n\t\t}\r\n\t\treturn reversedMap;\r\n\t})()\r\n\t/**\r\n\t * The range at which axis changes are detected\r\n\t * \r\n\t * @type {number}\r\n\t */\r\n\tstatic AXIS_UPDATE_RANGE = 0.0; // 0.2\r\n\t/**\r\n\t * The range at which the analog is considered to be dropped -0.09 - 0.09\r\n\t * \r\n\t * @type {number}\r\n\t */\r\n\tstatic ANALOG_RELEASE_RANGE = 0.09;\r\n\t/**\r\n\t * The value at which holding a trigger (LT OR RT) will consider it being pressed\r\n\t */\r\n\tstatic TRIGGER_PRESSED_VALUE = 0.12;\r\n\t/**\r\n\t * Value to indicate a pressed button\r\n\t * \r\n\t * @type {number}\r\n\t */\r\n\tstatic PRESSED = 1.0;\r\n\t/**\r\n\t * Value to indicate a button is not pressed\r\n\t * \r\n\t * @type {number}\r\n\t */\r\n\tstatic UNPRESSED = 0.0;\r\n\t/**\r\n\t * A button map that maps common button names to the indexes the computer knows them as\r\n\t */\r\n\tstatic BUTTONS_MAP = {\r\n\t\t'A': 0, // Main action button (⨉) PS4\r\n\t\t'B': 1, // Secondary action button (Ο) PS4\r\n\t\t'X': 2, // Third action button (▢) PS4\r\n\t\t'Y': 3, // Fourth action button (∆) PS4\r\n\t\t'LB': 4, // Left bumper or shoulder button\r\n\t\t'RB': 5, // Right bumper or shoulder button\r\n\t\t'LT': 6, // Left trigger button (analog)\r\n\t\t'RT': 7, // Right trigger button (analog)\r\n\t\t'BACK': 8, // Back button\r\n\t\t'START': 9, // Start button\r\n\t\t'LS': 10, // Click of the left stick L3\r\n\t\t'RS': 11, // Click of the right stick R3\r\n\t\t'UP': 12, // D-pad up\r\n\t\t'DOWN': 13, // D-pad down\r\n\t\t'LEFT': 14, // D-pad left\r\n\t\t'RIGHT': 15, // D-pad right\r\n\t\t'HOME': 16, // Home button (not available on all controllers)\r\n\t\t'OPTION': 17 // Option button (not available on all controllers)\r\n\t}\r\n\t/**\r\n\t * A reverse map of the button names\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tstatic BUTTONS_REVERSE_MAP = (() => { \r\n\t\tconst reversedMap = {};\r\n\t\tfor (const button in Controller.BUTTONS_MAP) {\r\n\t\t\tconst index = Controller.BUTTONS_MAP[button];\r\n\t\t\treversedMap[index] = button;\r\n\t\t}\r\n\t\treturn reversedMap;\r\n\t})()\r\n\t/**\r\n\t * A small remapped version of the controllers button_map with PS4 alternatives\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tstatic PS4_REMAPPED = {\r\n\t\t'A': 'CROSS', // Main action button (⨉) PS4\r\n\t\t'B': 'CIRCLE', // Secondary action button (Ο) PS4\r\n\t\t'X': 'SQUARE', // Third action button (▢) PS4\r\n\t\t'Y': 'TRIANGLE', // Fourth action button (∆) PS4\t\t\r\n\t}\r\n\t/**\r\n\t * PS: Playstation vendor\r\n\t * Xbox: XBOX vendor\r\n\t * PC: Computer PC vendor\r\n\t * Android: Android device vendor\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tstatic GAMEPAD_IDS = {\r\n\t\t'Xbox 360 Controller (XInput STANDARD GAMEPAD)': 'Xbox',\r\n\t\t'Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)': 'PS',\r\n\t\t'045E-02EA-Microsoft X-Box 360 pad': 'Xbox',\r\n\t\t'045E-028E-Microsoft X-Box One pad': 'Xbox',\r\n\t\t'045E-02DD-Microsoft X-Box One pad (Firmware 2015)': 'Xbox',\r\n\t\t'054C-05C4-Sony Computer Entertainment Wireless Controller': 'PS',\r\n\t\t'054C-09CC-Sony PLAYSTATION(R)3 Controller': 'PS',\r\n\t\t'057E-2009-Switch Pro Controller': 'NS', // Nintendo Switch\r\n\t\t'06A3-0D09-Logitech F310 Gamepad (XInput)': 'PC',\r\n\t\t'06A3-0D0A-Logitech F510 Gamepad (XInput)': 'PC',\r\n\t\t'06A3-0D0B-Logitech F710 Gamepad (XInput)': 'PC',\r\n\t\t'0738-4716-Controller (Xbox Wireless Receiver for Windows)': 'Xbox',\r\n\t\t'0796-5510-DualShock 4 Wireless Controller': 'PS',\r\n\t\t'0E6F-0213-PS3/PC Gamepad': 'PS',\r\n\t\t'0E6F-0501-XInput Gamepad': 'PC',\r\n\t\t'0E6F-0801-PS4 Wired Gamepad': 'PS',\r\n\t\t'24C6-5503-NAAC Wired Compact Controller for PS': 'PS',\r\n\t\t'2DC8-6101-Moga Pro': 'Android',\r\n\t\t'2DC8-7101-Moga Hero Power': 'Android',\r\n\t\t'2DC8-9101-Moga Power Pro': 'Android',\r\n\t\t'2DC8-F101-Moga Pro Power': 'Android',\r\n\t\t'2DC8-F301-Moga Hero Power (B) ': 'Android',\r\n\t\t'24C6-541A-Revolution Pro Controller': 'PS',\r\n\t\t'146B-0601-PC Gamepad': 'PC'\r\n\t};\r\n\t/**\r\n\t * Object full of the currently held down buttons\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tpressed = (() => {\r\n\t\tconst buttonMap = { ...Controller.BUTTONS_MAP };\r\n\t\tfor (const key in buttonMap) {\r\n\t\t\tbuttonMap[key] = false;\r\n\t\t}\r\n\t\treturn buttonMap;\r\n\t})()\r\n\t/**\r\n\t * Info about the controller\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tinfo = {\r\n\t\taxes: null,\r\n\t\tbuttons: null,\r\n\t\tpreviousButtonState: [],\r\n\t\tpreviousAxesState: [],\r\n\t\tinitialAxesStickDrift: []\r\n\t}\r\n\t/**\r\n\t * Object of stored callback that will call when a button is pressed\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\tpressHandlers = {};\r\n\t/**\r\n\t * Object of stored callback that will call when a button is released\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\treleaseHandlers = {};\r\n\t/**\r\n\t * Object of stored callbacks that will call when the axis is changed\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\taxisHandlers = {};\r\n\t/**\r\n\t * Creates a new controller instance and passes the gamepad it will be created with\r\n\t * \r\n\t * @param {Gamepad} pGamepad - A gamepad object\r\n\t */\r\n\tconstructor(pGamepad) {\r\n\t\tthis.gamepad = pGamepad;\r\n\t\tthis.type = Controller.GAMEPAD_IDS[this.gamepad.id] ? Controller.GAMEPAD_IDS[this.gamepad.id] : 'Generic';\r\n\t}\r\n\t/**\r\n\t * Returns the type the controller is. PC / PS / Xbox / Android\r\n\t * \r\n\t * @returns {string}\r\n\t */\r\n\tgetType() {\r\n\t\treturn this.type;\r\n\t}\r\n\t/**\r\n\t * Update the state of this controller with the latest polled information\r\n\t * \r\n\t * @param {Gamepad} - The gamepad with the new updated state\r\n\t * @param {Controller} - The gamepad controller instance\r\n\t */\r\n\tupdateState(pGamepad) {\r\n\t\tconst { buttons: newButtonState, axes: newAxesState } = pGamepad;\r\n\r\n\t\t// Update the controllers info with the latest state (not the gamepad, as those are read only vars)\r\n\t\tthis.info.buttons = newButtonState;\r\n\t\tthis.info.axes = newAxesState;\r\n\r\n\t\t// Loop through buttons and check for button and axis changes\r\n\t\tfor (let i = 0; i < newButtonState.length; i++) {\r\n\t\t\t// Get the button data\r\n\t\t\tconst buttonStillHeld = (newButtonState[i].pressed && this.info.previousButtonState[i]);\r\n\t\t\tconst buttonValue = newButtonState[i].value;\r\n\t\t\tthis.handleButtonInput(i, buttonValue, buttonStillHeld, newButtonState[i].pressed);\r\n\t\t\tthis.info.previousButtonState[i] = newButtonState[i].pressed;\r\n\t\t}\r\n\r\n\t\t// Loop through the axis and check for changes\r\n\t\t/**\r\n\t\t * Changes will almost always occur, so to prevent this spammy behavior we check in ranges. This range can be tweaked 0.0 is default\r\n\t\t */\r\n\t\t/**\r\n\t\t * @todo Stop using a for loop and check the axis manually, it is only 4. Two for left, and two for right, no loop is needed and will allow less events to be called due to it manually being checked than looped 4 times when their is \r\n\t\t * really only two axis. 2x the events are being checked for and called.\r\n\t\t */\r\n\t\tfor (let i = 0; i < newAxesState.length; i++) {\r\n\t\t\t// Check and see if the axis value changed significantly, we can tweak this value or maybe set it to a user defined value?\r\n\t\t\t// We also check if this value is set, if not we allow it to be set with the current data\r\n\t\t\t// The current axis\r\n\t\t\tlet currentAxis = newAxesState[i];\r\n\t\t\t// IF the analog crosses this range, then it has been \"dropped\".\r\n\t\t\tif (currentAxis >= -Controller.ANALOG_RELEASE_RANGE && currentAxis <= Controller.ANALOG_RELEASE_RANGE && (currentAxis === this.info.previousAxesState[i]) && (currentAxis !== 0 && currentAxis !== -0)) {\r\n\t\t\t\tthis.info.previousAxesState[i] = undefined;\r\n\t\t\t\tthis.info.initialAxesStickDrift[i] = undefined;\r\n\r\n\t\t\t\tswitch (Controller.AXES_REVERSED_MAP[i]) {\r\n\t\t\t\t\tcase 'LEFT_X':\r\n\t\t\t\t\tcase 'LEFT_Y':\r\n\t\t\t\t\t\tif (this.leftAnalogHeld) {\r\n\t\t\t\t\t\t\tthis.leftAnalogHeld = false;\r\n\t\t\t\t\t\t\tthis.handleDropAnalog('LEFT');\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tbreak;\r\n\r\n\t\t\t\t\tcase 'RIGHT_X':\r\n\t\t\t\t\tcase 'RIGHT_Y':\r\n\t\t\t\t\t\tif (this.rightAnalogHeld) {\r\n\t\t\t\t\t\t\tthis.rightAnalogHeld = false;\r\n\t\t\t\t\t\t\tthis.handleDropAnalog('RIGHT');\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t\t// Check if this axis has been held for more than one tick. And only if the axis is not 0. An axis of 0 means the analog is not being moved at all.\r\n\t\t\tconst axisStillHeld = (this.info.initialAxesStickDrift[i] !== currentAxis) && (currentAxis === this.info.previousAxesState[i]) && (currentAxis !== 0 && currentAxis !== -0);\r\n\t\t\tconst hasPreviousState = this.info.previousAxesState[i] !== undefined;\r\n\t\t\t// Can only calculate this if there was a previousAxesState\r\n\t\t\tlet axisUpdateRangeMet = false;\r\n\t\t\t// If the axis is different then the initial stick drift of the analog\r\n\t\t\tconst axisDifferentFromInitialStickDrift = (this.info.initialAxesStickDrift[i] !== undefined) && currentAxis !== this.info.initialAxesStickDrift[i];\r\n\t\t\t// If there is a previous state then we calculate if the range the analog has moved is enough to consider it an update\r\n\t\t\tif (hasPreviousState) {\r\n\t\t\t\taxisUpdateRangeMet = Math.abs(currentAxis - this.info.previousAxesState[i]) >= Controller.AXIS_UPDATE_RANGE;\r\n\t\t\t// If there is no previous state then this must mean the user has never touched the analog and we need to store the initial \"stick drift\" of this analog to check against in the future ticks to prevent non user axis changes from being called.\r\n\t\t\t} else {\r\n\t\t\t\t// In the event the analog had no previous state but the new axis is different then the stored initial stick drift then the analog has been moved\r\n\t\t\t\tif (axisDifferentFromInitialStickDrift) {\r\n\t\t\t\t\taxisUpdateRangeMet = Math.abs(currentAxis - this.info.initialAxesStickDrift[i]) >= Controller.AXIS_UPDATE_RANGE;\r\n\t\t\t\t// Otherwise store the initial axis stick drift\r\n\t\t\t\t} else {\r\n\t\t\t\t\tthis.info.initialAxesStickDrift[i] = currentAxis;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\r\n\t\t\t// If the axis is not the same as the initial stick drift then it means the user has touched the analog\r\n\t\t\tif (axisDifferentFromInitialStickDrift) {\r\n\t\t\t\t/**\r\n\t\t\t\t * @todo Simplify into a function call because this code is repeated.\r\n\t\t\t\t */\r\n\t\t\t\taxisUpdateRangeMet = Math.abs(currentAxis - this.info.initialAxesStickDrift[i]) >= Controller.AXIS_UPDATE_RANGE;\r\n\t\t\t}\r\n\r\n\t\t\t// If there is user input then handle events\r\n\t\t\tif (axisStillHeld || axisUpdateRangeMet) {\r\n\t\t\t\tswitch (Controller.AXES_REVERSED_MAP[i]) {\r\n\t\t\t\t\tcase 'LEFT_X':\r\n\t\t\t\t\tcase 'LEFT_Y':\r\n\t\t\t\t\t\tif (!this.leftAnalogHeld && !hasPreviousState) {\r\n\t\t\t\t\t\t\tthis.leftAnalogHeld = true;\r\n\t\t\t\t\t\t\tthis.handleGrabAnalog('LEFT');\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tbreak;\r\n\r\n\t\t\t\t\tcase 'RIGHT_X':\r\n\t\t\t\t\tcase 'RIGHT_Y':\r\n\t\t\t\t\t\tif (!this.rightAnalogHeld && !hasPreviousState) {\r\n\t\t\t\t\t\t\tthis.rightAnalogHeld = true;\r\n\t\t\t\t\t\t\tthis.handleGrabAnalog('RIGHT');\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n\r\n\t\t\t\tthis.handleAxisInput(i, currentAxis, axisStillHeld);\r\n\t\t\t\tthis.info.previousAxesState[i] = currentAxis;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Gets the current buttons pressed down on the gamepad.\r\n\t */\r\n\tgetPressed() {\r\n\t\tconst buttonsDown = [];\r\n\t\tfor (const button in this.pressed) {\r\n\t\t\t// If this button is currently pressed down add it to the array to return.\r\n\t\t\tif (this.pressed[button]) {\r\n\t\t\t\tbuttonsDown.push(button);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn buttonsDown;\r\n\t}\r\n    /**\r\n     * Attaches a callback to the specified event.\r\n\t * \r\n     * @param {Event['event']} pEvent - The event to attach the callback to\r\n     * @param {Event['callback']} pCallback - The function to be called when the event is triggered\r\n     * @return {Controller} The Controller instance\r\n     */\r\n\ton(pEvent, pCallback) {\r\n\t\tif (typeof(pEvent) === 'string') {\r\n\t\t\tif (typeof(pCallback) === 'function') {\r\n\t\t\t\tswitch (pEvent) {\r\n\t\t\t\t\tcase 'press':\r\n\t\t\t\t\t\tthis.pressHandlers[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tcase 'release':\r\n\t\t\t\t\t\tthis.releaseHandlers[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tcase 'axis':\r\n\t\t\t\t\tcase 'grab':\r\n\t\t\t\t\tcase 'drop':\r\n\t\t\t\t\t\tthis.axisHandlers[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tdefault:\r\n\t\t\t\t\t\tconsole.error(`The event \"${pEvent}\" is not supported.`);\r\n\t\t\t\t}\r\n\t\t\t} else {\r\n\t\t\t\tconsole.error(`The callback for event \"${pEvent}\" is not a function.`);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn this;\r\n\t}\r\n    /**\r\n     * Removes a callback from the specified event.\r\n\t * \r\n     * @param {Event['event']} pEvent - The event to remove the callback from\r\n     * @return {Controller} The Controller instance\r\n     */\t\r\n\toff(pEvent) {\r\n\t\tif (typeof(pEvent) === 'string') {\r\n\t\t\tif (typeof(pCallback) === 'function') {\r\n\t\t\t\tswitch (pEvent) {\r\n\t\t\t\t\tcase 'press':\r\n\t\t\t\t\t\tthis.pressHandlers[pEvent] = null;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tcase 'release':\r\n\t\t\t\t\t\tthis.releaseHandlers[pEvent] = null;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tcase 'axis':\r\n\t\t\t\t\tcase 'grab':\r\n\t\t\t\t\tcase 'drop':\r\n\t\t\t\t\t\tthis.axisHandlers[pEvent] = null;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tdefault:\r\n\t\t\t\t\t\tconsole.error(`The event \"${pEvent}\" is not supported.`);\r\n\t\t\t\t}\r\n\t\t\t} else {\r\n\t\t\t\tconsole.error(`The callback for event \"${pEvent}\" is not a function.`);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn this;\r\n\t}\r\n\t/**\r\n\t * Handles the input on the buttons.\r\n\t * \r\n\t * @param {number} pButton - The button index that was pressed\r\n\t * @param {number} pValue - The value of the button (0 for unpressed, 1 for pressed) 0-1 for buttons that have a range\r\n\t * @param {boolean} pRepeat - Whether this button is still being held from a previous frame\r\n\t * @param {boolean} pPressed - Whether this button is being pressed in this current frame.\r\n\t */\r\n\thandleButtonInput(pButton, pValue, pRepeat, pPressed) {\r\n\t\tlet buttonName = pButton;\r\n\t\tlet clampedValue = Math.floor(pValue * 100) / 100;\r\n\r\n\t\t// Check if button is mapped\r\n\t\tfor (const button in this.config.buttons) {\r\n\t\t\tif (this.config.buttons[button] === pButton) {\r\n\t\t\t\tbuttonName = button;\r\n\t\t\t\t// Only set the value to pressed if it actually is pressed, don't set it to false via pPressed, as it will be set to false after the release event is called\r\n\t\t\t\t// We also check if the value is greater or equal to the triggers pressed value. This is due to a trigger not being considered to be pressed unless its passed or at this threshold.\r\n\t\t\t\tif (pPressed || clampedValue > Controller.UNPRESSED) this.pressed[buttonName] = true;\r\n\t\t\t\tbreak;\r\n\t\t\t}\r\n\t\t}\r\n\t\t// Check if any of the main buttons need to be remapped for a PlayStation controller\r\n\t\tif (buttonName === 'A' || buttonName === 'B' || buttonName === 'X' || buttonName === 'Y') {\r\n\t\t\t// If this controller is a playstation controller\r\n\t\t\tif (this.type === 'PS') {\r\n\t\t\t\t// Change the XBOX controls to Playstation controller controls\r\n\t\t\t\tbuttonName = Controller.PS4_REMAPPED[buttonName];\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\tif (buttonName) {\r\n\t\t\t// Press\r\n\t\t\tif (clampedValue <= Controller.PRESSED && clampedValue > Controller.UNPRESSED) {\r\n\t\t\t\tif (typeof(this.pressHandlers['press']) === 'function') this.pressHandlers['press'](buttonName, clampedValue, pRepeat);\r\n\t\t\t// Release\r\n\t\t\t} else if (clampedValue === Controller.UNPRESSED && (buttonName === 'LT' || buttonName === 'RT') && this.pressed[buttonName]) {\r\n\t\t\t\tif (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release'](buttonName, clampedValue);\r\n\t\t\t\tthis.pressed[buttonName] = false;\r\n\t\t\t// Release\r\n\t\t\t} else if (clampedValue === Controller.UNPRESSED && this.pressed[buttonName]) {\r\n\t\t\t\tif (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release'](buttonName, clampedValue);\r\n\t\t\t\tthis.pressed[buttonName] = false;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Handles the input on the analogs.\r\n\t * \r\n\t * @param {number} pAxis - The axis index that was moved\r\n\t * @param {number} pValue - The value of the axis that was moved (0-1 range)\r\n\t * @param {boolean} pRepeat - Whether this axes is still the same from a previous frame\r\n\t */\r\n\thandleAxisInput(pAxis, pValue, pRepeat) {\r\n\t\tlet axisName = pAxis;\r\n\t\tlet clampedValue = Math.floor(pValue * 100) / 100;\r\n\t\t// Check if axis is mapped\r\n\t\tfor (const axes in Controller.AXES) {\r\n\t\t\tif (Controller.AXES[axes] === pAxis) {\r\n\t\t\t\taxisName = axes;\r\n\t\t\t}\r\n\t\t}\r\n\t\tif (axisName) {\r\n\t\t\tif (typeof(this.axisHandlers['axis']) === 'function') this.axisHandlers['axis'](axisName, clampedValue, pRepeat);\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Handles the event for when a analog is grabbed.\r\n\t * \r\n\t * @param {string} pAnalog - Analog that was grabbed\r\n\t */\r\n\thandleGrabAnalog(pAnalog) {\r\n\t\tif (pAnalog) {\r\n\t\t\tif (typeof(this.axisHandlers['grab']) === 'function') this.axisHandlers['grab'](pAnalog);\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Handles the event for when a analog is dropped.\r\n\t * \r\n\t * @param {string} pAnalog - Analog that was dropped\r\n\t */\r\n\thandleDropAnalog(pAnalog) {\r\n\t\tif (pAnalog) {\r\n\t\t\tif (typeof(this.axisHandlers['drop']) === 'function') this.axisHandlers['drop'](pAnalog);\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Whether the left analog is being held\r\n\t * \r\n\t * @returns {boolean}\r\n\t */\r\n\tisLeftAnalogHeld() {\r\n\t\treturn this.leftAnalogHeld;\r\n\t}\r\n\t/**\r\n\t * Whether the right analog is being held\r\n\t * \r\n\t * @returns {boolean}\r\n\t */\r\n\tisRightAnalogHeld() {\r\n\t\treturn this.rightAnalogHeld;\r\n\t}\r\n\t/**\r\n\t * Checks whether a button is pressed down or not\r\n\t * \r\n\t * @param {string} pButtonName - The button to check if its pressed\r\n\t * @returns {boolean}\r\n\t */\r\n\tisButtonPressed(pButtonName) {\r\n\t\treturn this.pressed[pButtonName];\r\n\t}\r\n\t/**\r\n\t * Vibrate the controller (experimental)\r\n\t * \r\n\t * dual-rumble: Dual-rumble describes a haptic configuration with an eccentric rotating mass vibration motor in each handle of a standard gamepad. \r\n\t * In this configuration, either motor is capable of vibrating the whole gamepad. \r\n\t * The two masses are unequal so that the effects of each can be combined to create more complex haptic effects.\r\n\t * \r\n\t * @param {string} pVibrationType - The type of rumble. \"dual-rumble\", or \"vibration\"\r\n\t * @param {number} pStartDelay - The start delay before the vibration occurs in ms\r\n\t * @param {number} pWeakMagnitude - The magnitude of the weak actuator (between 0 and 1).\r\n\t * @param {number} pStrongMagnitude - The magnitude of the strong actuator (between 0 and 1).\r\n\t */\r\n\tvibrate(pVibrationType = 'dual-rumble', pStartDelay=0, pDuration=1000, pWeakMagnitude=1, pStrongMagnitude=1) {\r\n\t\tif (!('vibrationActuator' in this.gamepad)) {\r\n\t\t\treturn;\r\n\t\t}\r\n\t\t// If a invalid pVibrationType is passed, default it\r\n\t\tif (pVibrationType !== 'dual-rumble' || pVibrationType !== 'vibration') pVibrationType = 'dual-rumble';\r\n\t\t// A new call to playEffect() overrides a previous ongoing call.\r\n\t\tthis.gamepad.vibrationActuator.playEffect(pVibrationType, {\r\n\t\t\tstartDelay: pStartDelay,\r\n\t\t\tduration: pDuration,\r\n\t\t\tweakMagnitude: pWeakMagnitude,\r\n\t\t\tstrongMagnitude: pStrongMagnitude,\r\n\t\t});\r\n\t}\r\n\t/**\r\n\t * The pulse() method of the GamepadHapticActuator interface makes the hardware pulse at a certain intensity for a specified duration. (From MDN)\r\n\t * \r\n\t * @param {number} pValue - A double representing the intensity of the pulse. This can vary depending on the hardware type, but generally takes a value between 0.0 (no intensity) and 1.0 (full intensity).\r\n\t * @param {number} pDuration - A double representing the duration of the pulse, in milliseconds.\r\n\t */\r\n\tpulse(pValue=1, pDuration=200) {\r\n\t\tif (!('hapticActuators' in this.gamepad)) {\r\n\t\t\treturn;\r\n\t\t}\r\n\t\tthis.gamepad.hapticActuators[0].pulse(pValue, pDuration);\r\n\t}\r\n}\r\n\r\nexport const GamepadManager = new GamepadManagerSingleton();\r\n",
+    "content": "/**\r\n * A gamepadmanager to help with games / handling input from a controller\r\n * @class GamepadManagerSingleton\r\n * @license GamepadManager does not have a license at this time. For licensing contact the author\r\n * @author https://github.com/doubleactii\r\n * @todo Currently bluetooth gamepads when disconnecting (PS4 only) do no fire a disconnected event. Manually calling `this.gamepad.vibrationActuator.reset()` can force it to call a disconnect event, but \r\n * this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. Find a fix. (This is a GamepadAPI issue/OS issue/not code wise issue)\r\n * Copyright (c) 2023 Evitca Studio\r\n */\r\nclass GamepadManagerSingleton {\r\n\t/**\r\n\t * The version of this module\r\n\t * \r\n\t * @type {string}\r\n\t */\r\n\tstatic version = '1.0.0';\r\n\t/**\r\n\t * Object containing all connected controllers\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\tcontrollers = {};\r\n\t/**\r\n\t * Object containing the callback for when a controller is connected\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\tconnectHandler = {};\r\n\t/**\r\n\t * Object containing the callback for when a controller is disconnected\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\tdisconnectHandler = {};\r\n\t/**\r\n\t * Creates the instance and assigns event handlers to gamepad events\r\n\t */\r\n\tconstructor() {\r\n\t\t// Bind this class instance to the event handlers\r\n\t\tthis.handleGamepadConnected = this.handleGamepadConnected.bind(this);\r\n\t\tthis.handleGamepadDisconnected = this.handleGamepadDisconnected.bind(this);\r\n\t\tthis.pollGamepadState = this.pollGamepadState.bind(this);\r\n\r\n\t\t// Check for gamepad support\r\n\t\tif ('getGamepads' in navigator) {\r\n\t\t\twindow.addEventListener('gamepadconnected', this.handleGamepadConnected);\r\n\t\t\twindow.addEventListener('gamepaddisconnected', this.handleGamepadDisconnected);\r\n\t\t\trequestAnimationFrame(this.pollGamepadState);\r\n\t\t} else {\r\n\t\t\tconsole.warn('Gamepad API not supported in this browser.');\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Gets the angle between two points\r\n\t * \r\n\t * @param {Object} pStartPoint - The starting point\r\n\t * @param {Object} pEndPoint - The ending point\r\n\t * @returns {number} The angle between the starting point and the ending point\r\n\t */\r\n\tstatic getAngle(pStartPoint, pEndPoint) {\r\n\t\tconst y = pStartPoint.y - pEndPoint.y;\r\n\t\tconst x = pStartPoint.x - pEndPoint.x;\r\n\t\treturn -Math.atan2(y, x) - Math.PI;\r\n\t}\r\n\t/**\r\n\t * This gets the first controller connected. This controller is dominant\r\n\t * \r\n\t * @returns {Gamepad} The first controller connected\r\n\t */\r\n\tgetMainController() {\r\n\t\treturn this.controllers['0'];\r\n\t}\r\n\t/**\r\n\t * @returns {Array} An array of all connected controllers\r\n\t */\r\n\tgetControllers() {\r\n\t\treturn { ...this.controllers };\r\n\t}\r\n    /**\r\n     * @typedef {Object} Event\r\n     * @property {string} event - The event name\r\n     * @property {function} callback - The function to be called when the event is triggered\r\n     */\r\n    /**\r\n     * Attaches a callback to the specified event.\r\n\t * \r\n     * @param {Event['event']} pEvent - The event to attach the callback to\r\n     * @param {Event['callback']} pCallback - The function to be called when the event is triggered\r\n     * @return {GamepadManagerSingleton} The GamepadManagerSingleton instance\r\n     */\r\n\ton(pEvent, pCallback) {\r\n\t\tif (typeof(pEvent) === 'string') {\r\n\t\t\tif (typeof(pCallback) === 'function') {\r\n\t\t\t\tswitch (pEvent) {\r\n\t\t\t\t\tcase 'connect':\r\n\t\t\t\t\t\tthis.connectHandler[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\r\n\t\t\t\t\tcase 'disconnect':\r\n\t\t\t\t\t\tthis.disconnectHandler[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\r\n\t\t\t\t\tdefault:\r\n\t\t\t\t\t\tconsole.error(`The event \"${pEvent}\" is not supported.`);\r\n\t\t\t\t}\r\n\t\t\t} else {\r\n\t\t\t\tconsole.error(`The callback for event \"${pEvent}\" is not a function.`);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn this;\r\n\t}\r\n\t/**\r\n\t * Listener function for when a gamepad is connected\r\n\t * \r\n\t * @param {pGamepadEvent} - A gamepad event\r\n\t */\r\n\thandleGamepadConnected(pGamepadEvent) {\r\n\t\t// Create a controller from the gamepad that was connected\r\n\t\t// This controller only saves a snapshot of the data of when it was first created, but we update it based on new polled data\r\n\t\tthis.controllers[pGamepadEvent.gamepad.index] = new Controller(pGamepadEvent.gamepad);\r\n\t\tif (typeof(this.connectHandler.connect) === 'function') this.connectHandler.connect(this.controllers[pGamepadEvent.gamepad.index]);\r\n\t}\r\n\t/**\r\n\t * Listener function for when the gamepad is disconnected\r\n\t * \r\n\t * @param {pGamepadEvent} - A gamepad event\r\n\t */\r\n\thandleGamepadDisconnected(pGamepadEvent) {\r\n\t\t// Delete the controller when it's disconnected\r\n\t\t// Maybe add a option to save gamepad info for a short while, incase it disconnected due to battery? \r\n\t\t// When reconnected it can prompt an alert that says \"restore configuration for gamepad\". This will restore that configuration to the controller.\r\n\t\tif (typeof(this.disconnectHandler.disconnect) === 'function') this.disconnectHandler.disconnect(this.controllers[pGamepadEvent.gamepad.index]);\r\n\t\tdelete this.controllers[pGamepadEvent.gamepad.index];\r\n\t}\r\n\t/**\r\n\t * Get the latest game state of the connected gamepads (Chrome only saves snapshots of the state, we have to keep polling to get updated states)\r\n\t */\r\n\tpollGamepadState() {\r\n\t\tconst gamepads = navigator.getGamepads();\r\n\t\tif (!gamepads) return;\r\n\t\t// Loop through all connected controllers and update their state\r\n\t\tfor (const gamepad of gamepads) {\r\n\t\t\t// Can be null if disconnected during the session\r\n\t\t\tif (gamepad) {\r\n\t\t\t\tfor (const controller in this.controllers) {\r\n\t\t\t\t\t// Make sure we are updating the correct controller with the right data from the gamepad at the same index\r\n\t\t\t\t\tif (gamepad.index === this.controllers[controller].gamepad.index) {\r\n\t\t\t\t\t\tthis.controllers[controller].updateState(gamepad);\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n\t\trequestAnimationFrame(this.pollGamepadState);\r\n\t}\r\n}\r\n\r\nclass Controller {\r\n\t/**\r\n\t * Configuration of which buttons / analogs map to which indexes\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tconfig = {\r\n\t\t// Buttons\r\n\t\tbuttons: (() => { return { ...Controller.BUTTONS_MAP }})()\r\n\t}\r\n\t/**\r\n\t * Whether the left analog is currently being held\r\n\t * \r\n\t * @type {boolean}\r\n\t */\r\n\tleftAnalogHeld = false;\r\n\t/**\r\n\t * Whether the right analog is currently being held\r\n\t * \r\n\t * @type {boolean}\r\n\t */\r\n\trightAnalogHeld = false;\r\n\t/**\r\n\t * The base analogs position when it is not in use\r\n\t */\r\n\tstatic baseAnalogPos = { x: 0, y: 0 };\r\n\t/**\r\n\t * Analog thumb sticks\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tstatic AXES = {\r\n\t\t'LEFT_X': 0, // Left axis\r\n\t\t'LEFT_Y': 1, // Left axis \r\n\t\t'RIGHT_X': 2,\r\n\t\t'RIGHT_Y': 3,\r\n\t}\r\n\r\n\tstatic AXES_REVERSED_MAP = (() => { \r\n\t\tconst reversedMap = {};\r\n\t\tfor (const axis in Controller.AXES) {\r\n\t\t\tconst index = Controller.AXES[axis];\r\n\t\t\treversedMap[index] = axis;\r\n\t\t}\r\n\t\treturn reversedMap;\r\n\t})()\r\n\t/**\r\n\t * The range at which axis changes are detected\r\n\t * \r\n\t * @type {number}\r\n\t */\r\n\tstatic AXIS_UPDATE_RANGE = 0.0; // 0.2\r\n\t/**\r\n\t * The range at which the analog is considered to be dropped -0.09 - 0.09\r\n\t * \r\n\t * @type {number}\r\n\t */\r\n\tstatic ANALOG_RELEASE_RANGE = 0.09;\r\n\t/**\r\n\t * The value at which holding a trigger (LT OR RT) will consider it being pressed\r\n\t */\r\n\tstatic TRIGGER_PRESSED_VALUE = 0.12;\r\n\t/**\r\n\t * Value to indicate a pressed button\r\n\t * \r\n\t * @type {number}\r\n\t */\r\n\tstatic PRESSED = 1.0;\r\n\t/**\r\n\t * Value to indicate a button is not pressed\r\n\t * \r\n\t * @type {number}\r\n\t */\r\n\tstatic UNPRESSED = 0.0;\r\n\t/**\r\n\t * A button map that maps common button names to the indexes the computer knows them as\r\n\t */\r\n\tstatic BUTTONS_MAP = {\r\n\t\t'A': 0, // Main action button (⨉) PS4\r\n\t\t'B': 1, // Secondary action button (Ο) PS4\r\n\t\t'X': 2, // Third action button (▢) PS4\r\n\t\t'Y': 3, // Fourth action button (∆) PS4\r\n\t\t'LB': 4, // Left bumper or shoulder button\r\n\t\t'RB': 5, // Right bumper or shoulder button\r\n\t\t'LT': 6, // Left trigger button (analog)\r\n\t\t'RT': 7, // Right trigger button (analog)\r\n\t\t'BACK': 8, // Back button\r\n\t\t'START': 9, // Start button\r\n\t\t'LS': 10, // Click of the left stick L3\r\n\t\t'RS': 11, // Click of the right stick R3\r\n\t\t'UP': 12, // D-pad up\r\n\t\t'DOWN': 13, // D-pad down\r\n\t\t'LEFT': 14, // D-pad left\r\n\t\t'RIGHT': 15, // D-pad right\r\n\t\t'HOME': 16, // Home button (not available on all controllers)\r\n\t\t'OPTION': 17 // Option button (not available on all controllers)\r\n\t}\r\n\t/**\r\n\t * A reverse map of the button names\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tstatic BUTTONS_REVERSE_MAP = (() => { \r\n\t\tconst reversedMap = {};\r\n\t\tfor (const button in Controller.BUTTONS_MAP) {\r\n\t\t\tconst index = Controller.BUTTONS_MAP[button];\r\n\t\t\treversedMap[index] = button;\r\n\t\t}\r\n\t\treturn reversedMap;\r\n\t})()\r\n\t/**\r\n\t * A small remapped version of the controllers button_map with PS4 alternatives\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tstatic PS4_REMAPPED = {\r\n\t\t'A': 'CROSS', // Main action button (⨉) PS4\r\n\t\t'B': 'CIRCLE', // Secondary action button (Ο) PS4\r\n\t\t'X': 'SQUARE', // Third action button (▢) PS4\r\n\t\t'Y': 'TRIANGLE', // Fourth action button (∆) PS4\t\t\r\n\t}\r\n\t/**\r\n\t * PS: Playstation vendor\r\n\t * Xbox: XBOX vendor\r\n\t * PC: Computer PC vendor\r\n\t * Android: Android device vendor\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tstatic GAMEPAD_IDS = {\r\n\t\t'Xbox 360 Controller (XInput STANDARD GAMEPAD)': 'Xbox',\r\n\t\t'Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)': 'PS',\r\n\t\t'045E-02EA-Microsoft X-Box 360 pad': 'Xbox',\r\n\t\t'045E-028E-Microsoft X-Box One pad': 'Xbox',\r\n\t\t'045E-02DD-Microsoft X-Box One pad (Firmware 2015)': 'Xbox',\r\n\t\t'054C-05C4-Sony Computer Entertainment Wireless Controller': 'PS',\r\n\t\t'054C-09CC-Sony PLAYSTATION(R)3 Controller': 'PS',\r\n\t\t'057E-2009-Switch Pro Controller': 'NS', // Nintendo Switch\r\n\t\t'06A3-0D09-Logitech F310 Gamepad (XInput)': 'PC',\r\n\t\t'06A3-0D0A-Logitech F510 Gamepad (XInput)': 'PC',\r\n\t\t'06A3-0D0B-Logitech F710 Gamepad (XInput)': 'PC',\r\n\t\t'0738-4716-Controller (Xbox Wireless Receiver for Windows)': 'Xbox',\r\n\t\t'0796-5510-DualShock 4 Wireless Controller': 'PS',\r\n\t\t'0E6F-0213-PS3/PC Gamepad': 'PS',\r\n\t\t'0E6F-0501-XInput Gamepad': 'PC',\r\n\t\t'0E6F-0801-PS4 Wired Gamepad': 'PS',\r\n\t\t'24C6-5503-NAAC Wired Compact Controller for PS': 'PS',\r\n\t\t'2DC8-6101-Moga Pro': 'Android',\r\n\t\t'2DC8-7101-Moga Hero Power': 'Android',\r\n\t\t'2DC8-9101-Moga Power Pro': 'Android',\r\n\t\t'2DC8-F101-Moga Pro Power': 'Android',\r\n\t\t'2DC8-F301-Moga Hero Power (B) ': 'Android',\r\n\t\t'24C6-541A-Revolution Pro Controller': 'PS',\r\n\t\t'146B-0601-PC Gamepad': 'PC'\r\n\t};\r\n\t/**\r\n\t * Object full of the currently held down buttons\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tpressed = (() => {\r\n\t\tconst buttonMap = { ...Controller.BUTTONS_MAP };\r\n\t\tfor (const key in buttonMap) {\r\n\t\t\tbuttonMap[key] = false;\r\n\t\t}\r\n\t\treturn buttonMap;\r\n\t})()\r\n\t/**\r\n\t * Info about the controller\r\n\t * \r\n\t * @type {object}\r\n\t */\r\n\tinfo = {\r\n\t\taxes: null,\r\n\t\tbuttons: null,\r\n\t\tpreviousButtonState: [],\r\n\t\tpreviousAxesState: [],\r\n\t\tinitialAxesStickDrift: []\r\n\t}\r\n\t/**\r\n\t * The left analogs position\r\n\t */\r\n\tleftAnalogPos = { x: 0, y: 0 };\r\n\t/**\r\n\t * The right analogs position\r\n\t */\r\n\trightAnalogPos = { x: 0, y: 0 };\r\n\t/**\r\n\t * Object of stored callback that will call when a button is pressed\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\tpressHandlers = {};\r\n\t/**\r\n\t * Object of stored callback that will call when a button is released\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\treleaseHandlers = {};\r\n\t/**\r\n\t * Object of stored callbacks that will call when the axis is changed\r\n\t * \r\n\t * @type {Object}\r\n\t */\r\n\taxisHandlers = {};\r\n\t/**\r\n\t * Creates a new controller instance and passes the gamepad it will be created with\r\n\t * \r\n\t * @param {Gamepad} pGamepad - A gamepad object\r\n\t */\r\n\tconstructor(pGamepad) {\r\n\t\tthis.gamepad = pGamepad;\r\n\t\tthis.type = Controller.GAMEPAD_IDS[this.gamepad.id] ? Controller.GAMEPAD_IDS[this.gamepad.id] : 'Generic';\r\n\t}\r\n\t/**\r\n\t * Returns the type the controller is. PC / PS / Xbox / Android\r\n\t * \r\n\t * @returns {string}\r\n\t */\r\n\tgetType() {\r\n\t\treturn this.type;\r\n\t}\r\n\t/**\r\n\t * Update the state of this controller with the latest polled information\r\n\t * \r\n\t * @param {Gamepad} - The gamepad with the new updated state\r\n\t * @param {Controller} - The gamepad controller instance\r\n\t */\r\n\tupdateState(pGamepad) {\r\n\t\tconst { buttons: newButtonState, axes: newAxesState } = pGamepad;\r\n\r\n\t\t// Update the controllers info with the latest state (not the gamepad, as those are read only vars)\r\n\t\tthis.info.buttons = newButtonState;\r\n\t\tthis.info.axes = newAxesState;\r\n\r\n\t\t// Loop through buttons and check for button and axis changes\r\n\t\tfor (let i = 0; i < newButtonState.length; i++) {\r\n\t\t\t// Get the button data\r\n\t\t\tconst buttonStillHeld = (newButtonState[i].pressed && this.info.previousButtonState[i]);\r\n\t\t\tconst buttonValue = newButtonState[i].value;\r\n\t\t\tthis.handleButtonInput(i, buttonValue, buttonStillHeld, newButtonState[i].pressed);\r\n\t\t\tthis.info.previousButtonState[i] = newButtonState[i].pressed;\r\n\t\t}\r\n\r\n\t\t// Loop through the axis and check for changes\r\n\t\t/**\r\n\t\t * Changes will almost always occur, so to prevent this spammy behavior we check in ranges. This range can be tweaked 0.0 is default\r\n\t\t */\r\n\t\t/**\r\n\t\t * @todo Stop using a for loop and check the axis manually, it is only 4. Two for left, and two for right, no loop is needed and will allow less events to be called due to it manually being checked than looped 4 times when their is \r\n\t\t * really only two axis. 2x the events are being checked for and called.\r\n\t\t */\r\n\t\tfor (let i = 0; i < newAxesState.length; i++) {\r\n\t\t\t// Check and see if the axis value changed significantly, we can tweak this value or maybe set it to a user defined value?\r\n\t\t\t// We also check if this value is set, if not we allow it to be set with the current data\r\n\t\t\t// The current axis\r\n\t\t\tlet currentAxis = newAxesState[i];\r\n\t\t\t// IF the analog crosses this range, then it has been \"dropped\".\r\n\t\t\tif (currentAxis >= -Controller.ANALOG_RELEASE_RANGE && currentAxis <= Controller.ANALOG_RELEASE_RANGE && (currentAxis === this.info.previousAxesState[i]) && (currentAxis !== 0 && currentAxis !== -0)) {\r\n\t\t\t\tthis.info.previousAxesState[i] = undefined;\r\n\t\t\t\tthis.info.initialAxesStickDrift[i] = undefined;\r\n\r\n\t\t\t\tswitch (Controller.AXES_REVERSED_MAP[i]) {\r\n\t\t\t\t\tcase 'LEFT_X':\r\n\t\t\t\t\tcase 'LEFT_Y':\r\n\t\t\t\t\t\tif (this.leftAnalogHeld) {\r\n\t\t\t\t\t\t\tthis.leftAnalogHeld = false;\r\n\t\t\t\t\t\t\tthis.handleDropAnalog('LEFT');\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tbreak;\r\n\r\n\t\t\t\t\tcase 'RIGHT_X':\r\n\t\t\t\t\tcase 'RIGHT_Y':\r\n\t\t\t\t\t\tif (this.rightAnalogHeld) {\r\n\t\t\t\t\t\t\tthis.rightAnalogHeld = false;\r\n\t\t\t\t\t\t\tthis.handleDropAnalog('RIGHT');\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t\t// Check if this axis has been held for more than one tick. And only if the axis is not 0. An axis of 0 means the analog is not being moved at all.\r\n\t\t\tconst axisStillHeld = (this.info.initialAxesStickDrift[i] !== currentAxis) && (currentAxis === this.info.previousAxesState[i]) && (currentAxis !== 0 && currentAxis !== -0);\r\n\t\t\tconst hasPreviousState = this.info.previousAxesState[i] !== undefined;\r\n\t\t\t// Can only calculate this if there was a previousAxesState\r\n\t\t\tlet axisUpdateRangeMet = false;\r\n\t\t\t// If the axis is different then the initial stick drift of the analog\r\n\t\t\tconst axisDifferentFromInitialStickDrift = (this.info.initialAxesStickDrift[i] !== undefined) && currentAxis !== this.info.initialAxesStickDrift[i];\r\n\t\t\t// If there is a previous state then we calculate if the range the analog has moved is enough to consider it an update\r\n\t\t\tif (hasPreviousState) {\r\n\t\t\t\taxisUpdateRangeMet = Math.abs(currentAxis - this.info.previousAxesState[i]) >= Controller.AXIS_UPDATE_RANGE;\r\n\t\t\t// If there is no previous state then this must mean the user has never touched the analog and we need to store the initial \"stick drift\" of this analog to check against in the future ticks to prevent non user axis changes from being called.\r\n\t\t\t} else {\r\n\t\t\t\t// In the event the analog had no previous state but the new axis is different then the stored initial stick drift then the analog has been moved\r\n\t\t\t\tif (axisDifferentFromInitialStickDrift) {\r\n\t\t\t\t\taxisUpdateRangeMet = Math.abs(currentAxis - this.info.initialAxesStickDrift[i]) >= Controller.AXIS_UPDATE_RANGE;\r\n\t\t\t\t// Otherwise store the initial axis stick drift\r\n\t\t\t\t} else {\r\n\t\t\t\t\tthis.info.initialAxesStickDrift[i] = currentAxis;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\r\n\t\t\t// If the axis is not the same as the initial stick drift then it means the user has touched the analog\r\n\t\t\tif (axisDifferentFromInitialStickDrift) {\r\n\t\t\t\t/**\r\n\t\t\t\t * @todo Simplify into a function call because this code is repeated.\r\n\t\t\t\t */\r\n\t\t\t\taxisUpdateRangeMet = Math.abs(currentAxis - this.info.initialAxesStickDrift[i]) >= Controller.AXIS_UPDATE_RANGE;\r\n\t\t\t}\r\n\r\n\t\t\t// If there is user input then handle events\r\n\t\t\tif (axisStillHeld || axisUpdateRangeMet) {\r\n\t\t\t\tswitch (Controller.AXES_REVERSED_MAP[i]) {\r\n\t\t\t\t\tcase 'LEFT_X':\r\n\t\t\t\t\tcase 'LEFT_Y':\r\n\t\t\t\t\t\tif (!this.leftAnalogHeld && !hasPreviousState) {\r\n\t\t\t\t\t\t\tthis.leftAnalogHeld = true;\r\n\t\t\t\t\t\t\tthis.handleGrabAnalog('LEFT');\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tbreak;\r\n\r\n\t\t\t\t\tcase 'RIGHT_X':\r\n\t\t\t\t\tcase 'RIGHT_Y':\r\n\t\t\t\t\t\tif (!this.rightAnalogHeld && !hasPreviousState) {\r\n\t\t\t\t\t\t\tthis.rightAnalogHeld = true;\r\n\t\t\t\t\t\t\tthis.handleGrabAnalog('RIGHT');\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n\r\n\t\t\t\tthis.handleAxisInput(i, currentAxis, axisStillHeld);\r\n\t\t\t\tthis.info.previousAxesState[i] = currentAxis;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Gets the current buttons pressed down on the gamepad.\r\n\t */\r\n\tgetPressed() {\r\n\t\tconst buttonsDown = [];\r\n\t\tfor (const button in this.pressed) {\r\n\t\t\t// If this button is currently pressed down add it to the array to return.\r\n\t\t\tif (this.pressed[button]) {\r\n\t\t\t\tbuttonsDown.push(button);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn buttonsDown;\r\n\t}\r\n    /**\r\n     * Attaches a callback to the specified event.\r\n\t * \r\n     * @param {Event['event']} pEvent - The event to attach the callback to\r\n     * @param {Event['callback']} pCallback - The function to be called when the event is triggered\r\n     * @return {Controller} The Controller instance\r\n     */\r\n\ton(pEvent, pCallback) {\r\n\t\tif (typeof(pEvent) === 'string') {\r\n\t\t\tif (typeof(pCallback) === 'function') {\r\n\t\t\t\tswitch (pEvent) {\r\n\t\t\t\t\tcase 'press':\r\n\t\t\t\t\t\tthis.pressHandlers[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tcase 'release':\r\n\t\t\t\t\t\tthis.releaseHandlers[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tcase 'axis':\r\n\t\t\t\t\tcase 'grab':\r\n\t\t\t\t\tcase 'drop':\r\n\t\t\t\t\t\tthis.axisHandlers[pEvent] = pCallback;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tdefault:\r\n\t\t\t\t\t\tconsole.error(`The event \"${pEvent}\" is not supported.`);\r\n\t\t\t\t}\r\n\t\t\t} else {\r\n\t\t\t\tconsole.error(`The callback for event \"${pEvent}\" is not a function.`);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn this;\r\n\t}\r\n    /**\r\n     * Removes a callback from the specified event.\r\n\t * \r\n     * @param {Event['event']} pEvent - The event to remove the callback from\r\n     * @return {Controller} The Controller instance\r\n     */\t\r\n\toff(pEvent) {\r\n\t\tif (typeof(pEvent) === 'string') {\r\n\t\t\tif (typeof(pCallback) === 'function') {\r\n\t\t\t\tswitch (pEvent) {\r\n\t\t\t\t\tcase 'press':\r\n\t\t\t\t\t\tthis.pressHandlers[pEvent] = null;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tcase 'release':\r\n\t\t\t\t\t\tthis.releaseHandlers[pEvent] = null;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tcase 'axis':\r\n\t\t\t\t\tcase 'grab':\r\n\t\t\t\t\tcase 'drop':\r\n\t\t\t\t\t\tthis.axisHandlers[pEvent] = null;\r\n\t\t\t\t\t\tbreak;\r\n\t\t\t\t\tdefault:\r\n\t\t\t\t\t\tconsole.error(`The event \"${pEvent}\" is not supported.`);\r\n\t\t\t\t}\r\n\t\t\t} else {\r\n\t\t\t\tconsole.error(`The callback for event \"${pEvent}\" is not a function.`);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn this;\r\n\t}\r\n\t/**\r\n\t * Handles the input on the buttons.\r\n\t * \r\n\t * @param {number} pButton - The button index that was pressed\r\n\t * @param {number} pValue - The value of the button (0 for unpressed, 1 for pressed) 0-1 for buttons that have a range\r\n\t * @param {boolean} pRepeat - Whether this button is still being held from a previous frame\r\n\t * @param {boolean} pPressed - Whether this button is being pressed in this current frame.\r\n\t */\r\n\thandleButtonInput(pButton, pValue, pRepeat, pPressed) {\r\n\t\tlet buttonName = pButton;\r\n\t\tlet clampedValue = Math.floor(pValue * 100) / 100;\r\n\r\n\t\t// Check if button is mapped\r\n\t\tfor (const button in this.config.buttons) {\r\n\t\t\tif (this.config.buttons[button] === pButton) {\r\n\t\t\t\tbuttonName = button;\r\n\t\t\t\t// Only set the value to pressed if it actually is pressed, don't set it to false via pPressed, as it will be set to false after the release event is called\r\n\t\t\t\t// We also check if the value is greater or equal to the triggers pressed value. This is due to a trigger not being considered to be pressed unless its passed or at this threshold.\r\n\t\t\t\tif (pPressed || clampedValue > Controller.UNPRESSED) this.pressed[buttonName] = true;\r\n\t\t\t\tbreak;\r\n\t\t\t}\r\n\t\t}\r\n\t\t// Check if any of the main buttons need to be remapped for a PlayStation controller\r\n\t\tif (buttonName === 'A' || buttonName === 'B' || buttonName === 'X' || buttonName === 'Y') {\r\n\t\t\t// If this controller is a playstation controller\r\n\t\t\tif (this.type === 'PS') {\r\n\t\t\t\t// Change the XBOX controls to Playstation controller controls\r\n\t\t\t\tbuttonName = Controller.PS4_REMAPPED[buttonName];\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\tif (buttonName) {\r\n\t\t\t// Press\r\n\t\t\tif (clampedValue <= Controller.PRESSED && clampedValue > Controller.UNPRESSED) {\r\n\t\t\t\tif (typeof(this.pressHandlers['press']) === 'function') this.pressHandlers['press'](buttonName, clampedValue, pRepeat);\r\n\t\t\t// Release\r\n\t\t\t} else if (clampedValue === Controller.UNPRESSED && (buttonName === 'LT' || buttonName === 'RT') && this.pressed[buttonName]) {\r\n\t\t\t\tif (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release'](buttonName, clampedValue);\r\n\t\t\t\tthis.pressed[buttonName] = false;\r\n\t\t\t// Release\r\n\t\t\t} else if (clampedValue === Controller.UNPRESSED && this.pressed[buttonName]) {\r\n\t\t\t\tif (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release'](buttonName, clampedValue);\r\n\t\t\t\tthis.pressed[buttonName] = false;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Handles the input on the analogs.\r\n\t * \r\n\t * @param {number} pAxis - The axis index that was moved\r\n\t * @param {number} pValue - The value of the axis that was moved (0-1 range)\r\n\t * @param {boolean} pRepeat - Whether this axes is still the same from a previous frame\r\n\t */\r\n\thandleAxisInput(pAxis, pValue, pRepeat) {\r\n\t\tlet axisName = pAxis;\r\n\t\t// Clamp value to hundreths position just for easier calculations\r\n\t\tlet clampedValue = Math.floor(pValue * 100) / 100;\r\n\t\t// Check if axis is mapped\r\n\t\tfor (const axes in Controller.AXES) {\r\n\t\t\tif (Controller.AXES[axes] === pAxis) {\r\n\t\t\t\taxisName = axes;\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\t// The angle the axis is in\r\n\t\tlet analogAngle = 0;\r\n\t\r\n\t\tif (axisName === 'LEFT_X' || axisName === 'LEFT_Y') {\r\n\t\t\tif (axisName === 'LEFT_X') {\r\n\t\t\t\tthis.leftAnalogPos.x = clampedValue;\r\n\t\t\t}\r\n\t\t\tif (axisName === 'LEFT_Y') {\r\n\t\t\t\tthis.leftAnalogPos.y = clampedValue;\r\n\t\t\t}\r\n\t\t\tanalogAngle = GamepadManagerSingleton.getAngle(Controller.baseAnalogPos, this.leftAnalogPos);\r\n\t\t}\r\n\t\t\r\n\t\tif (axisName === 'RIGHT_X' || axisName === 'RIGHT_Y') {\r\n\t\t\tif (axisName === 'RIGHT_X') {\r\n\t\t\t\tthis.rightAnalogPos.x = clampedValue;\r\n\t\t\t}\r\n\t\t\tif (axisName === 'RIGHT_Y') {\r\n\t\t\t\tthis.rightAnalogPos.y = clampedValue;\r\n\t\t\t}\r\n\t\t\tanalogAngle = GamepadManagerSingleton.getAngle(Controller.baseAnalogPos, this.rightAnalogPos);\r\n\t\t}\r\n\r\n\t\tif (axisName) {\r\n\t\t\tif (typeof(this.axisHandlers['axis']) === 'function') this.axisHandlers['axis'](axisName, clampedValue, analogAngle, pRepeat);\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Handles the event for when a analog is grabbed.\r\n\t * \r\n\t * @param {string} pAnalog - Analog that was grabbed\r\n\t */\r\n\thandleGrabAnalog(pAnalog) {\r\n\t\tif (pAnalog) {\r\n\t\t\tif (typeof(this.axisHandlers['grab']) === 'function') this.axisHandlers['grab'](pAnalog);\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Handles the event for when a analog is dropped.\r\n\t * \r\n\t * @param {string} pAnalog - Analog that was dropped\r\n\t */\r\n\thandleDropAnalog(pAnalog) {\r\n\t\tif (pAnalog) {\r\n\t\t\tif (typeof(this.axisHandlers['drop']) === 'function') this.axisHandlers['drop'](pAnalog);\r\n\t\t}\r\n\t}\r\n\t/**\r\n\t * Whether the left analog is being held\r\n\t * \r\n\t * @returns {boolean}\r\n\t */\r\n\tisLeftAnalogHeld() {\r\n\t\treturn this.leftAnalogHeld;\r\n\t}\r\n\t/**\r\n\t * Whether the right analog is being held\r\n\t * \r\n\t * @returns {boolean}\r\n\t */\r\n\tisRightAnalogHeld() {\r\n\t\treturn this.rightAnalogHeld;\r\n\t}\r\n\t/**\r\n\t * Checks whether a button is pressed down or not\r\n\t * \r\n\t * @param {string} pButtonName - The button to check if its pressed\r\n\t * @returns {boolean}\r\n\t */\r\n\tisButtonPressed(pButtonName) {\r\n\t\treturn this.pressed[pButtonName];\r\n\t}\r\n\t/**\r\n\t * Vibrate the controller (experimental)\r\n\t * \r\n\t * dual-rumble: Dual-rumble describes a haptic configuration with an eccentric rotating mass vibration motor in each handle of a standard gamepad. \r\n\t * In this configuration, either motor is capable of vibrating the whole gamepad. \r\n\t * The two masses are unequal so that the effects of each can be combined to create more complex haptic effects.\r\n\t * \r\n\t * @param {string} pVibrationType - The type of rumble. \"dual-rumble\", or \"vibration\"\r\n\t * @param {number} pStartDelay - The start delay before the vibration occurs in ms\r\n\t * @param {number} pWeakMagnitude - The magnitude of the weak actuator (between 0 and 1).\r\n\t * @param {number} pStrongMagnitude - The magnitude of the strong actuator (between 0 and 1).\r\n\t */\r\n\tvibrate(pVibrationType = 'dual-rumble', pStartDelay=0, pDuration=1000, pWeakMagnitude=1, pStrongMagnitude=1) {\r\n\t\tif (!('vibrationActuator' in this.gamepad)) {\r\n\t\t\treturn;\r\n\t\t}\r\n\t\t// If a invalid pVibrationType is passed, default it\r\n\t\tif (pVibrationType !== 'dual-rumble' || pVibrationType !== 'vibration') pVibrationType = 'dual-rumble';\r\n\t\t// A new call to playEffect() overrides a previous ongoing call.\r\n\t\tthis.gamepad.vibrationActuator.playEffect(pVibrationType, {\r\n\t\t\tstartDelay: pStartDelay,\r\n\t\t\tduration: pDuration,\r\n\t\t\tweakMagnitude: pWeakMagnitude,\r\n\t\t\tstrongMagnitude: pStrongMagnitude,\r\n\t\t});\r\n\t}\r\n\t/**\r\n\t * The pulse() method of the GamepadHapticActuator interface makes the hardware pulse at a certain intensity for a specified duration. (From MDN)\r\n\t * \r\n\t * @param {number} pValue - A double representing the intensity of the pulse. This can vary depending on the hardware type, but generally takes a value between 0.0 (no intensity) and 1.0 (full intensity).\r\n\t * @param {number} pDuration - A double representing the duration of the pulse, in milliseconds.\r\n\t */\r\n\tpulse(pValue=1, pDuration=200) {\r\n\t\tif (!('hapticActuators' in this.gamepad)) {\r\n\t\t\treturn;\r\n\t\t}\r\n\t\tthis.gamepad.hapticActuators[0].pulse(pValue, pDuration);\r\n\t}\r\n}\r\n\r\nexport const GamepadManager = new GamepadManagerSingleton();\r\n",
     "static": true,
     "longname": "C:/Users/jared/Documents/Github/Gamepad/src/gamepad.mjs",
     "access": "public",
@@ -586,7 +586,7 @@
     "importPath": "gamepad/src/gamepad.mjs",
     "importStyle": null,
     "description": null,
-    "lineNumber": 145,
+    "lineNumber": 157,
     "undocument": true,
     "interface": false
   },
@@ -599,7 +599,7 @@
     "longname": "src/gamepad.mjs~Controller#config",
     "access": "public",
     "description": "Configuration of which buttons / analogs map to which indexes",
-    "lineNumber": 151,
+    "lineNumber": 163,
     "type": {
       "nullable": null,
       "types": [
@@ -618,7 +618,7 @@
     "longname": "src/gamepad.mjs~Controller#leftAnalogHeld",
     "access": "public",
     "description": null,
-    "lineNumber": 160,
+    "lineNumber": 172,
     "undocument": true,
     "type": {
       "types": [
@@ -635,7 +635,7 @@
     "longname": "src/gamepad.mjs~Controller#rightAnalogHeld",
     "access": "public",
     "description": "Whether the right analog is currently being held",
-    "lineNumber": 166,
+    "lineNumber": 178,
     "type": {
       "nullable": null,
       "types": [
@@ -648,13 +648,29 @@
   {
     "__docId__": 53,
     "kind": "member",
+    "name": "baseAnalogPos",
+    "memberof": "src/gamepad.mjs~Controller",
+    "static": true,
+    "longname": "src/gamepad.mjs~Controller.baseAnalogPos",
+    "access": "public",
+    "description": "The base analogs position when it is not in use",
+    "lineNumber": 182,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 54,
+    "kind": "member",
     "name": "AXES",
     "memberof": "src/gamepad.mjs~Controller",
     "static": true,
     "longname": "src/gamepad.mjs~Controller.AXES",
     "access": "public",
     "description": "Analog thumb sticks",
-    "lineNumber": 172,
+    "lineNumber": 188,
     "type": {
       "nullable": null,
       "types": [
@@ -665,7 +681,7 @@
     }
   },
   {
-    "__docId__": 54,
+    "__docId__": 55,
     "kind": "member",
     "name": "AXES_REVERSED_MAP",
     "memberof": "src/gamepad.mjs~Controller",
@@ -673,7 +689,7 @@
     "longname": "src/gamepad.mjs~Controller.AXES_REVERSED_MAP",
     "access": "public",
     "description": null,
-    "lineNumber": 179,
+    "lineNumber": 195,
     "undocument": true,
     "type": {
       "types": [
@@ -682,7 +698,7 @@
     }
   },
   {
-    "__docId__": 55,
+    "__docId__": 56,
     "kind": "member",
     "name": "AXIS_UPDATE_RANGE",
     "memberof": "src/gamepad.mjs~Controller",
@@ -690,26 +706,7 @@
     "longname": "src/gamepad.mjs~Controller.AXIS_UPDATE_RANGE",
     "access": "public",
     "description": "The range at which axis changes are detected",
-    "lineNumber": 192,
-    "type": {
-      "nullable": null,
-      "types": [
-        "number"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 56,
-    "kind": "member",
-    "name": "ANALOG_RELEASE_RANGE",
-    "memberof": "src/gamepad.mjs~Controller",
-    "static": true,
-    "longname": "src/gamepad.mjs~Controller.ANALOG_RELEASE_RANGE",
-    "access": "public",
-    "description": "The range at which the analog is considered to be dropped -0.09 - 0.09",
-    "lineNumber": 198,
+    "lineNumber": 208,
     "type": {
       "nullable": null,
       "types": [
@@ -722,29 +719,13 @@
   {
     "__docId__": 57,
     "kind": "member",
-    "name": "TRIGGER_PRESSED_VALUE",
+    "name": "ANALOG_RELEASE_RANGE",
     "memberof": "src/gamepad.mjs~Controller",
     "static": true,
-    "longname": "src/gamepad.mjs~Controller.TRIGGER_PRESSED_VALUE",
+    "longname": "src/gamepad.mjs~Controller.ANALOG_RELEASE_RANGE",
     "access": "public",
-    "description": "The value at which holding a trigger (LT OR RT) will consider it being pressed",
-    "lineNumber": 202,
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "__docId__": 58,
-    "kind": "member",
-    "name": "PRESSED",
-    "memberof": "src/gamepad.mjs~Controller",
-    "static": true,
-    "longname": "src/gamepad.mjs~Controller.PRESSED",
-    "access": "public",
-    "description": "Value to indicate a pressed button",
-    "lineNumber": 208,
+    "description": "The range at which the analog is considered to be dropped -0.09 - 0.09",
+    "lineNumber": 214,
     "type": {
       "nullable": null,
       "types": [
@@ -755,15 +736,31 @@
     }
   },
   {
-    "__docId__": 59,
+    "__docId__": 58,
     "kind": "member",
-    "name": "UNPRESSED",
+    "name": "TRIGGER_PRESSED_VALUE",
     "memberof": "src/gamepad.mjs~Controller",
     "static": true,
-    "longname": "src/gamepad.mjs~Controller.UNPRESSED",
+    "longname": "src/gamepad.mjs~Controller.TRIGGER_PRESSED_VALUE",
     "access": "public",
-    "description": "Value to indicate a button is not pressed",
-    "lineNumber": 214,
+    "description": "The value at which holding a trigger (LT OR RT) will consider it being pressed",
+    "lineNumber": 218,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 59,
+    "kind": "member",
+    "name": "PRESSED",
+    "memberof": "src/gamepad.mjs~Controller",
+    "static": true,
+    "longname": "src/gamepad.mjs~Controller.PRESSED",
+    "access": "public",
+    "description": "Value to indicate a pressed button",
+    "lineNumber": 224,
     "type": {
       "nullable": null,
       "types": [
@@ -776,30 +773,32 @@
   {
     "__docId__": 60,
     "kind": "member",
+    "name": "UNPRESSED",
+    "memberof": "src/gamepad.mjs~Controller",
+    "static": true,
+    "longname": "src/gamepad.mjs~Controller.UNPRESSED",
+    "access": "public",
+    "description": "Value to indicate a button is not pressed",
+    "lineNumber": 230,
+    "type": {
+      "nullable": null,
+      "types": [
+        "number"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 61,
+    "kind": "member",
     "name": "BUTTONS_MAP",
     "memberof": "src/gamepad.mjs~Controller",
     "static": true,
     "longname": "src/gamepad.mjs~Controller.BUTTONS_MAP",
     "access": "public",
     "description": "A button map that maps common button names to the indexes the computer knows them as",
-    "lineNumber": 218,
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "__docId__": 61,
-    "kind": "member",
-    "name": "BUTTONS_REVERSE_MAP",
-    "memberof": "src/gamepad.mjs~Controller",
-    "static": true,
-    "longname": "src/gamepad.mjs~Controller.BUTTONS_REVERSE_MAP",
-    "access": "public",
-    "description": null,
-    "lineNumber": 243,
-    "undocument": true,
+    "lineNumber": 234,
     "type": {
       "types": [
         "*"
@@ -809,32 +808,13 @@
   {
     "__docId__": 62,
     "kind": "member",
-    "name": "PS4_REMAPPED",
+    "name": "BUTTONS_REVERSE_MAP",
     "memberof": "src/gamepad.mjs~Controller",
     "static": true,
-    "longname": "src/gamepad.mjs~Controller.PS4_REMAPPED",
-    "access": "public",
-    "description": "A small remapped version of the controllers button_map with PS4 alternatives",
-    "lineNumber": 256,
-    "type": {
-      "nullable": null,
-      "types": [
-        "object"
-      ],
-      "spread": false,
-      "description": null
-    }
-  },
-  {
-    "__docId__": 63,
-    "kind": "member",
-    "name": "GAMEPAD_IDS",
-    "memberof": "src/gamepad.mjs~Controller",
-    "static": true,
-    "longname": "src/gamepad.mjs~Controller.GAMEPAD_IDS",
+    "longname": "src/gamepad.mjs~Controller.BUTTONS_REVERSE_MAP",
     "access": "public",
     "description": null,
-    "lineNumber": 270,
+    "lineNumber": 259,
     "undocument": true,
     "type": {
       "types": [
@@ -843,15 +823,15 @@
     }
   },
   {
-    "__docId__": 64,
+    "__docId__": 63,
     "kind": "member",
-    "name": "pressed",
+    "name": "PS4_REMAPPED",
     "memberof": "src/gamepad.mjs~Controller",
-    "static": false,
-    "longname": "src/gamepad.mjs~Controller#pressed",
+    "static": true,
+    "longname": "src/gamepad.mjs~Controller.PS4_REMAPPED",
     "access": "public",
-    "description": "Object full of the currently held down buttons",
-    "lineNumber": 301,
+    "description": "A small remapped version of the controllers button_map with PS4 alternatives",
+    "lineNumber": 272,
     "type": {
       "nullable": null,
       "types": [
@@ -862,15 +842,32 @@
     }
   },
   {
+    "__docId__": 64,
+    "kind": "member",
+    "name": "GAMEPAD_IDS",
+    "memberof": "src/gamepad.mjs~Controller",
+    "static": true,
+    "longname": "src/gamepad.mjs~Controller.GAMEPAD_IDS",
+    "access": "public",
+    "description": null,
+    "lineNumber": 286,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
     "__docId__": 65,
     "kind": "member",
-    "name": "info",
+    "name": "pressed",
     "memberof": "src/gamepad.mjs~Controller",
     "static": false,
-    "longname": "src/gamepad.mjs~Controller#info",
+    "longname": "src/gamepad.mjs~Controller#pressed",
     "access": "public",
-    "description": "Info about the controller",
-    "lineNumber": 313,
+    "description": "Object full of the currently held down buttons",
+    "lineNumber": 317,
     "type": {
       "nullable": null,
       "types": [
@@ -883,13 +880,32 @@
   {
     "__docId__": 66,
     "kind": "member",
-    "name": "pressHandlers",
+    "name": "info",
     "memberof": "src/gamepad.mjs~Controller",
     "static": false,
-    "longname": "src/gamepad.mjs~Controller#pressHandlers",
+    "longname": "src/gamepad.mjs~Controller#info",
+    "access": "public",
+    "description": "Info about the controller",
+    "lineNumber": 329,
+    "type": {
+      "nullable": null,
+      "types": [
+        "object"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 67,
+    "kind": "member",
+    "name": "leftAnalogPos",
+    "memberof": "src/gamepad.mjs~Controller",
+    "static": false,
+    "longname": "src/gamepad.mjs~Controller#leftAnalogPos",
     "access": "public",
     "description": null,
-    "lineNumber": 325,
+    "lineNumber": 339,
     "undocument": true,
     "type": {
       "types": [
@@ -898,7 +914,42 @@
     }
   },
   {
-    "__docId__": 67,
+    "__docId__": 68,
+    "kind": "member",
+    "name": "rightAnalogPos",
+    "memberof": "src/gamepad.mjs~Controller",
+    "static": false,
+    "longname": "src/gamepad.mjs~Controller#rightAnalogPos",
+    "access": "public",
+    "description": "The right analogs position",
+    "lineNumber": 343,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 69,
+    "kind": "member",
+    "name": "pressHandlers",
+    "memberof": "src/gamepad.mjs~Controller",
+    "static": false,
+    "longname": "src/gamepad.mjs~Controller#pressHandlers",
+    "access": "public",
+    "description": "Object of stored callback that will call when a button is pressed",
+    "lineNumber": 349,
+    "type": {
+      "nullable": null,
+      "types": [
+        "Object"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 70,
     "kind": "member",
     "name": "releaseHandlers",
     "memberof": "src/gamepad.mjs~Controller",
@@ -906,7 +957,7 @@
     "longname": "src/gamepad.mjs~Controller#releaseHandlers",
     "access": "public",
     "description": "Object of stored callback that will call when a button is released",
-    "lineNumber": 331,
+    "lineNumber": 355,
     "type": {
       "nullable": null,
       "types": [
@@ -917,7 +968,7 @@
     }
   },
   {
-    "__docId__": 68,
+    "__docId__": 71,
     "kind": "member",
     "name": "axisHandlers",
     "memberof": "src/gamepad.mjs~Controller",
@@ -925,7 +976,7 @@
     "longname": "src/gamepad.mjs~Controller#axisHandlers",
     "access": "public",
     "description": "Object of stored callbacks that will call when the axis is changed",
-    "lineNumber": 337,
+    "lineNumber": 361,
     "type": {
       "nullable": null,
       "types": [
@@ -936,7 +987,7 @@
     }
   },
   {
-    "__docId__": 69,
+    "__docId__": 72,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/gamepad.mjs~Controller",
@@ -946,7 +997,7 @@
     "longname": "src/gamepad.mjs~Controller#constructor",
     "access": "public",
     "description": "Creates a new controller instance and passes the gamepad it will be created with",
-    "lineNumber": 343,
+    "lineNumber": 367,
     "params": [
       {
         "nullable": null,
@@ -961,7 +1012,7 @@
     ]
   },
   {
-    "__docId__": 70,
+    "__docId__": 73,
     "kind": "member",
     "name": "gamepad",
     "memberof": "src/gamepad.mjs~Controller",
@@ -969,7 +1020,7 @@
     "longname": "src/gamepad.mjs~Controller#gamepad",
     "access": "public",
     "description": null,
-    "lineNumber": 344,
+    "lineNumber": 368,
     "undocument": true,
     "type": {
       "types": [
@@ -978,7 +1029,7 @@
     }
   },
   {
-    "__docId__": 71,
+    "__docId__": 74,
     "kind": "member",
     "name": "type",
     "memberof": "src/gamepad.mjs~Controller",
@@ -986,7 +1037,7 @@
     "longname": "src/gamepad.mjs~Controller#type",
     "access": "public",
     "description": null,
-    "lineNumber": 345,
+    "lineNumber": 369,
     "undocument": true,
     "type": {
       "types": [
@@ -995,7 +1046,7 @@
     }
   },
   {
-    "__docId__": 72,
+    "__docId__": 75,
     "kind": "method",
     "name": "getType",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1005,7 +1056,7 @@
     "longname": "src/gamepad.mjs~Controller#getType",
     "access": "public",
     "description": "Returns the type the controller is. PC / PS / Xbox / Android",
-    "lineNumber": 352,
+    "lineNumber": 376,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1023,7 +1074,7 @@
     "params": []
   },
   {
-    "__docId__": 73,
+    "__docId__": 76,
     "kind": "method",
     "name": "updateState",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1033,7 +1084,7 @@
     "longname": "src/gamepad.mjs~Controller#updateState",
     "access": "public",
     "description": "Update the state of this controller with the latest polled information",
-    "lineNumber": 361,
+    "lineNumber": 385,
     "params": [
       {
         "nullable": null,
@@ -1059,7 +1110,7 @@
     "return": null
   },
   {
-    "__docId__": 78,
+    "__docId__": 81,
     "kind": "method",
     "name": "getPressed",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1069,7 +1120,7 @@
     "longname": "src/gamepad.mjs~Controller#getPressed",
     "access": "public",
     "description": "Gets the current buttons pressed down on the gamepad.",
-    "lineNumber": 470,
+    "lineNumber": 494,
     "params": [],
     "return": {
       "types": [
@@ -1078,7 +1129,7 @@
     }
   },
   {
-    "__docId__": 79,
+    "__docId__": 82,
     "kind": "method",
     "name": "on",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1088,7 +1139,7 @@
     "longname": "src/gamepad.mjs~Controller#on",
     "access": "public",
     "description": "Attaches a callback to the specified event.",
-    "lineNumber": 487,
+    "lineNumber": 511,
     "params": [
       {
         "nullable": null,
@@ -1121,7 +1172,7 @@
     }
   },
   {
-    "__docId__": 80,
+    "__docId__": 83,
     "kind": "method",
     "name": "off",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1131,7 +1182,7 @@
     "longname": "src/gamepad.mjs~Controller#off",
     "access": "public",
     "description": "Removes a callback from the specified event.",
-    "lineNumber": 517,
+    "lineNumber": 541,
     "params": [
       {
         "nullable": null,
@@ -1154,7 +1205,7 @@
     }
   },
   {
-    "__docId__": 81,
+    "__docId__": 84,
     "kind": "method",
     "name": "handleButtonInput",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1164,7 +1215,7 @@
     "longname": "src/gamepad.mjs~Controller#handleButtonInput",
     "access": "public",
     "description": "Handles the input on the buttons.",
-    "lineNumber": 549,
+    "lineNumber": 573,
     "params": [
       {
         "nullable": null,
@@ -1210,7 +1261,7 @@
     "return": null
   },
   {
-    "__docId__": 82,
+    "__docId__": 85,
     "kind": "method",
     "name": "handleAxisInput",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1220,7 +1271,7 @@
     "longname": "src/gamepad.mjs~Controller#handleAxisInput",
     "access": "public",
     "description": "Handles the input on the analogs.",
-    "lineNumber": 594,
+    "lineNumber": 618,
     "params": [
       {
         "nullable": null,
@@ -1256,7 +1307,7 @@
     "return": null
   },
   {
-    "__docId__": 83,
+    "__docId__": 86,
     "kind": "method",
     "name": "handleGrabAnalog",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1266,7 +1317,7 @@
     "longname": "src/gamepad.mjs~Controller#handleGrabAnalog",
     "access": "public",
     "description": "Handles the event for when a analog is grabbed.",
-    "lineNumber": 612,
+    "lineNumber": 661,
     "params": [
       {
         "nullable": null,
@@ -1282,7 +1333,7 @@
     "return": null
   },
   {
-    "__docId__": 84,
+    "__docId__": 87,
     "kind": "method",
     "name": "handleDropAnalog",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1292,7 +1343,7 @@
     "longname": "src/gamepad.mjs~Controller#handleDropAnalog",
     "access": "public",
     "description": "Handles the event for when a analog is dropped.",
-    "lineNumber": 622,
+    "lineNumber": 671,
     "params": [
       {
         "nullable": null,
@@ -1308,7 +1359,7 @@
     "return": null
   },
   {
-    "__docId__": 85,
+    "__docId__": 88,
     "kind": "method",
     "name": "isLeftAnalogHeld",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1318,7 +1369,7 @@
     "longname": "src/gamepad.mjs~Controller#isLeftAnalogHeld",
     "access": "public",
     "description": "Whether the left analog is being held",
-    "lineNumber": 632,
+    "lineNumber": 681,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1336,7 +1387,7 @@
     "params": []
   },
   {
-    "__docId__": 86,
+    "__docId__": 89,
     "kind": "method",
     "name": "isRightAnalogHeld",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1346,7 +1397,7 @@
     "longname": "src/gamepad.mjs~Controller#isRightAnalogHeld",
     "access": "public",
     "description": "Whether the right analog is being held",
-    "lineNumber": 640,
+    "lineNumber": 689,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1364,7 +1415,7 @@
     "params": []
   },
   {
-    "__docId__": 87,
+    "__docId__": 90,
     "kind": "method",
     "name": "isButtonPressed",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1374,7 +1425,7 @@
     "longname": "src/gamepad.mjs~Controller#isButtonPressed",
     "access": "public",
     "description": "Checks whether a button is pressed down or not",
-    "lineNumber": 649,
+    "lineNumber": 698,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1403,7 +1454,7 @@
     }
   },
   {
-    "__docId__": 88,
+    "__docId__": 91,
     "kind": "method",
     "name": "vibrate",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1413,7 +1464,7 @@
     "longname": "src/gamepad.mjs~Controller#vibrate",
     "access": "public",
     "description": "Vibrate the controller (experimental)\n\ndual-rumble: Dual-rumble describes a haptic configuration with an eccentric rotating mass vibration motor in each handle of a standard gamepad. \nIn this configuration, either motor is capable of vibrating the whole gamepad. \nThe two masses are unequal so that the effects of each can be combined to create more complex haptic effects.",
-    "lineNumber": 664,
+    "lineNumber": 713,
     "params": [
       {
         "nullable": null,
@@ -1459,7 +1510,7 @@
     "return": null
   },
   {
-    "__docId__": 89,
+    "__docId__": 92,
     "kind": "method",
     "name": "pulse",
     "memberof": "src/gamepad.mjs~Controller",
@@ -1469,7 +1520,7 @@
     "longname": "src/gamepad.mjs~Controller#pulse",
     "access": "public",
     "description": "The pulse() method of the GamepadHapticActuator interface makes the hardware pulse at a certain intensity for a specified duration. (From MDN)",
-    "lineNumber": 684,
+    "lineNumber": 733,
     "params": [
       {
         "nullable": null,
@@ -1495,7 +1546,7 @@
     "return": null
   },
   {
-    "__docId__": 90,
+    "__docId__": 93,
     "kind": "variable",
     "name": "GamepadManager",
     "memberof": "src/gamepad.mjs",
@@ -1506,7 +1557,7 @@
     "importPath": "gamepad/src/gamepad.mjs",
     "importStyle": "{GamepadManager}",
     "description": null,
-    "lineNumber": 692,
+    "lineNumber": 741,
     "undocument": true,
     "type": {
       "types": [
@@ -1515,7 +1566,7 @@
     }
   },
   {
-    "__docId__": 91,
+    "__docId__": 94,
     "kind": "class",
     "name": "GamepadManagerSingleton",
     "memberof": "src/gamepad.mjs",
@@ -1548,7 +1599,7 @@
     "interface": false
   },
   {
-    "__docId__": 92,
+    "__docId__": 95,
     "kind": "member",
     "name": "version",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1567,7 +1618,7 @@
     }
   },
   {
-    "__docId__": 93,
+    "__docId__": 96,
     "kind": "member",
     "name": "controllers",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1586,7 +1637,7 @@
     }
   },
   {
-    "__docId__": 94,
+    "__docId__": 97,
     "kind": "member",
     "name": "connectHandler",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1605,7 +1656,7 @@
     }
   },
   {
-    "__docId__": 95,
+    "__docId__": 98,
     "kind": "member",
     "name": "disconnectHandler",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1624,7 +1675,7 @@
     }
   },
   {
-    "__docId__": 96,
+    "__docId__": 99,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1637,7 +1688,56 @@
     "lineNumber": 38
   },
   {
-    "__docId__": 100,
+    "__docId__": 103,
+    "kind": "method",
+    "name": "getAngle",
+    "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/gamepad.mjs~GamepadManagerSingleton.getAngle",
+    "access": "public",
+    "description": "Gets the angle between two points",
+    "lineNumber": 60,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{number} The angle between the starting point and the ending point"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "pStartPoint",
+        "description": "The starting point"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "pEndPoint",
+        "description": "The ending point"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "number"
+      ],
+      "spread": false,
+      "description": "The angle between the starting point and the ending point"
+    }
+  },
+  {
+    "__docId__": 104,
     "kind": "method",
     "name": "getMainController",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1647,7 +1747,7 @@
     "longname": "src/gamepad.mjs~GamepadManagerSingleton#getMainController",
     "access": "public",
     "description": "This gets the first controller connected. This controller is dominant",
-    "lineNumber": 58,
+    "lineNumber": 70,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1665,7 +1765,7 @@
     "params": []
   },
   {
-    "__docId__": 101,
+    "__docId__": 105,
     "kind": "method",
     "name": "getControllers",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1675,7 +1775,7 @@
     "longname": "src/gamepad.mjs~GamepadManagerSingleton#getControllers",
     "access": "public",
     "description": "",
-    "lineNumber": 64,
+    "lineNumber": 76,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1693,7 +1793,7 @@
     "params": []
   },
   {
-    "__docId__": 102,
+    "__docId__": 106,
     "kind": "typedef",
     "name": "Event",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1732,7 +1832,7 @@
     }
   },
   {
-    "__docId__": 103,
+    "__docId__": 107,
     "kind": "method",
     "name": "on",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1742,7 +1842,7 @@
     "longname": "src/gamepad.mjs~GamepadManagerSingleton#on",
     "access": "public",
     "description": "Attaches a callback to the specified event.",
-    "lineNumber": 79,
+    "lineNumber": 91,
     "params": [
       {
         "nullable": null,
@@ -1775,7 +1875,7 @@
     }
   },
   {
-    "__docId__": 104,
+    "__docId__": 108,
     "kind": "method",
     "name": "handleGamepadConnected",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1785,7 +1885,7 @@
     "longname": "src/gamepad.mjs~GamepadManagerSingleton#handleGamepadConnected",
     "access": "public",
     "description": "Listener function for when a gamepad is connected",
-    "lineNumber": 105,
+    "lineNumber": 117,
     "params": [
       {
         "nullable": null,
@@ -1801,7 +1901,7 @@
     "return": null
   },
   {
-    "__docId__": 105,
+    "__docId__": 109,
     "kind": "method",
     "name": "handleGamepadDisconnected",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1811,7 +1911,7 @@
     "longname": "src/gamepad.mjs~GamepadManagerSingleton#handleGamepadDisconnected",
     "access": "public",
     "description": "Listener function for when the gamepad is disconnected",
-    "lineNumber": 116,
+    "lineNumber": 128,
     "params": [
       {
         "nullable": null,
@@ -1827,7 +1927,7 @@
     "return": null
   },
   {
-    "__docId__": 106,
+    "__docId__": 110,
     "kind": "method",
     "name": "pollGamepadState",
     "memberof": "src/gamepad.mjs~GamepadManagerSingleton",
@@ -1837,7 +1937,7 @@
     "longname": "src/gamepad.mjs~GamepadManagerSingleton#pollGamepadState",
     "access": "public",
     "description": "Get the latest game state of the connected gamepads (Chrome only saves snapshots of the state, we have to keep polling to get updated states)",
-    "lineNumber": 126,
+    "lineNumber": 138,
     "params": [],
     "return": null
   },

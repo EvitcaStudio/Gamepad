@@ -91,6 +91,18 @@ class GamepadManagerSingleton {
 		}
 	}
 	/**
+	 * Gets the angle between two points
+	 * 
+	 * @param {Object} pStartPoint - The starting point
+	 * @param {Object} pEndPoint - The ending point
+	 * @returns {number} The angle between the starting point and the ending point
+	 */
+	static getAngle(pStartPoint, pEndPoint) {
+		const y = pStartPoint.y - pEndPoint.y;
+		const x = pStartPoint.x - pEndPoint.x;
+		return -Math.atan2(y, x) - Math.PI;
+	}
+	/**
 	 * This gets the first controller connected. This controller is dominant
 	 * 
 	 * @returns {Gamepad} The first controller connected
@@ -204,6 +216,10 @@ class Controller {
 	 * @type {boolean}
 	 */
 	rightAnalogHeld = false;
+	/**
+	 * The base analogs position when it is not in use
+	 */
+	static baseAnalogPos = { x: 0, y: 0 };
 	/**
 	 * Analog thumb sticks
 	 * 
@@ -357,6 +373,14 @@ class Controller {
 		previousAxesState: [],
 		initialAxesStickDrift: []
 	}
+	/**
+	 * The left analogs position
+	 */
+	leftAnalogPos = { x: 0, y: 0 };
+	/**
+	 * The right analogs position
+	 */
+	rightAnalogPos = { x: 0, y: 0 };
 	/**
 	 * Object of stored callback that will call when a button is pressed
 	 * 
@@ -633,6 +657,7 @@ class Controller {
 	 */
 	handleAxisInput(pAxis, pValue, pRepeat) {
 		let axisName = pAxis;
+		// Clamp value to hundreths position just for easier calculations
 		let clampedValue = Math.floor(pValue * 100) / 100;
 		// Check if axis is mapped
 		for (const axes in Controller.AXES) {
@@ -640,8 +665,32 @@ class Controller {
 				axisName = axes;
 			}
 		}
+
+		// The angle the axis is in
+		let analogAngle = 0;
+	
+		if (axisName === &apos;LEFT_X&apos; || axisName === &apos;LEFT_Y&apos;) {
+			if (axisName === &apos;LEFT_X&apos;) {
+				this.leftAnalogPos.x = clampedValue;
+			}
+			if (axisName === &apos;LEFT_Y&apos;) {
+				this.leftAnalogPos.y = clampedValue;
+			}
+			analogAngle = GamepadManagerSingleton.getAngle(Controller.baseAnalogPos, this.leftAnalogPos);
+		}
+		
+		if (axisName === &apos;RIGHT_X&apos; || axisName === &apos;RIGHT_Y&apos;) {
+			if (axisName === &apos;RIGHT_X&apos;) {
+				this.rightAnalogPos.x = clampedValue;
+			}
+			if (axisName === &apos;RIGHT_Y&apos;) {
+				this.rightAnalogPos.y = clampedValue;
+			}
+			analogAngle = GamepadManagerSingleton.getAngle(Controller.baseAnalogPos, this.rightAnalogPos);
+		}
+
 		if (axisName) {
-			if (typeof(this.axisHandlers[&apos;axis&apos;]) === &apos;function&apos;) this.axisHandlers[&apos;axis&apos;](axisName, clampedValue, pRepeat);
+			if (typeof(this.axisHandlers[&apos;axis&apos;]) === &apos;function&apos;) this.axisHandlers[&apos;axis&apos;](axisName, clampedValue, analogAngle, pRepeat);
 		}
 	}
 	/**

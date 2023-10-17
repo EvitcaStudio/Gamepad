@@ -396,6 +396,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/gamepad.mjs~controller#leftanalogpos",
+    "class/src/gamepad.mjs~Controller.html#instance-member-leftAnalogPos",
+    "src/gamepad.mjs~Controller#leftAnalogPos",
+    "member"
+  ],
+  [
     "src/gamepad.mjs~controller#off",
     "class/src/gamepad.mjs~Controller.html#instance-method-off",
     "src/gamepad.mjs~Controller#off",
@@ -435,6 +441,12 @@ window.esdocSearchIndex = [
     "src/gamepad.mjs~controller#rightanalogheld",
     "class/src/gamepad.mjs~Controller.html#instance-member-rightAnalogHeld",
     "src/gamepad.mjs~Controller#rightAnalogHeld",
+    "member"
+  ],
+  [
+    "src/gamepad.mjs~controller#rightanalogpos",
+    "class/src/gamepad.mjs~Controller.html#instance-member-rightAnalogPos",
+    "src/gamepad.mjs~Controller#rightAnalogPos",
     "member"
   ],
   [
@@ -522,6 +534,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/gamepad.mjs~controller.baseanalogpos",
+    "class/src/gamepad.mjs~Controller.html#static-member-baseAnalogPos",
+    "src/gamepad.mjs~Controller.baseAnalogPos",
+    "member"
+  ],
+  [
     "src/gamepad.mjs~gamepadmanagersingleton#connecthandler",
     "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-member-connectHandler",
     "src/gamepad.mjs~GamepadManagerSingleton#connectHandler",
@@ -586,6 +604,12 @@ window.esdocSearchIndex = [
     "typedef/index.html#static-typedef-Event",
     "src/gamepad.mjs~GamepadManagerSingleton.Event",
     "typedef"
+  ],
+  [
+    "src/gamepad.mjs~gamepadmanagersingleton.getangle",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#static-method-getAngle",
+    "src/gamepad.mjs~GamepadManagerSingleton.getAngle",
+    "method"
   ],
   [
     "src/gamepad.mjs~gamepadmanagersingleton.version",
