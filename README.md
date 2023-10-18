@@ -35,7 +35,7 @@ GamepadManager.on('connect', function(pController) {
         // Do something when a controller presses a button
     }).on('release', (pButtonName, pValue) => {
         // Do something when a controller releases a button
-    }).on('axis', (pAxisName, pValue, pRepeat) => {
+    }).on('axis', (pAxisName, pValue, pAngle, pRepeat) => {
         // Do something when a controller moves its analogs
     }).on('grab', (pAnalogName) => {
         // Do something when an analog is touched or moved from the "drop off zone" (center position)

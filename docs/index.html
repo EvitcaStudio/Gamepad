@@ -59,7 +59,7 @@ Supports remapping of controller buttons to match different controller layouts.<
         // Do something when a controller presses a button
     }).on(&apos;release&apos;, (pButtonName, pValue) =&gt; {
         // Do something when a controller releases a button
-    }).on(&apos;axis&apos;, (pAxisName, pValue, pRepeat) =&gt; {
+    }).on(&apos;axis&apos;, (pAxisName, pValue, pAngle, pRepeat) =&gt; {
         // Do something when a controller moves its analogs
     }).on(&apos;grab&apos;, (pAnalogName) =&gt; {
         // Do something when an analog is touched or moved from the &quot;drop off zone&quot; (center position)
