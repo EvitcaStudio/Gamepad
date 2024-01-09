@@ -32,7 +32,6 @@
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/gamepad.mjs~Controller.html">Controller</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html">GamepadManagerSingleton</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-GamepadManager">GamepadManager</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Event">Event</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -44,7 +43,7 @@
   
   
   
-  <span data-ice="source">| <span><a href="file/src/gamepad.mjs.html#lineNumber10">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/gamepad.mjs.html#lineNumber9">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -79,46 +78,10 @@
   
 
   <div data-ice="todo"><h4>TODO:</h4><ul><li><span>Currently bluetooth gamepads when disconnecting (PS4 only) do no fire a disconnected event. Manually calling `this.gamepad.vibrationActuator.reset()` can force it to call a disconnect event, but 
-this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. Find a fix. (This is a GamepadAPI issue/OS issue/not code wise issue)
-Copyright (c) 2023 Evitca Studio</span></li></ul></div>
+this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. Find a fix. (This is a GamepadAPI issue/OS issue/not code wise issue)</span></li></ul></div>
 </div>
 
-<div data-ice="staticMemberSummary"><h2>Static Member Summary</h2><table class="summary" data-ice="summary">
-  <thead><tr><td data-ice="title" colspan="3">Static Public Members</td></tr></thead>
-  <tbody>
-  
-  <tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      <span data-ice="static">static</span>
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          
-          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html#static-member-version">version</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>The version of this module</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
+
 <div data-ice="staticMethodSummary"><h2>Static Method Summary</h2><table class="summary" data-ice="summary">
   <thead><tr><td data-ice="title" colspan="3">Static Public Methods</td></tr></thead>
   <tbody>
@@ -418,7 +381,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-on">on</a></span></span><span class="code" data-ice="signature">(pEvent: <span>Event[&apos;event&apos;]</span>, pCallback: <span>Event[&apos;callback&apos;]</span>): <span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html">GamepadManagerSingleton</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-on">on</a></span></span><span class="code" data-ice="signature">(pEvent: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, pCallback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html">GamepadManagerSingleton</a></span></span>
         </p>
       </div>
       <div>
@@ -468,53 +431,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
 
 
 
-<div data-ice="staticMemberDetails"><h2 data-ice="title">Static Public Members</h2>
 
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-member-version">
-    <span class="access" data-ice="access">public</span>
-    <span data-ice="static">static</span>
-    
-    
-    
-    
-    <span class="code" data-ice="name">version</span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber16">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>The version of this module</p>
-</div>
-
-  
-
-  <div data-ice="properties">
-</div>
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-</div>
-</div>
 <div data-ice="staticMethodDetails"><h2 data-ice="title">Static Public Methods</h2>
 
 <div class="detail" data-ice="detail">
@@ -529,7 +446,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber60">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber53">source</a></span></span>
     </span>
   </h3>
 
@@ -613,7 +530,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber38">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber31">source</a></span></span>
     </span>
   </h3>
 
@@ -660,7 +577,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber28">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber21">source</a></span></span>
     </span>
   </h3>
 
@@ -704,7 +621,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber22">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber15">source</a></span></span>
     </span>
   </h3>
 
@@ -748,7 +665,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber34">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber27">source</a></span></span>
     </span>
   </h3>
 
@@ -795,7 +712,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber76">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber69">source</a></span></span>
     </span>
   </h3>
 
@@ -851,7 +768,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber70">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber63">source</a></span></span>
     </span>
   </h3>
 
@@ -908,7 +825,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber117">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber105">source</a></span></span>
     </span>
   </h3>
 
@@ -969,7 +886,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber128">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber116">source</a></span></span>
     </span>
   </h3>
 
@@ -1026,11 +943,11 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     
     
     
-    <span class="code" data-ice="name">on</span><span class="code" data-ice="signature">(pEvent: <span>Event[&apos;event&apos;]</span>, pCallback: <span>Event[&apos;callback&apos;]</span>): <span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html">GamepadManagerSingleton</a></span></span>
+    <span class="code" data-ice="name">on</span><span class="code" data-ice="signature">(pEvent: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, pCallback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html">GamepadManagerSingleton</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber91">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber79">source</a></span></span>
     </span>
   </h3>
 
@@ -1052,14 +969,14 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">pEvent</td>
-      <td data-ice="type" class="code"><span>Event[&apos;event&apos;]</span></td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The event to attach the callback to</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">pCallback</td>
-      <td data-ice="type" class="code"><span>Event[&apos;callback&apos;]</span></td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The function to be called when the event is triggered</p>
 </td>
@@ -1111,7 +1028,7 @@ Copyright (c) 2023 Evitca Studio</span></li></ul></div>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber138">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/gamepad.mjs.html#lineNumber126">source</a></span></span>
     </span>
   </h3>
 

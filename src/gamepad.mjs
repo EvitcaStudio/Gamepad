@@ -5,15 +5,8 @@
  * @author https://github.com/doubleactii
  * @todo Currently bluetooth gamepads when disconnecting (PS4 only) do no fire a disconnected event. Manually calling `this.gamepad.vibrationActuator.reset()` can force it to call a disconnect event, but 
  * this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. Find a fix. (This is a GamepadAPI issue/OS issue/not code wise issue)
- * Copyright (c) 2023 Evitca Studio
  */
 class GamepadManagerSingleton {
-	/**
-	 * The version of this module
-	 * 
-	 * @type {string}
-	 */
-	static version = '1.0.0';
 	/**
 	 * Object containing all connected controllers
 	 * 
@@ -77,15 +70,10 @@ class GamepadManagerSingleton {
 		return { ...this.controllers };
 	}
     /**
-     * @typedef {Object} Event
-     * @property {string} event - The event name
-     * @property {function} callback - The function to be called when the event is triggered
-     */
-    /**
      * Attaches a callback to the specified event.
 	 * 
-     * @param {Event['event']} pEvent - The event to attach the callback to
-     * @param {Event['callback']} pCallback - The function to be called when the event is triggered
+     * @param {Object} pEvent - The event to attach the callback to
+     * @param {Function} pCallback - The function to be called when the event is triggered
      * @return {GamepadManagerSingleton} The GamepadManagerSingleton instance
      */
 	on(pEvent, pCallback) {
@@ -333,6 +321,10 @@ class Controller {
 		previousAxesState: [],
 		initialAxesStickDrift: []
 	}
+	/**
+	 * The version of the module.
+	 */
+	version = "VERSION_REPLACE_ME";
 	/**
 	 * The left analogs position
 	 */

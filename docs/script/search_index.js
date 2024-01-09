@@ -462,6 +462,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/gamepad.mjs~controller#version",
+    "class/src/gamepad.mjs~Controller.html#instance-member-version",
+    "src/gamepad.mjs~Controller#version",
+    "member"
+  ],
+  [
     "src/gamepad.mjs~controller#vibrate",
     "class/src/gamepad.mjs~Controller.html#instance-method-vibrate",
     "src/gamepad.mjs~Controller#vibrate",
@@ -600,21 +606,9 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/gamepad.mjs~gamepadmanagersingleton.event",
-    "typedef/index.html#static-typedef-Event",
-    "src/gamepad.mjs~GamepadManagerSingleton.Event",
-    "typedef"
-  ],
-  [
     "src/gamepad.mjs~gamepadmanagersingleton.getangle",
     "class/src/gamepad.mjs~GamepadManagerSingleton.html#static-method-getAngle",
     "src/gamepad.mjs~GamepadManagerSingleton.getAngle",
     "method"
-  ],
-  [
-    "src/gamepad.mjs~gamepadmanagersingleton.version",
-    "class/src/gamepad.mjs~GamepadManagerSingleton.html#static-member-version",
-    "src/gamepad.mjs~GamepadManagerSingleton.version",
-    "member"
   ]
 ]
