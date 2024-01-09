@@ -409,10 +409,10 @@ class Controller {
 						this.axisHandlers[pEvent] = pCallback;
 						break;
 					default:
-						console.error(`The event &quot;${pEvent}&quot; is not supported.`);
+						GamepadManager.logger.prefix(&apos;Gamepad-Module&apos;).error(`The event &quot;${pEvent}&quot; is not supported.`);
 				}
 			} else {
-				console.error(`The callback for event &quot;${pEvent}&quot; is not a function.`);
+				GamepadManager.logger.prefix(&apos;Gamepad-Module&apos;).error(`The callback for event &quot;${pEvent}&quot; is not a function.`);
 			}
 		}
 		return this;
@@ -439,10 +439,10 @@ class Controller {
 						this.axisHandlers[pEvent] = null;
 						break;
 					default:
-						console.error(`The event &quot;${pEvent}&quot; is not supported.`);
+						GamepadManager.logger.prefix(&apos;Gamepad-Module&apos;).error(`The event &quot;${pEvent}&quot; is not supported.`);
 				}
 			} else {
-				console.error(`The callback for event &quot;${pEvent}&quot; is not a function.`);
+				GamepadManager.logger.prefix(&apos;Gamepad-Module&apos;).error(`The callback for event &quot;${pEvent}&quot; is not a function.`);
 			}
 		}
 		return this;

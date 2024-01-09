@@ -3,7 +3,7 @@
   "destination": "./docs",
   "includes": ["\\.js$", "\\.mjs$"],
   "index": "./README.md",
-  "excludes": [],
+  "excludes": ["logger.min.mjs"],
   "plugins": [
   {
     "name": "esdoc-standard-plugin",

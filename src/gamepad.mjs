@@ -1,5 +1,7 @@
 
-import { Controller } from './controller.mjs'
+import { Controller } from './controller.mjs';
+import { Logger } from './vendor/logger.min.mjs';
+
 /**
  * A gamepadmanager to help with games / handling input from a controller
  * @class GamepadManagerSingleton
@@ -35,6 +37,14 @@ class GamepadManagerSingleton {
 	 * Creates the instance and assigns event handlers to gamepad events
 	 */
 	constructor() {
+
+        /** The logger module this module uses to log errors / logs.
+         * @private
+         * @type {Object}
+         */
+        this.logger = new Logger();
+        this.logger.registerType('Gamepad-Module', '#ff6600');
+
 		// Bind this class instance to the event handlers
 		this.handleGamepadConnected = this.handleGamepadConnected.bind(this);
 		this.handleGamepadDisconnected = this.handleGamepadDisconnected.bind(this);
@@ -46,7 +56,7 @@ class GamepadManagerSingleton {
 			window.addEventListener('gamepaddisconnected', this.handleGamepadDisconnected);
 			requestAnimationFrame(this.pollGamepadState);
 		} else {
-			console.warn('Gamepad API not supported in this browser.');
+			this.logger.prefix('Gamepad-Module').warn('Gamepad API not supported in this browser.');
 		}
 	}
 	/**
@@ -95,10 +105,10 @@ class GamepadManagerSingleton {
 						break;
 
 					default:
-						console.error(`The event "${pEvent}" is not supported.`);
+						this.logger.prefix('Gamepad-Module').error(`The event "${pEvent}" is not supported.`);
 				}
 			} else {
-				console.error(`The callback for event "${pEvent}" is not a function.`);
+				this.logger.prefix('Gamepad-Module').error(`The callback for event "${pEvent}" is not a function.`);
 			}
 		}
 		return this;

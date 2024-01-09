@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/vendor/logger.min.mjs | Gamepad</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="A gamepadmanager to help with games / handling input from a controller."><meta property="og:type" content="website"><meta property="og:url" content="https://github.com/EvitcaStudio/Gamepad#readme"><meta property="og:site_name" content="Gamepad"><meta property="og:title" content="Gamepad"><meta property="og:image" content="./evitcastudio_round_branding.png"><meta property="og:description" content="A gamepadmanager to help with games / handling input from a controller."><meta property="og:author" content="https://github.com/doubleactii"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="Gamepad"><meta property="twitter:description" content="A gamepadmanager to help with games / handling input from a controller."><meta property="twitter:image" content="./evitcastudio_round_branding.png"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/EvitcaStudio/Gamepad"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/controller.mjs~Controller.html">Controller</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html">GamepadManagerSingleton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-GamepadManager">GamepadManager</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#vendor">vendor</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vendor/logger.min.mjs~e.html">e</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-i">i</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-t">t</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/vendor/logger.min.mjs</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * logger@1.0.0 https://github.com/EvitcaStudio/Logger
+ * Compiled 1/9/2024, 9:29:22 AM UTC
+ * 
+ * logger is licensed under a MIT styled License. See LICENSE.md for more info.
+ * 
+ * Copyright 2024, Evitca Studio, All Rights Reserved
+ */
+ var t={d:(s,e)=&gt;{for(var i in e)t.o(e,i)&amp;&amp;!t.o(s,i)&amp;&amp;Object.defineProperty(s,i,{enumerable:!0,get:e[i]})},o:(t,s)=&gt;Object.prototype.hasOwnProperty.call(t,s)},s={};t.d(s,{Y:()=&gt;e});class e{constructor(t){this.RESET=&quot;[0m&quot;,this.BRIGHT=&quot;[1m&quot;,this.DIM=&quot;[2m&quot;,this.UNDERSCORE=&quot;[4m&quot;,this.BLINK=&quot;[5m&quot;,this.REVERSE=&quot;[7m&quot;,this.HIDDEN=&quot;[8m&quot;,this.FG_BLACK=&quot;[30m&quot;,this.FG_RED=&quot;[31m&quot;,this.FG_GREEN=&quot;[32m&quot;,this.FG_YELLOW=&quot;[33m&quot;,this.FG_BLUE=&quot;[34m&quot;,this.FG_MAGENTA=&quot;[35m&quot;,this.FG_CYAN=&quot;[36m&quot;,this.FG_WHITE=&quot;[37m&quot;,this.FG_GRAY=&quot;[90m&quot;,this.BG_BLACK=&quot;[40m&quot;,this.BG_RED=&quot;[41m&quot;,this.BG_GREEN=&quot;[42m&quot;,this.BG_YELLOW=&quot;[43m&quot;,this.BG_BLUE=&quot;[44m&quot;,this.BG_MAGENTA=&quot;[45m&quot;,this.BG_CYAN=&quot;[46m&quot;,this.BG_WHITE=&quot;[47m&quot;,this.BG_GRAY=&quot;[100m&quot;,this.TYPE_SPACER_LENGTH=13,this.types={default:this.FG_WHITE},this.currentType=&quot;&quot;,this.SPACE_CHAR=&quot; &quot;,this.FG_COLORS={};for(let t=0;t&lt;=255;t++)this.FG_COLORS[t]=&quot;[38;5;&quot;+t+&quot;m&quot;;this.BG_COLORS={};for(let t=0;t&lt;=255;t++)this.BG_COLORS[t]=&quot;[48;5;&quot;+t+&quot;m&quot;;Array.isArray(t)&amp;&amp;this.registerTypes(t)}prefix(t){return&quot;string&quot;==typeof t&amp;&amp;(this.currentType=t),this}message(s=&quot;log&quot;,...e){var i=this.currentType||&quot;&quot;;if(0===i.length)console[s](...e);else{var r=i.length&gt;=this.TYPE_SPACER_LENGTH;let t=this.types[i.toLowerCase()]?this.types[i.toLowerCase()]:this.types.default;var h=t.includes(&quot;&quot;);h||(t=&quot;color: &quot;+t),!globalThis.window||h?console[s](t+i+this.SPACE_CHAR.repeat(Math.max(this.TYPE_SPACER_LENGTH-i.length,r?1:0))+&quot;|&quot;+this.RESET,...e):console[s](&quot;%c&quot;+i+this.SPACE_CHAR.repeat(Math.max(this.TYPE_SPACER_LENGTH-i.length,r?1:0))+&quot;|&quot;,t,...e)}this.currentType=&quot;&quot;}log(...t){this.message(&quot;log&quot;,...t)}info(...t){this.message(&quot;info&quot;,...t)}error(...t){this.message(&quot;error&quot;,...t)}warn(...t){this.message(&quot;warn&quot;,...t)}assert(...t){console.assert(...t)}debug(...t){this.message(&quot;debug&quot;,...t)}count(t){console.count(t)}countReset(t){console.countReset(t)}table(t,s){console.table(t,s)}time(t){this.message(&quot;time&quot;,t)}timeLog(t){this.message(&quot;timeLog&quot;,t)}timeEnd(t){this.message(&quot;timeEnd&quot;,t)}trace(...t){this.message(&quot;trace&quot;,...t)}group(t){this.message(&quot;group&quot;,t)}groupCollapsed(t){console.groupCollapsed(t)}groupEnd(){console.groupEnd()}clear(){console.clear()}registerType(t,s){this.types[t]||&quot;string&quot;==typeof t&amp;&amp;&quot;string&quot;==typeof s&amp;&amp;(this.types[t.toLowerCase()]=s)}registerTypes(s){if(Array.isArray(s))for(let t=0;t&lt;s.length;t++)this.registerType(s[t].type,s[t].ansi)}unregisterType(t){this.types[t]&amp;&amp;delete this.types[t]}}var i=s.Y;export{i as Logger};</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

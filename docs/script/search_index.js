@@ -594,6 +594,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/gamepad.mjs~gamepadmanagersingleton#logger",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-member-logger",
+    "src/gamepad.mjs~GamepadManagerSingleton#logger",
+    "member"
+  ],
+  [
     "src/gamepad.mjs~gamepadmanagersingleton#on",
     "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-on",
     "src/gamepad.mjs~GamepadManagerSingleton#on",
