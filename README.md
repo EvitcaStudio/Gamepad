@@ -6,15 +6,15 @@ GamepadManager is a Javascript library that provides an easy way to handle input
 ### ES Module
 
 ```js
-import { Pathway } from './pathway.mjs';
+import { GamepadManager } from './gamepad.mjs';
 ```
 
 ### IIFE (Immediately Invoked Function Expression)
 
 ```js
-<script src="pathway.js"></script>;
+<script src="gamepad.js"></script>;
 // ...
-window.PathwayBundle.Pathway;
+window.GamepadBundle.GamepadManager;
 ```
 
 # Features
@@ -78,4 +78,4 @@ Currently, Bluetooth gamepads when disconnecting (PS4 only) do not fire a discon
 
 ### Global Dependency
 
-GamepadManager relies on the `VYLO` variable being globally accessible.
+Gamepad relies on the `VYLO` variable being globally accessible.
