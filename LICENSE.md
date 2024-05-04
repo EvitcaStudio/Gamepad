@@ -1,6 +1,6 @@
-GamepadManager is free software, available under the terms of a MIT style License.
+MIT License
 
-Copyright (c) 2022 Evitca Studio
+Copyright (c) 2024 Evitca Studio
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@ furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
-This software cannot be sold by itself. It must be used in a project and the project itself can be sold. In the case it is not, you the "user" of this software are breaking the license and agreeing to forfeit its usage.
-
-Neither the name “EvitcaStudio” or "Gamepad" or "GamepadManager" nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

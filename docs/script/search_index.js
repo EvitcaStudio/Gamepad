@@ -6,15 +6,15 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "gamepad/src/gamepad.mjs~gamepadmanager",
+    "gamepad~gamepadmanager",
     "variable/index.html#static-variable-GamepadManager",
-    "<span>GamepadManager</span> <span class=\"search-result-import-path\">gamepad/src/gamepad.mjs</span>",
+    "<span>GamepadManager</span> <span class=\"search-result-import-path\">gamepad</span>",
     "variable"
   ],
   [
-    "gamepad/src/gamepad.mjs~gamepadmanagersingleton",
+    "gamepad~gamepadmanagersingleton",
     "class/src/gamepad.mjs~GamepadManagerSingleton.html",
-    "<span>GamepadManagerSingleton</span> <span class=\"search-result-import-path\">gamepad/src/gamepad.mjs</span>",
+    "<span>GamepadManagerSingleton</span> <span class=\"search-result-import-path\">gamepad</span>",
     "class"
   ],
   [

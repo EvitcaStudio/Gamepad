@@ -1,5 +1,21 @@
-# GamepadManager
+# GamepadManager Module
 GamepadManager is a Javascript library that provides an easy way to handle input from game controllers. It is designed to work with the Gamepad API, which is a browser API that provides access to gamepad devices. This library is useful for games and other applications that require input from a game controller.
+
+## Installation
+
+### ES Module
+
+```js
+import { Pathway } from './pathway.mjs';
+```
+
+### IIFE (Immediately Invoked Function Expression)
+
+```js
+<script src="pathway.js"></script>;
+// ...
+window.PathwayBundle.Pathway;
+```
 
 # Features
 Handles input from multiple game controllers simultaneously.
@@ -9,11 +25,6 @@ Includes event handlers for detecting when game controllers are connected or dis
 Supports remapping of controller buttons to match different controller layouts.
 
 # Usage
-You can create a new GamepadManager object like this:
-
-```js
-import { GamepadManager } from './gamepad.min.mjs';
-```
 
 The GamepadManager object provides several methods for accessing input from game controllers. For example, you can get the main controller like this:
 
@@ -64,3 +75,7 @@ GamepadManager was created by doubleactii.
 
 # TODO
 Currently, Bluetooth gamepads when disconnecting (PS4 only) do not fire a disconnected event. Manually calling this.gamepad.vibrationActuator.reset() can force it to call a disconnect event, but this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. A fix needs to be found. (This is a GamepadAPI issue/OS issue/not a code-wise issue)
+
+### Global Dependency
+
+GamepadManager relies on the `VYLO` variable being globally accessible.
