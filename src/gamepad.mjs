@@ -24,6 +24,16 @@ class GamepadManagerSingleton {
 	 */
 	connectHandler = {};
 	/**
+	 * Controllers connected before an event listener caught them.
+	 * @type {Set<Controller> | null}
+	 */
+	connectedControllers = null;
+	/**
+	 * Controllers connected before an event listener caught them.
+	 * @type {Set<Controller> | null}
+	 */
+	unassignedControllers = null;
+	/**
 	 * Object containing the callback for when a controller is disconnected
 	 * 
 	 * @type {Object}
@@ -44,6 +54,9 @@ class GamepadManagerSingleton {
          */
         this.logger = new Logger();
         this.logger.registerType('Gamepad-Module', '#ff6600');
+
+		this.connectedControllers = new Set();
+		this.unassignedControllers = new Set();
 
 		// Bind this class instance to the event handlers
 		this.handleGamepadConnected = this.handleGamepadConnected.bind(this);
@@ -98,6 +111,8 @@ class GamepadManagerSingleton {
 				switch (pEvent) {
 					case 'connect':
 						this.connectHandler[pEvent] = pCallback;
+						this.unassignedControllers.values().forEach(pController => this.connectHandler[pEvent](pController));
+						this.unassignedControllers.clear();
 						break;
 
 					case 'disconnect':
@@ -116,25 +131,38 @@ class GamepadManagerSingleton {
 	/**
 	 * Listener function for when a gamepad is connected
 	 * 
-	 * @param {pGamepadEvent} - A gamepad event
+	 * @param {pGamepadEvent} pGamepadEvent - A gamepad event
 	 */
 	handleGamepadConnected(pGamepadEvent) {
 		// Create a controller from the gamepad that was connected
 		// This controller only saves a snapshot of the data of when it was first created, but we update it based on new polled data
-		this.controllers[pGamepadEvent.gamepad.index] = new Controller(pGamepadEvent.gamepad);
-		if (typeof(this.connectHandler.connect) === 'function') this.connectHandler.connect(this.controllers[pGamepadEvent.gamepad.index]);
+		const controller = new Controller(pGamepadEvent.gamepad);
+
+		this.controllers[controller.index] = controller;
+		this.connectedControllers.add(controller);
+		
+		if (typeof(this.connectHandler.connect) === 'function') {
+			this.connectHandler.connect(controller);
+		} else {
+			this.unassignedControllers.add(controller);
+		}
 	}
 	/**
 	 * Listener function for when the gamepad is disconnected
 	 * 
-	 * @param {pGamepadEvent} - A gamepad event
+	 * @param {pGamepadEvent} pGamepadEvent - A gamepad event
 	 */
 	handleGamepadDisconnected(pGamepadEvent) {
 		// Delete the controller when it's disconnected
 		// Maybe add a option to save gamepad info for a short while, incase it disconnected due to battery? 
 		// When reconnected it can prompt an alert that says "restore configuration for gamepad". This will restore that configuration to the controller.
-		if (typeof(this.disconnectHandler.disconnect) === 'function') this.disconnectHandler.disconnect(this.controllers[pGamepadEvent.gamepad.index]);
-		delete this.controllers[pGamepadEvent.gamepad.index];
+		const index = pGamepadEvent.gamepad.index;
+		const controller = this.controllers[index];
+
+		if (typeof(this.disconnectHandler.disconnect) === 'function') this.disconnectHandler.disconnect(controller);
+
+		this.connectedControllers.delete(controller);
+		delete this.controllers[index];
 	}
 	/**
 	 * Get the latest game state of the connected gamepads (Chrome only saves snapshots of the state, we have to keep polling to get updated states)

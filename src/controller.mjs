@@ -211,6 +211,11 @@ class Controller {
 	 */
 	timestamp = 0;
 	/**
+	 * The index of the controller.
+	 * @type {number}
+	 */
+	index = 0;
+	/**
 	 * Creates a new controller instance and passes the gamepad it will be created with
 	 * 
 	 * @param {Gamepad} pGamepad - A gamepad object
@@ -218,6 +223,7 @@ class Controller {
 	constructor(pGamepad) {
 		this.gamepad = pGamepad;
 		this.timestamp = pGamepad.timestamp;
+		this.index = pGamepad.index;
 		this.type = Controller.GAMEPAD_IDS[this.gamepad.id] ? Controller.GAMEPAD_IDS[this.gamepad.id] : 'Generic';
 	}
 	/**
