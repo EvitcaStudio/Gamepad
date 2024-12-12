@@ -2,7 +2,7 @@ import babel from '@rollup/plugin-babel';
 import replace from 'rollup-plugin-replace';
 import terser from '@rollup/plugin-terser';
 import { cleandir } from 'rollup-plugin-cleandir';
-import packageJson from './package.json' assert { type: 'json' };
+import packageJson from './package.json' with { type: 'json' };
 
 const fileName = packageJson.name;
 
