@@ -450,6 +450,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/controller.mjs~controller#timestamp",
+    "class/src/controller.mjs~Controller.html#instance-member-timestamp",
+    "src/controller.mjs~Controller#timestamp",
+    "member"
+  ],
+  [
     "src/controller.mjs~controller#type",
     "class/src/controller.mjs~Controller.html#instance-member-type",
     "src/controller.mjs~Controller#type",

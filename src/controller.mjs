@@ -206,12 +206,18 @@ class Controller {
 	 */
 	axisHandlers = {};
 	/**
+	 * The timestamp of the gamepad.
+	 * @type {number}
+	 */
+	timestamp = 0;
+	/**
 	 * Creates a new controller instance and passes the gamepad it will be created with
 	 * 
 	 * @param {Gamepad} pGamepad - A gamepad object
 	 */
 	constructor(pGamepad) {
 		this.gamepad = pGamepad;
+		this.timestamp = pGamepad.timestamp;
 		this.type = Controller.GAMEPAD_IDS[this.gamepad.id] ? Controller.GAMEPAD_IDS[this.gamepad.id] : 'Generic';
 	}
 	/**
@@ -229,11 +235,12 @@ class Controller {
 	 * @param {Controller} - The gamepad controller instance
 	 */
 	updateState(pGamepad) {
-		const { buttons: newButtonState, axes: newAxesState } = pGamepad;
+		const { buttons: newButtonState, axes: newAxesState, timestamp } = pGamepad;
 
 		// Update the controllers info with the latest state (not the gamepad, as those are read only vars)
 		this.info.buttons = newButtonState;
 		this.info.axes = newAxesState;
+		this.timestamp = timestamp;
 
 		// Loop through buttons and check for button and axis changes
 		for (let i = 0; i < newButtonState.length; i++) {
