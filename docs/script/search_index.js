@@ -366,6 +366,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/controller.mjs~controller#index",
+    "class/src/controller.mjs~Controller.html#instance-member-index",
+    "src/controller.mjs~Controller#index",
+    "member"
+  ],
+  [
     "src/controller.mjs~controller#info",
     "class/src/controller.mjs~Controller.html#instance-member-info",
     "src/controller.mjs~Controller#info",
@@ -558,6 +564,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/gamepad.mjs~gamepadmanagersingleton#connectedcontrollers",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-member-connectedControllers",
+    "src/gamepad.mjs~GamepadManagerSingleton#connectedControllers",
+    "member"
+  ],
+  [
     "src/gamepad.mjs~gamepadmanagersingleton#constructor",
     "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-constructor-constructor",
     "src/gamepad.mjs~GamepadManagerSingleton#constructor",
@@ -616,6 +628,12 @@ window.esdocSearchIndex = [
     "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-method-pollGamepadState",
     "src/gamepad.mjs~GamepadManagerSingleton#pollGamepadState",
     "method"
+  ],
+  [
+    "src/gamepad.mjs~gamepadmanagersingleton#unassignedcontrollers",
+    "class/src/gamepad.mjs~GamepadManagerSingleton.html#instance-member-unassignedControllers",
+    "src/gamepad.mjs~GamepadManagerSingleton#unassignedControllers",
+    "member"
   ],
   [
     "src/gamepad.mjs~gamepadmanagersingleton#version",
