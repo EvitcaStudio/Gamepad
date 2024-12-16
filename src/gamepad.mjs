@@ -111,7 +111,7 @@ class GamepadManagerSingleton {
 				switch (pEvent) {
 					case 'connect':
 						this.connectHandler[pEvent] = pCallback;
-						this.unassignedControllers.values().forEach(pController => this.connectHandler[pEvent](pController));
+						this.unassignedControllers.forEach(pController => this.connectHandler[pEvent](pController));
 						this.unassignedControllers.clear();
 						break;
 
