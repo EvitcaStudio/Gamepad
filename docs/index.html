@@ -1,102 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <base data-ice="baseUrl">
-  <title data-ice="title">Home | Gamepad</title>
-  <link type="text/css" rel="stylesheet" href="css/style.css">
-  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
-  <script src="script/prettify/prettify.js"></script>
-  <script src="script/manual.js"></script>
-<meta name="description" content="A gamepadmanager to help with games / handling input from a controller."><meta property="og:type" content="website"><meta property="og:url" content="https://github.com/EvitcaStudio/Gamepad#readme"><meta property="og:site_name" content="Gamepad"><meta property="og:title" content="Gamepad"><meta property="og:image" content="./evitcastudio_round_branding.png"><meta property="og:description" content="A gamepadmanager to help with games / handling input from a controller."><meta property="og:author" content="https://github.com/doubleactii"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="Gamepad"><meta property="twitter:description" content="A gamepadmanager to help with games / handling input from a controller."><meta property="twitter:image" content="./evitcastudio_round_branding.png"></head>
-<body class="layout-container" data-ice="rootContainer">
-
-<header>
-  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
-  
-  <a href="identifiers.html">Reference</a>
-  <a href="source.html">Source</a>
-  
-  <div class="search-box">
-  <span>
-    <img src="./image/search.png">
-    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
-  </span>
-    <ul class="search-result"></ul>
-  </div>
-<a style="position:relative; top:3px;" href="https://github.com/EvitcaStudio/Gamepad"><img width="20px" src="./image/github.png"></a></header>
-
-<nav class="navigation" data-ice="nav"><div>
-  <ul>
-    
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/controller.mjs~Controller.html">Controller</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/gamepad.mjs~GamepadManagerSingleton.html">GamepadManagerSingleton</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-GamepadManager">GamepadManager</a></span></span></li>
-</ul>
-</div>
-</nav>
-
-<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="gamepadmanager-module">GamepadManager Module</h1><p>GamepadManager is a Javascript library that provides an easy way to handle input from game controllers. It is designed to work with the Gamepad API, which is a browser API that provides access to gamepad devices. This library is useful for games and other applications that require input from a game controller.</p>
-<h2 id="installation">Installation</h2><h3 id="es-module">ES Module</h3><pre><code class="lang-js"><code class="source-code prettyprint">import { GamepadManager } from &apos;./gamepad.mjs&apos;;</code>
-</code></pre>
-<h3 id="iife--immediately-invoked-function-expression-">IIFE (Immediately Invoked Function Expression)</h3><pre><code class="lang-js"><code class="source-code prettyprint">&lt;script src=&quot;gamepad.js&quot;&gt;&lt;/script&gt;;
-// ...
-window.GamepadBundle.GamepadManager;</code>
-</code></pre>
-<h1 id="features">Features</h1><p>Handles input from multiple game controllers simultaneously.
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Gamepad - v2.0.0</title><meta name="description" content="Documentation for Gamepad"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">Gamepad - v2.0.0</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h2>Gamepad - v2.0.0</h2></div><div class="tsd-panel tsd-typography"><a id="md:gamepadmanager-module" class="tsd-anchor"></a><h1><a href="#md:gamepadmanager-module">GamepadManager Module</a></h1><p>GamepadManager is a Javascript library that provides an easy way to handle input from game controllers. It is designed to work with the Gamepad API, which is a browser API that provides access to gamepad devices. This library is useful for games and other applications that require input from a game controller.</p>
+<a id="md:installation" class="tsd-anchor"></a><h2><a href="#md:installation">Installation</a></h2><a id="md:es-module" class="tsd-anchor"></a><h3><a href="#md:es-module">ES Module</a></h3><pre><code class="language-js"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">GamepadManager</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;./gamepad.mjs&#39;</span><span class="hl-1">;</span>
+</code><button>Copy</button></pre>
+<a id="md:iife-immediately-invoked-function-expression" class="tsd-anchor"></a><h3><a href="#md:iife-immediately-invoked-function-expression">IIFE (Immediately Invoked Function Expression)</a></h3><pre><code class="language-js"><span class="hl-4">&lt;</span><span class="hl-5">script</span><span class="hl-1"> </span><span class="hl-6">src</span><span class="hl-1">=</span><span class="hl-3">&quot;gamepad.js&quot;</span><span class="hl-4">&gt;&lt;/</span><span class="hl-5">script</span><span class="hl-4">&gt;</span><span class="hl-1">;</span><br/><span class="hl-7">// ...</span><br/><span class="hl-2">window</span><span class="hl-1">.</span><span class="hl-2">GamepadBundle</span><span class="hl-1">.</span><span class="hl-2">GamepadManager</span><span class="hl-1">;</span>
+</code><button>Copy</button></pre>
+<a id="md:features" class="tsd-anchor"></a><h1><a href="#md:features">Features</a></h1><p>Handles input from multiple game controllers simultaneously.
 Supports all types of game controllers supported by the Gamepad API, including Bluetooth controllers.
 Provides an easy-to-use API for accessing input from game controllers.
 Includes event handlers for detecting when game controllers are connected or disconnected.
 Supports remapping of controller buttons to match different controller layouts.</p>
-<h1 id="usage">Usage</h1><p>The GamepadManager object provides several methods for accessing input from game controllers. For example, you can get the main controller like this:</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">var controller = GamepadManager.getMainController();</code>
-</code></pre>
+<a id="md:usage" class="tsd-anchor"></a><h1><a href="#md:usage">Usage</a></h1><p>The GamepadManager object provides several methods for accessing input from game controllers. For example, you can get the main controller like this:</p>
+<pre><code class="language-js"><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-2">controller</span><span class="hl-1"> = </span><span class="hl-2">GamepadManager</span><span class="hl-1">.</span><span class="hl-9">getMainController</span><span class="hl-1">();</span>
+</code><button>Copy</button></pre>
 <p>You can also get a list of all connected controllers like this:</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">var controllers = GamepadManager.getControllers();</code>
-</code></pre>
+<pre><code class="language-js"><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-2">controllers</span><span class="hl-1"> = </span><span class="hl-2">GamepadManager</span><span class="hl-1">.</span><span class="hl-9">getControllers</span><span class="hl-1">();</span>
+</code><button>Copy</button></pre>
 <p>The GamepadManager object also includes event handlers for detecting when game controllers are connected or disconnected. For example, to handle the &quot;connect&quot; event, you can use the following code:</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">GamepadManager.on(&apos;connect&apos;, function(pController) {
-    // Do something when a controller is connected.
-    pController.on(&apos;press&apos;, (pButtonName, pValue, pRepeat) =&gt; {
-        // Do something when a controller presses a button
-    }).on(&apos;release&apos;, (pButtonName, pValue) =&gt; {
-        // Do something when a controller releases a button
-    }).on(&apos;axis&apos;, (pAxisName, pValue, pAngle, pRepeat) =&gt; {
-        // Do something when a controller moves its analogs
-    }).on(&apos;grab&apos;, (pAnalogName) =&gt; {
-        // Do something when an analog is touched or moved from the &quot;drop off zone&quot; (center position)
-    }).on(&apos;drop&apos;, (pAnalogName) =&gt; {
-        // Do something when an analog is not being touched anymore or has been moved to the &quot;drop off zone&quot; (center position)
-    });
-
-    pController.vibrate(&apos;dual-rumble&apos;, 0, 1000, 1, 1); // Vibrate the controller with customizable settings
-    pController.isLeftAnalogHeld(); // Returns a boolean
-    pController.isRightAnalogHeld(); // Returns a boolean
-    pController.isButtonPressed(&apos;A&apos;); // Returns a boolean
-    pController.getType(); // Returns the type this controller is. PC / PS / Xbox/ Android
-});
-
-GamepadManager.on(&apos;disconnect&apos;, function(pController) {
-    // Do something when a controller is disconnected.
-});</code>
-</code></pre>
-<h1 id="license">License</h1><p>GamepadManager is free software, available under the terms of a MIT style License.</p>
-<h1 id="author">Author</h1><p>GamepadManager was created by doubleactii.</p>
-<h1 id="-a-href--https---evitcastudio-github-io-gamepad---docs--a-"><a href="https://evitcastudio.github.io/Gamepad/">Docs</a></h1><h1 id="todo">TODO</h1><p>Currently, Bluetooth gamepads when disconnecting (PS4 only) do not fire a disconnected event. Manually calling this.gamepad.vibrationActuator.reset() can force it to call a disconnect event, but this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. A fix needs to be found. (This is a GamepadAPI issue/OS issue/not a code-wise issue)</p>
-<h3 id="global-dependency">Global Dependency</h3><p>Gamepad relies on the <code>VYLO</code> variable being globally accessible.</p>
-</div>
-</div>
-
-<footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
-</footer>
-
-<script src="script/search_index.js"></script>
-<script src="script/search.js"></script>
-<script src="script/pretty-print.js"></script>
-<script src="script/inherited-summary.js"></script>
-<script src="script/test-summary.js"></script>
-<script src="script/inner-link.js"></script>
-<script src="script/patch-for-local.js"></script>
-</body>
-</html>
+<pre><code class="language-js"><span class="hl-2">GamepadManager</span><span class="hl-1">.</span><span class="hl-9">on</span><span class="hl-1">(</span><span class="hl-3">&#39;connect&#39;</span><span class="hl-1">, </span><span class="hl-8">function</span><span class="hl-1">(</span><span class="hl-2">pController</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-7">// Do something when a controller is connected.</span><br/><span class="hl-1">    </span><span class="hl-2">pController</span><span class="hl-1">.</span><span class="hl-9">on</span><span class="hl-1">(</span><span class="hl-3">&#39;press&#39;</span><span class="hl-1">, (</span><span class="hl-2">pButtonName</span><span class="hl-1">, </span><span class="hl-2">pValue</span><span class="hl-1">, </span><span class="hl-2">pRepeat</span><span class="hl-1">) </span><span class="hl-8">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">// Do something when a controller presses a button</span><br/><span class="hl-1">    }).</span><span class="hl-9">on</span><span class="hl-1">(</span><span class="hl-3">&#39;release&#39;</span><span class="hl-1">, (</span><span class="hl-2">pButtonName</span><span class="hl-1">, </span><span class="hl-2">pValue</span><span class="hl-1">) </span><span class="hl-8">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">// Do something when a controller releases a button</span><br/><span class="hl-1">    }).</span><span class="hl-9">on</span><span class="hl-1">(</span><span class="hl-3">&#39;axis&#39;</span><span class="hl-1">, (</span><span class="hl-2">pAxisName</span><span class="hl-1">, </span><span class="hl-2">pValue</span><span class="hl-1">, </span><span class="hl-2">pAngle</span><span class="hl-1">, </span><span class="hl-2">pRepeat</span><span class="hl-1">) </span><span class="hl-8">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">// Do something when a controller moves its analogs</span><br/><span class="hl-1">    }).</span><span class="hl-9">on</span><span class="hl-1">(</span><span class="hl-3">&#39;grab&#39;</span><span class="hl-1">, (</span><span class="hl-2">pAnalogName</span><span class="hl-1">) </span><span class="hl-8">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">// Do something when an analog is touched or moved from the &quot;drop off zone&quot; (center position)</span><br/><span class="hl-1">    }).</span><span class="hl-9">on</span><span class="hl-1">(</span><span class="hl-3">&#39;drop&#39;</span><span class="hl-1">, (</span><span class="hl-2">pAnalogName</span><span class="hl-1">) </span><span class="hl-8">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">// Do something when an analog is not being touched anymore or has been moved to the &quot;drop off zone&quot; (center position)</span><br/><span class="hl-1">    });</span><br/><br/><span class="hl-1">    </span><span class="hl-2">pController</span><span class="hl-1">.</span><span class="hl-9">vibrate</span><span class="hl-1">(</span><span class="hl-3">&#39;dual-rumble&#39;</span><span class="hl-1">, </span><span class="hl-10">0</span><span class="hl-1">, </span><span class="hl-10">1000</span><span class="hl-1">, </span><span class="hl-10">1</span><span class="hl-1">, </span><span class="hl-10">1</span><span class="hl-1">); </span><span class="hl-7">// Vibrate the controller with customizable settings</span><br/><span class="hl-1">    </span><span class="hl-2">pController</span><span class="hl-1">.</span><span class="hl-9">isLeftAnalogHeld</span><span class="hl-1">(); </span><span class="hl-7">// Returns a boolean</span><br/><span class="hl-1">    </span><span class="hl-2">pController</span><span class="hl-1">.</span><span class="hl-9">isRightAnalogHeld</span><span class="hl-1">(); </span><span class="hl-7">// Returns a boolean</span><br/><span class="hl-1">    </span><span class="hl-2">pController</span><span class="hl-1">.</span><span class="hl-9">isButtonPressed</span><span class="hl-1">(</span><span class="hl-3">&#39;A&#39;</span><span class="hl-1">); </span><span class="hl-7">// Returns a boolean</span><br/><span class="hl-1">    </span><span class="hl-2">pController</span><span class="hl-1">.</span><span class="hl-9">getType</span><span class="hl-1">(); </span><span class="hl-7">// Returns the type this controller is. PC / PS / Xbox/ Android</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-2">GamepadManager</span><span class="hl-1">.</span><span class="hl-9">on</span><span class="hl-1">(</span><span class="hl-3">&#39;disconnect&#39;</span><span class="hl-1">, </span><span class="hl-8">function</span><span class="hl-1">(</span><span class="hl-2">pController</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-7">// Do something when a controller is disconnected.</span><br/><span class="hl-1">});</span>
+</code><button>Copy</button></pre>
+<a id="md:license" class="tsd-anchor"></a><h1><a href="#md:license">License</a></h1><p>GamepadManager is free software, available under the terms of a MIT style License.</p>
+<a id="md:author" class="tsd-anchor"></a><h1><a href="#md:author">Author</a></h1><p>GamepadManager was created by doubleactii.</p>
+<a id="md:docs" class="tsd-anchor"></a><h1><a href="#md:docs"><a href="https://evitcastudio.github.io/Gamepad/">Docs</a></a></h1><a id="md:todo" class="tsd-anchor"></a><h1><a href="#md:todo">TODO</a></h1><p>Currently, Bluetooth gamepads when disconnecting (PS4 only) do not fire a disconnected event. Manually calling this.gamepad.vibrationActuator.reset() can force it to call a disconnect event, but this is a messy way of checking each tick to see if the gamepad is still connected. It also will cancel ongoing vibrations. A fix needs to be found. (This is a GamepadAPI issue/OS issue/not a code-wise issue)</p>
+<a id="md:global-dependency" class="tsd-anchor"></a><h3><a href="#md:global-dependency">Global Dependency</a></h3><p>Gamepad relies on the <code>VYLO</code> variable being globally accessible.</p>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-index-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><h4 class="uppercase">Member Visibility</h4><form><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></form></div><div class="tsd-theme-toggle"><h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:gamepadmanager-module"><span>Gamepad<wbr/>Manager <wbr/>Module</span></a><ul><li><a href="#md:installation"><span>Installation</span></a></li><li><ul><li><a href="#md:es-module"><span>ES <wbr/>Module</span></a></li><li><a href="#md:iife-immediately-invoked-function-expression"><span>IIFE (<wbr/>Immediately <wbr/>Invoked <wbr/>Function <wbr/>Expression)</span></a></li></ul></li></ul><a href="#md:features"><span>Features</span></a><a href="#md:usage"><span>Usage</span></a><a href="#md:license"><span>License</span></a><a href="#md:author"><span>Author</span></a><a href="#md:docs"><span>Docs</span></a><a href="#md:todo"><span>TODO</span></a><ul><li><a href="#md:global-dependency"><span>Global <wbr/>Dependency</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="assets/icons.svg#icon-1"></use></svg><span>Gamepad - v2.0.0</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="."><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
