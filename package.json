@@ -1,6 +1,6 @@
 {
   "name": "gamepad",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "A gamepadmanager to help with games / handling input from a controller",
   "main": "dist/gamepad.js",
   "types": "dist/gamepad.d.ts",
@@ -9,7 +9,7 @@
     "docs/**/*"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && npx http-server -p 3000 -o",
     "build": "bun run bun-build.ts && npx tsc --declaration --emitDeclarationOnly --declarationMap false --sourceMap false",
     "build:docs": "npx typedoc",
     "build:dist": "bun run build && bun run build:docs"
@@ -29,6 +29,7 @@
     "bun": "^1.2.22",
     "bun-types": "latest",
     "chalk": "^4.1.2",
+    "http-server": "^14.1.1",
     "typedoc": "^0.25.0",
     "typescript": "^5.0.0"
   }

@@ -1,5 +1,77 @@
 import { GamepadManager } from './gamepad';
 
+/**
+ * Type definitions for the Gamepad Controller
+ */
+
+// Point/Position types
+export type Point2D = { x: number; y: number };
+
+// Analog stick position with metadata
+export type AnalogPosition = { x: number; y: number; magnitude: number; angle: number };
+
+// Button state with pressed status and value
+export type ButtonState = { pressed: boolean; value: number };
+
+// Button action types for the global button event
+/**
+ * Button action types for the global 'button' event
+ * 
+ * @typedef {Object} ButtonAction
+ * @property {'pressed'} pressed - Button was just pressed (transition from not pressed to pressed)
+ * @property {'held'} held - Button is being held down (continuous while pressed)
+ * @property {'released'} released - Button was just released (transition from pressed to not pressed)
+ */
+export type ButtonAction = 'pressed' | 'held' | 'released';
+
+// Button states map
+export type ButtonStates = { [buttonName: string]: ButtonState };
+
+// Analog states with left and right sticks
+export type AnalogStates = {
+	leftStick: AnalogPosition;
+	rightStick: AnalogPosition;
+};
+
+// Complete controller state
+export type ControllerState = {
+	type: string;
+	index: number;
+	buttons: ButtonStates;
+	analogs: AnalogStates;
+	deadZones: {
+		leftAnalog: number;
+		rightAnalog: number;
+	};
+};
+
+// Vibration pattern step
+export type VibrationStep = {
+	delay: number;
+	duration: number;
+	weak: number;
+	strong: number;
+};
+
+// Vibration preset configuration
+export type VibrationPreset = {
+	duration: number;
+	weak: number;
+	strong: number;
+};
+
+// Event listener options
+export type EventListenerOptions = {
+	once?: boolean;
+	priority?: number;
+};
+
+// Handler function types
+export type ButtonPressHandler = (buttonName: string, value: number, repeat: boolean) => void;
+export type ButtonReleaseHandler = (buttonName: string, value: number) => void;
+export type AnalogHandler = (analog: string) => void;
+export type AxisHandler = (axisName: string, value: number, angle: number, repeat: boolean) => void;
+
 class Controller {
 	/**
 	 * Configuration of which buttons / analogs map to which indexes
@@ -21,7 +93,7 @@ class Controller {
 	/**
 	 * The base analogs position when it is not in use
 	 */
-	static baseAnalogPos: { x: number; y: number } = { x: 0, y: 0 };
+	static baseAnalogPos: Point2D = { x: 0, y: 0 };
 	/**
 	 * Analog thumb sticks
 	 */
@@ -41,17 +113,35 @@ class Controller {
 		return reversedMap;
 	})()
 	/**
-	 * The range at which axis changes are detected
+	 * User-configurable dead zone threshold (0.0 - 1.0)
+	 * Default is 0.0 (no dead zone) following industry standards.
+	 * Developers should configure this based on their application needs.
+	 * Typical pValues: 0.0 (none), 0.15 (light), 0.25 (medium)
 	 */
-	static AXIS_UPDATE_RANGE: number = 0.0; // 0.2
+	deadZone: number = 0.0;
 	/**
-	 * The range at which the analog is considered to be dropped -0.09 - 0.09
+	 * Separate dead zones for left and right analog sticks
 	 */
-	static ANALOG_RELEASE_RANGE: number = 0.09;
+	leftAnalogDeadZone: number = 0.0;
+	rightAnalogDeadZone: number = 0.0;
 	/**
-	 * The value at which holding a trigger (LT OR RT) will consider it being pressed
+	 * Stick drift compensation pValues per axis
+	 */
+	stickDriftCompensation: { [pAxisIndex: number]: number } = {};
+	/**
+	 * The pValue at which holding a trigger (LT OR RT) will consider it being pressed
 	 */
 	static TRIGGER_PRESSED_VALUE: number = 0.12;
+	/**
+	 * Vibration presets for common haptic effects
+	 */
+	static VIBRATION_PRESETS: { [key: string]: VibrationPreset } = {
+		'light-tap': { duration: 50, weak: 0.3, strong: 0.3 },
+		'medium-rumble': { duration: 200, weak: 0.6, strong: 0.6 },
+		'heavy-shake': { duration: 400, weak: 1.0, strong: 1.0 },
+		'notification': { duration: 100, weak: 0.5, strong: 0.2 },
+		'damage': { duration: 150, weak: 0.8, strong: 1.0 },
+	};
 	/**
 	 * Value to indicate a pressed button
 	 */
@@ -136,24 +226,14 @@ class Controller {
 		'146B-0601-PC Gamepad': 'PC'
 	};
 	/**
-	 * Object full of the currently held down buttons
-	 */
-	pressed: { [key: string]: boolean } = (() => {
-		const buttonMap: { [key: string]: boolean } = {};
-		for (const key in Controller.BUTTONS_MAP) {
-			buttonMap[key] = false;
-		}
-		return buttonMap;
-	})()
-	/**
 	 * Info about the controller
 	 */
 	info: {
 		axes: readonly number[] | null;
 		buttons: readonly GamepadButton[] | null;
 		previousButtonState: boolean[];
-		previousAxesState: (number | undefined)[];
-		initialAxesStickDrift: (number | undefined)[];
+		previousAxesState: number[];
+		initialAxesStickDrift: number[];
 	} = {
 		axes: null,
 		buttons: null,
@@ -162,25 +242,9 @@ class Controller {
 		initialAxesStickDrift: []
 	}
 	/**
-	 * The left analogs position
+	 * Map of event listeners for multiple listeners per event
 	 */
-	leftAnalogPos: { x: number; y: number } = { x: 0, y: 0 };
-	/**
-	 * The right analogs position
-	 */
-	rightAnalogPos: { x: number; y: number } = { x: 0, y: 0 };
-	/**
-	 * Object of stored callback that will call when a button is pressed
-	 */
-	pressHandlers: { [key: string]: ((buttonName: string, value: number, repeat: boolean) => void) | null } = {};
-	/**
-	 * Object of stored callback that will call when a button is released
-	 */
-	releaseHandlers: { [key: string]: ((buttonName: string, value: number) => void) | null } = {};
-	/**
-	 * Object of stored callbacks that will call when the axis is changed
-	 */
-	axisHandlers: { [key: string]: ((analog: string) => void) | ((axisName: string, value: number, angle: number, repeat: boolean) => void) | null } = {};
+	private eventListeners: Map<string, Function[]> = new Map();
 	/**
 	 * The timestamp of the gamepad.
 	 */
@@ -207,7 +271,7 @@ class Controller {
 		this.gamepad = pGamepad;
 		this.timestamp = pGamepad.timestamp;
 		this.index = pGamepad.index;
-		this.type = Controller.GAMEPAD_IDS[this.gamepad.id] ? Controller.GAMEPAD_IDS[this.gamepad.id] : 'Generic';
+		this.type = this.detectControllerType();
 	}
 	/**
 	 * Returns the type the controller is. PC / PS / Xbox / Android
@@ -218,126 +282,348 @@ class Controller {
 		return this.type;
 	}
 	/**
+	 * Applies circular dead zone filtering with proper scaling to an analog stick
+	 * 
+	 * @param pX - Raw X axis pValue (-1 to 1)
+	 * @param pY - Raw Y axis pValue (-1 to 1)
+	 * @param pDeadZone - Dead zone threshold (0.0 - 1.0)
+	 * @returns Object with filtered x, y pValues and magnitude
+	 */
+	applyCircularDeadZone(pX: number, pY: number, pDeadZone: number): AnalogPosition {
+		// Calculate magnitude from center
+		const magnitude = Math.sqrt(pX * pX + pY * pY);
+		
+		// If within dead zone, return zero
+		if (magnitude < pDeadZone) {
+			return { x: 0, y: 0, magnitude: 0, angle: 0 };
+		}
+		
+		// Scale the input to maintain full range after dead zone
+		const scaledMagnitude = (magnitude - pDeadZone) / (1 - pDeadZone);
+		
+		// Normalize and scale
+		const normalizedX = pX / magnitude;
+		const normalizedY = pY / magnitude;
+		
+		const scaledX = normalizedX * scaledMagnitude;
+		const scaledY = normalizedY * scaledMagnitude;
+		
+		// Calculate angle
+		const angle = Math.atan2(scaledY, scaledX);
+		
+		return {
+			x: scaledX,
+			y: scaledY,
+			magnitude: scaledMagnitude,
+			angle: angle
+		};
+	}
+	/**
+	 * Applies dead zone filtering to an axis pValue (legacy method for individual axes)
+	 * 
+	 * @param pValue - Raw axis pValue (-1 to 1)
+	 * @param pAxisIndex - Index of the axis
+	 * @returns Filtered pValue (0 if within dead zone, otherwise compensated pValue)
+	 */
+	applyDeadZone(pValue: number, pAxisIndex: number): number {
+		// Store initial stick drift if not set
+		if (this.info.initialAxesStickDrift[pAxisIndex] === undefined) {
+			this.info.initialAxesStickDrift[pAxisIndex] = pValue;
+		}
+		
+		// Apply stick drift compensation
+		const compensatedValue = pValue - this.info.initialAxesStickDrift[pAxisIndex];
+		
+		// Apply dead zone threshold
+		if (Math.abs(compensatedValue) < this.deadZone) {
+			return 0;
+		}
+		
+		// Scale the pValue to maintain full range after dead zone
+		const sign = Math.sign(compensatedValue);
+		const scaledValue = (Math.abs(compensatedValue) - this.deadZone) / (1 - this.deadZone);
+		return Math.max(-1, Math.min(1, sign * scaledValue));
+	}
+	/**
+	 * Gets the current left analog stick position with metadata
+	 * 
+	 * @returns Object containing x, y, magnitude, and angle
+	 */
+	getLeftAnalogPosition(): AnalogPosition {
+		// Return cached reactive state (no calculations needed)
+		return this.currentAnalogStates.leftStick;
+	}
+	/**
+	 * Gets the current right analog stick position with metadata
+	 * 
+	 * @returns Object containing x, y, magnitude, and angle
+	 */
+	getRightAnalogPosition(): AnalogPosition {
+		// Return cached reactive state (no calculations needed)
+		return this.currentAnalogStates.rightStick;
+	}
+	/**
+	 * Gets the angle between two points
+	 * 
+	 * @param pStartPoint - The starting point
+	 * @param pEndPoint - The ending point
+	 * @returns The angle between the starting point and the ending point
+	 */
+	private getAngle(pStartPoint: Point2D, pEndPoint: Point2D): number {
+		const y = pStartPoint.y - pEndPoint.y;
+		const x = pStartPoint.x - pEndPoint.x;
+		return -Math.atan2(y, x) - Math.PI;
+	}
+	/**
 	 * Update the state of this controller with the latest polled information
 	 * 
 	 * @param pGamepad - The gamepad with the new updated state
 	 */
 	updateState(pGamepad: Gamepad): void {
-		const { buttons: newButtonState, axes: newAxesState, timestamp } = pGamepad;
+		const { buttons: pNewButtonState, axes: pNewAxesState, timestamp: pTimestamp } = pGamepad;
 
-		// Update the controllers info with the latest state (not the gamepad, as those are read only vars)
-		this.info.buttons = newButtonState;
-		this.info.axes = newAxesState;
-		this.timestamp = timestamp;
+		// Update the controllers info with the latest state
+		this.info.buttons = pNewButtonState;
+		this.info.axes = pNewAxesState;
+		this.timestamp = pTimestamp;
 
-		// Loop through buttons and check for button and axis changes
-		for (let i = 0; i < newButtonState.length; i++) {
-			// Get the button data
-			const buttonStillHeld = (newButtonState[i].pressed && this.info.previousButtonState[i]);
-			const buttonValue = newButtonState[i].value;
-			this.handleButtonInput(i, buttonValue, buttonStillHeld, newButtonState[i].pressed);
-			this.info.previousButtonState[i] = newButtonState[i].pressed;
-		}
+		// Update button states reactively
+		this.updateButtonStates(pNewButtonState);
+		
+		// Update analog states reactively
+		this.updateAnalogStates(pNewAxesState);
+	}
 
-		// Loop through the axis and check for changes
-		/**
-		 * Changes will almost always occur, so to prevent this spammy behavior we check in ranges. This range can be tweaked 0.0 is default
-		 */
-		/**
-		 * @todo Stop using a for loop and check the axis manually, it is only 4. Two for left, and two for right, no loop is needed and will allow less events to be called due to it manually being checked than looped 4 times when their is 
-		 * really only two axis. 2x the events are being checked for and called.
-		 */
-		for (let i = 0; i < newAxesState.length; i++) {
-			// Check and see if the axis value changed significantly, we can tweak this value or maybe set it to a user defined value?
-			// We also check if this value is set, if not we allow it to be set with the current data
-			// The current axis
-			let currentAxis = newAxesState[i];
-			// IF the analog crosses this range, then it has been "dropped".
-			if (currentAxis >= -Controller.ANALOG_RELEASE_RANGE && currentAxis <= Controller.ANALOG_RELEASE_RANGE && (currentAxis === this.info.previousAxesState[i]) && (currentAxis !== 0 && currentAxis !== -0)) {
-				this.info.previousAxesState[i] = undefined;
-				this.info.initialAxesStickDrift[i] = undefined;
-
-				switch (Controller.AXES_REVERSED_MAP[i]) {
-					case 'LEFT_X':
-					case 'LEFT_Y':
-						if (this.leftAnalogHeld) {
-							this.leftAnalogHeld = false;
-							this.handleDropAnalog('LEFT');
-						}
-						break;
-
-					case 'RIGHT_X':
-					case 'RIGHT_Y':
-						if (this.rightAnalogHeld) {
-							this.rightAnalogHeld = false;
-							this.handleDropAnalog('RIGHT');
-						}
-						break;
-				}
-			}
-			// Check if this axis has been held for more than one tick. And only if the axis is not 0. An axis of 0 means the analog is not being moved at all.
-			const axisStillHeld = (this.info.initialAxesStickDrift[i] !== currentAxis) && (currentAxis === this.info.previousAxesState[i]) && (currentAxis !== 0 && currentAxis !== -0);
-			const hasPreviousState = this.info.previousAxesState[i] !== undefined;
-			// Can only calculate this if there was a previousAxesState
-			let axisUpdateRangeMet = false;
-			// If the axis is different then the initial stick drift of the analog
-			const axisDifferentFromInitialStickDrift = (this.info.initialAxesStickDrift[i] !== undefined) && currentAxis !== this.info.initialAxesStickDrift[i];
-			// If there is a previous state then we calculate if the range the analog has moved is enough to consider it an update
-			if (hasPreviousState) {
-				axisUpdateRangeMet = Math.abs(currentAxis - this.info.previousAxesState[i]!) >= Controller.AXIS_UPDATE_RANGE;
-			// If there is no previous state then this must mean the user has never touched the analog and we need to store the initial "stick drift" of this analog to check against in the future ticks to prevent non user axis changes from being called.
-			} else {
-				// In the event the analog had no previous state but the new axis is different then the stored initial stick drift then the analog has been moved
-				if (axisDifferentFromInitialStickDrift) {
-					axisUpdateRangeMet = Math.abs(currentAxis - this.info.initialAxesStickDrift[i]!) >= Controller.AXIS_UPDATE_RANGE;
-				// Otherwise store the initial axis stick drift
+	/**
+	 * Updates button states reactively (Optimized - no object churn)
+	 */
+	private updateButtonStates(pButtons: readonly GamepadButton[]): void {
+		Object.keys(Controller.BUTTONS_MAP).forEach(buttonName => {
+			const buttonIndex = Controller.BUTTONS_MAP[buttonName];
+			const button = pButtons[buttonIndex];
+			
+			if (button) {
+				let actualButtonName = buttonName;
+				let isPressed = false;
+				let value = button.value;
+				
+				// Handle PlayStation button remapping
+				if (this.type === 'PS' && ['A', 'B', 'X', 'Y'].includes(buttonName)) {
+					if (buttonName === 'A') actualButtonName = 'CROSS';
+					else if (buttonName === 'B') actualButtonName = 'CIRCLE';
+					else if (buttonName === 'X') actualButtonName = 'SQUARE';
+					else if (buttonName === 'Y') actualButtonName = 'TRIANGLE';
+					
+					isPressed = button.pressed;
 				} else {
-					this.info.initialAxesStickDrift[i] = currentAxis;
+					try {
+						isPressed = button.pressed;
+					} catch (e) {
+						isPressed = false;
+					}
+				}
+				
+				// Handle triggers as analog axes
+				if (buttonName === 'LT' || buttonName === 'RT') {
+					const triggerAxisIndex = buttonName === 'LT' ? 4 : 5;
+					if (this.info.axes?.[triggerAxisIndex] !== undefined) {
+						value = Math.abs(this.info.axes[triggerAxisIndex]);
+						isPressed = value > 0.1;
+					}
+				}
+				
+				// Get or create cached state (reuse existing object)
+				let currentState = this.currentButtonStates.get(buttonName);
+				if (!currentState) {
+					currentState = { pressed: false, value: 0 };
+					this.currentButtonStates.set(buttonName, currentState);
+				}
+				
+				// Only fire events if state changed (update in place to avoid object churn)
+				if (currentState.pressed !== isPressed || Math.abs(currentState.value - value) > 0.01) {
+					const wasPressed = currentState.pressed;
+					currentState.pressed = isPressed;
+					currentState.value = value;
+					
+					// Fire appropriate events
+					if (isPressed && !wasPressed) {
+						this.fireEvent('buttondown', buttonName, value);
+					} else if (!isPressed && wasPressed) {
+						this.fireEvent('buttonup', buttonName, value);
+					}
+					this.fireEvent('buttonpress', buttonName, value, wasPressed);
+					
+					// Fire global button event for all button changes
+					let action: ButtonAction;
+					if (isPressed && !wasPressed) {
+						action = 'pressed';
+					} else if (!isPressed && wasPressed) {
+						action = 'released';
+					} else {
+						action = 'held';
+					}
+					this.fireEvent('button', buttonName, value, action);
+				} else {
+					// Update the cached state even if no events are fired
+					currentState.pressed = isPressed;
+					currentState.value = value;
 				}
 			}
+		});
+	}
 
-			// If the axis is not the same as the initial stick drift then it means the user has touched the analog
-			if (axisDifferentFromInitialStickDrift) {
-				/**
-				 * @todo Simplify into a function call because this code is repeated.
-				 */
-				axisUpdateRangeMet = Math.abs(currentAxis - this.info.initialAxesStickDrift[i]!) >= Controller.AXIS_UPDATE_RANGE;
+	/**
+	 * Updates analog states reactively (Optimized - no object churn)
+	 */
+	private updateAnalogStates(pAxes: readonly number[]): void {
+		// Update left analog stick (reuse existing object)
+		const leftRawX = pAxes[Controller.AXES.LEFT_X] || 0;
+		const leftRawY = pAxes[Controller.AXES.LEFT_Y] || 0;
+		const leftFiltered = this.applyCircularDeadZone(leftRawX, leftRawY, this.leftAnalogDeadZone);
+		const leftAngle = this.getAngle(Controller.baseAnalogPos, { x: leftFiltered.x, y: leftFiltered.y });
+		
+		// Detect left analog grab/drop
+		const leftMagnitude = leftFiltered.magnitude;
+		const wasLeftHeld = this.leftAnalogHeld;
+		const isLeftHeld = leftMagnitude > 0.1; // Threshold for "held"
+		
+		if (isLeftHeld !== wasLeftHeld) {
+			this.leftAnalogHeld = isLeftHeld;
+			if (isLeftHeld) {
+				this.fireEvent('grab', 'LEFT');
+			} else {
+				this.fireEvent('drop', 'LEFT');
 			}
-
-			// If there is user input then handle events
-			if (axisStillHeld || axisUpdateRangeMet) {
-				switch (Controller.AXES_REVERSED_MAP[i]) {
-					case 'LEFT_X':
-					case 'LEFT_Y':
-						if (!this.leftAnalogHeld && !hasPreviousState) {
-							this.leftAnalogHeld = true;
-							this.handleGrabAnalog('LEFT');
-						}
-						break;
-
-					case 'RIGHT_X':
-					case 'RIGHT_Y':
-						if (!this.rightAnalogHeld && !hasPreviousState) {
-							this.rightAnalogHeld = true;
-							this.handleGrabAnalog('RIGHT');
-						}
-						break;
-				}
-
-				this.handleAxisInput(i, currentAxis, axisStillHeld);
-				this.info.previousAxesState[i] = currentAxis;
+		}
+		
+		// Only update if changed significantly (reuse existing object)
+		const currentLeft = this.currentAnalogStates.leftStick;
+		if (Math.abs(currentLeft.x - leftFiltered.x) > 0.01 || Math.abs(currentLeft.y - leftFiltered.y) > 0.01) {
+			// Update in place to avoid object churn
+			currentLeft.x = leftFiltered.x;
+			currentLeft.y = leftFiltered.y;
+			currentLeft.magnitude = leftFiltered.magnitude;
+			currentLeft.angle = leftAngle;
+			
+			this.fireEvent('axischange', 'LEFT_X', leftFiltered.x, leftAngle, true);
+			this.fireEvent('axischange', 'LEFT_Y', leftFiltered.y, leftAngle, true);
+		}
+		
+		// Update right analog stick (reuse existing object)
+		const rightRawX = pAxes[Controller.AXES.RIGHT_X] || 0;
+		const rightRawY = pAxes[Controller.AXES.RIGHT_Y] || 0;
+		const rightFiltered = this.applyCircularDeadZone(rightRawX, rightRawY, this.rightAnalogDeadZone);
+		const rightAngle = this.getAngle(Controller.baseAnalogPos, { x: rightFiltered.x, y: rightFiltered.y });
+		
+		// Detect right analog grab/drop
+		const rightMagnitude = rightFiltered.magnitude;
+		const wasRightHeld = this.rightAnalogHeld;
+		const isRightHeld = rightMagnitude > 0.1; // Threshold for "held"
+		
+		if (isRightHeld !== wasRightHeld) {
+			this.rightAnalogHeld = isRightHeld;
+			if (isRightHeld) {
+				this.fireEvent('grab', 'RIGHT');
+			} else {
+				this.fireEvent('drop', 'RIGHT');
 			}
+		}
+		
+		// Only update if changed significantly (reuse existing object)
+		const currentRight = this.currentAnalogStates.rightStick;
+		if (Math.abs(currentRight.x - rightFiltered.x) > 0.01 || Math.abs(currentRight.y - rightFiltered.y) > 0.01) {
+			// Update in place to avoid object churn
+			currentRight.x = rightFiltered.x;
+			currentRight.y = rightFiltered.y;
+			currentRight.magnitude = rightFiltered.magnitude;
+			currentRight.angle = rightAngle;
+			
+			this.fireEvent('axischange', 'RIGHT_X', rightFiltered.x, rightAngle, true);
+			this.fireEvent('axischange', 'RIGHT_Y', rightFiltered.y, rightAngle, true);
 		}
 	}
+	/**
+	 * Detects controller type based on Web API properties
+	 * 
+	 * @returns Controller type string
+	 */
+	private detectControllerType(): string {
+		const id = this.gamepad.id.toLowerCase();
+		const mapping = this.gamepad.mapping;
+		
+		// Use standard mapping if available
+		if (mapping === 'standard') {
+			// Detect specific controller types from ID
+			if (id.includes('xbox') || id.includes('microsoft')) {
+				return 'Xbox';
+			} else if (id.includes('playstation') || id.includes('sony') || id.includes('dualshock') || id.includes('dualsense')) {
+				return 'PS';
+			} else if (id.includes('nintendo') || id.includes('switch')) {
+				return 'NS';
+			} else if (id.includes('logitech')) {
+				return 'PC';
+			}
+			return 'Standard';
+		}
+		
+		// Fallback to generic for non-standard controllers
+		return 'Generic';
+	}
+
+	/**
+	 * Checks if this controller supports haptic feedback
+	 * 
+	 * @returns True if haptic feedback is supported
+	 */
+	hasHapticSupport(): boolean {
+		return 'vibrationActuator' in this.gamepad || 'hapticActuators' in this.gamepad;
+	}
+
+	/**
+	 * Checks if this controller supports motion sensors
+	 * 
+	 * @returns True if motion sensors are supported
+	 */
+	hasMotionSupport(): boolean {
+		return 'pose' in this.gamepad;
+	}
+
+	/**
+	 * Checks if this controller supports touchpad
+	 * 
+	 * @returns True if touchpad is supported
+	 */
+	hasTouchpadSupport(): boolean {
+		// Check for PlayStation controllers with touchpad
+		return this.type === 'PS' && this.gamepad.buttons.length >= 17; // Touchpad buttons
+	}
+
+	/**
+	 * Gets the controller's display name
+	 * 
+	 * @returns Human-readable controller name
+	 */
+	getDisplayName(): string {
+		const id = this.gamepad.id;
+		const mapping = this.gamepad.mapping;
+		
+		// Use mapping if available (standard controllers)
+		if (mapping === 'standard') {
+			return `${this.type} Controller (Standard)`;
+		}
+		
+		// Use ID for non-standard controllers
+		return id || 'Unknown Controller';
+	}
+
 	/**
 	 * Gets the current buttons pressed down on the gamepad.
 	 */
 	getPressed(): string[] {
 		const buttonsDown: string[] = [];
-		for (const button in this.pressed) {
-			// If this button is currently pressed down add it to the array to return.
-			if (this.pressed[button]) {
-				buttonsDown.push(button);
+		for (const [buttonName, buttonState] of this.currentButtonStates) {
+			if (buttonState.pressed) {
+				buttonsDown.push(buttonName);
 			}
 		}
 		return buttonsDown;
@@ -349,166 +635,195 @@ class Controller {
      * @param pCallback - The function to be called when the event is triggered
      * @return The Controller instance
      */
-	on(pEvent: string, pCallback: ((buttonName: string, value: number, repeat: boolean) => void) | ((buttonName: string, value: number) => void) | ((analog: string) => void) | ((axisName: string, value: number, angle: number, repeat: boolean) => void)): Controller {
-		if (typeof(pEvent) === 'string') {
-			if (typeof(pCallback) === 'function') {
-				switch (pEvent) {
-					case 'press':
-						this.pressHandlers[pEvent] = pCallback as (buttonName: string, value: number, repeat: boolean) => void;
-						break;
-					case 'release':
-						this.releaseHandlers[pEvent] = pCallback as (buttonName: string, value: number) => void;
-						break;
-					case 'axis':
-					case 'grab':
-					case 'drop':
-						this.axisHandlers[pEvent] = pCallback as ((analog: string) => void) | ((axisName: string, value: number, angle: number, repeat: boolean) => void);
-						break;
-					default:
-						GamepadManager.logger.prefix('Gamepad-Module').error(`The event "${pEvent}" is not supported.`);
-				}
-			} else {
-				GamepadManager.logger.prefix('Gamepad-Module').error(`The callback for event "${pEvent}" is not a function.`);
-			}
-		}
-		return this;
-	}
-    /**
-     * Removes a callback from the specified event.
-	 * 
-     * @param pEvent - The event to remove the callback from
-     * @return The Controller instance
-     */	
-	off(pEvent: string): Controller {
-		if (typeof(pEvent) === 'string') {
-			switch (pEvent) {
-				case 'press':
-					this.pressHandlers[pEvent] = null;
-					break;
-				case 'release':
-					this.releaseHandlers[pEvent] = null;
-					break;
-				case 'axis':
-				case 'grab':
-				case 'drop':
-					this.axisHandlers[pEvent] = null;
-					break;
-				default:
-					GamepadManager.logger.prefix('Gamepad-Module').error(`The event "${pEvent}" is not supported.`);
-			}
-		}
-		return this;
-	}
 	/**
-	 * Handles the input on the buttons.
+	 * Adds an event listener with optional configuration
 	 * 
-	 * @param pButton - The button index that was pressed
-	 * @param pValue - The value of the button (0 for unpressed, 1 for pressed) 0-1 for buttons that have a range
-	 * @param pRepeat - Whether this button is still being held from a previous frame
-	 * @param pPressed - Whether this button is being pressed in this current frame.
+	 * @param pEvent - The event name (case agnostic)
+	 * @param pCallback - The callback function
+	 * @param pOptions - Optional configuration (once, priority)
+	 * @returns The Controller instance
 	 */
-	handleButtonInput(pButton: number, pValue: number, pRepeat: boolean, pPressed: boolean): void {
-		let buttonName: string | number = pButton;
-		let clampedValue = Math.floor(pValue * 100) / 100;
-
-		// Check if button is mapped
-		for (const button in this.config.buttons) {
-			if (this.config.buttons[button] === pButton) {
-				buttonName = button;
-				// Only set the value to pressed if it actually is pressed, don't set it to false via pPressed, as it will be set to false after the release event is called
-				// We also check if the value is greater or equal to the triggers pressed value. This is due to a trigger not being considered to be pressed unless its passed or at this threshold.
-				if (pPressed || clampedValue > Controller.UNPRESSED) this.pressed[buttonName] = true;
-				break;
-			}
-		}
-		// Check if any of the main buttons need to be remapped for a PlayStation controller
-		if (buttonName === 'A' || buttonName === 'B' || buttonName === 'X' || buttonName === 'Y') {
-			// If this controller is a playstation controller
-			if (this.type === 'PS') {
-				// Change the XBOX controls to Playstation controller controls
-				buttonName = Controller.PS4_REMAPPED[buttonName as string];
-			}
-		}
-
-		if (buttonName) {
-			// Press
-			if (clampedValue <= Controller.PRESSED && clampedValue > Controller.UNPRESSED) {
-				if (typeof(this.pressHandlers['press']) === 'function') this.pressHandlers['press']!(buttonName as string, clampedValue, pRepeat);
-			// Release
-			} else if (clampedValue === Controller.UNPRESSED && (buttonName === 'LT' || buttonName === 'RT') && this.pressed[buttonName as string]) {
-				if (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release']!(buttonName as string, clampedValue);
-				this.pressed[buttonName as string] = false;
-			// Release
-			} else if (clampedValue === Controller.UNPRESSED && this.pressed[buttonName as string]) {
-				if (typeof(this.releaseHandlers['release']) === 'function') this.releaseHandlers['release']!(buttonName as string, clampedValue);
-				this.pressed[buttonName as string] = false;
-			}
-		}
-	}
-	/**
-	 * Handles the input on the analogs.
-	 * 
-	 * @param pAxis - The axis index that was moved
-	 * @param pValue - The value of the axis that was moved (0-1 range)
-	 * @param pRepeat - Whether this axes is still the same from a previous frame
-	 */
-	handleAxisInput(pAxis: number, pValue: number, pRepeat: boolean): void {
-		let axisName: string | number = pAxis;
-		// Clamp value to hundreths position just for easier calculations
-		let clampedValue = Math.floor(pValue * 100) / 100;
-		// Check if axis is mapped
-		for (const axes in Controller.AXES) {
-			if (Controller.AXES[axes] === pAxis) {
-				axisName = axes;
-			}
-		}
-
-		// The angle the axis is in
-		let analogAngle = 0;
-	
-		if (axisName === 'LEFT_X' || axisName === 'LEFT_Y') {
-			if (axisName === 'LEFT_X') {
-				this.leftAnalogPos.x = clampedValue;
-			}
-			if (axisName === 'LEFT_Y') {
-				this.leftAnalogPos.y = clampedValue;
-			}
-			analogAngle = (GamepadManager.constructor as any).getAngle(Controller.baseAnalogPos, this.leftAnalogPos);
+	addEventListener(pEvent: string, pCallback: Function, pOptions?: EventListenerOptions): Controller {
+		if (!pCallback) {
+			GamepadManager.logger.prefix('Gamepad-Module').error(`The callback for event "${pEvent}" is not a function.`);
+			return this;
 		}
 		
-		if (axisName === 'RIGHT_X' || axisName === 'RIGHT_Y') {
-			if (axisName === 'RIGHT_X') {
-				this.rightAnalogPos.x = clampedValue;
-			}
-			if (axisName === 'RIGHT_Y') {
-				this.rightAnalogPos.y = clampedValue;
-			}
-			analogAngle = (GamepadManager.constructor as any).getAngle(Controller.baseAnalogPos, this.rightAnalogPos);
+		// Convert to lowercase for case matching
+		const lowerEvent = pEvent.toLowerCase();
+		
+		if (!this.eventListeners.has(lowerEvent)) {
+			this.eventListeners.set(lowerEvent, []);
 		}
+		
+		const listeners = this.eventListeners.get(lowerEvent)!;
+		listeners.push(pCallback);
+		
+		// Sort by priority if specified
+		if (pOptions?.priority !== undefined) {
+			listeners.sort((a, b) => (a as any).priority - (b as any).priority);
+		}
+		
+		return this;
+	}
+	/**
+	 * Removes an event listener
+	 * 
+	 * @param pEvent - The event name (case agnostic)
+	 * @param pCallback - The callback function to remove
+	 * @returns The Controller instance
+	 */
+	removeEventListener(pEvent: string, pCallback: Function): Controller {
+		// Convert to lowercase for case matching
+		const lowerEvent = pEvent.toLowerCase();
+		
+		const listeners = this.eventListeners.get(lowerEvent);
+		if (listeners) {
+			const index = listeners.indexOf(pCallback);
+			if (index !== -1) {
+				listeners.splice(index, 1);
+			}
+		}
+		return this;
+	}
+	/**
+	 * Fires an event to all registered listeners
+	 * 
+	 * @param pEventName - The name of the event
+	 * @param pArgs - Arguments to pass to the listeners
+	 */
+	private fireEvent(pEventName: string, ...pArgs: any[]): void {
+		// Convert to lowercase for case matching
+		const lowerEventName = pEventName.toLowerCase();
+		
+		const listeners = this.eventListeners.get(lowerEventName);
+		if (listeners) {
+			listeners.forEach(listener => {
+				try {
+					listener(...pArgs);
+				} catch (error) {
+					GamepadManager.logger.prefix('Gamepad-Module').error(`Error in event listener for "${pEventName}":`, error);
+				}
+			});
+		}
+	}
+	/**
+	 * Sets the dead zone threshold for this controller
+	 * 
+	 * Dead zones ignore small analog stick movements to prevent drift and unwanted input.
+	 * Values below the threshold are treated as 0. Higher values = more input ignored.
+	 * 
+	 * @param pDeadZone - The dead zone threshold (0.0 to 1.0, where 0.15 = 15% dead zone)
+	 * @throws Error if deadZone is not between 0 and 1
+	 */
+	setDeadZone(pDeadZone: number): void {
+		if (pDeadZone < 0 || pDeadZone > 1) {
+			throw new Error('Dead zone must be between 0 and 1');
+		}
+		this.deadZone = pDeadZone;
+	}
+	/**
+	 * Sets the dead zone threshold for the left analog stick
+	 * 
+	 * Dead zones ignore small analog stick movements to prevent drift and unwanted input.
+	 * Values below the threshold are treated as 0. Higher values = more input ignored.
+	 * 
+	 * @param pDeadZone - The dead zone threshold (0.0 to 1.0, where 0.15 = 15% dead zone)
+	 * @throws Error if deadZone is not between 0 and 1
+	 */
+	setLeftAnalogDeadZone(pDeadZone: number): void {
+		if (pDeadZone < 0 || pDeadZone > 1) {
+			throw new Error('Dead zone must be between 0 and 1');
+		}
+		this.leftAnalogDeadZone = pDeadZone;
+	}
+	/**
+	 * Sets the dead zone threshold for the right analog stick
+	 * 
+	 * Dead zones ignore small analog stick movements to prevent drift and unwanted input.
+	 * Values below the threshold are treated as 0. Higher values = more input ignored.
+	 * 
+	 * @param pDeadZone - The dead zone threshold (0.0 to 1.0, where 0.15 = 15% dead zone)
+	 * @throws Error if deadZone is not between 0 and 1
+	 */
+	setRightAnalogDeadZone(pDeadZone: number): void {
+		if (pDeadZone < 0 || pDeadZone > 1) {
+			throw new Error('Dead zone must be between 0 and 1');
+		}
+		this.rightAnalogDeadZone = pDeadZone;
+	}
+	/**
+	 * Gets the current dead zone threshold
+	 * 
+	 * @returns The current dead zone pValue
+	 */
+	getDeadZone(): number {
+		return this.deadZone;
+	}
+	/**
+	 * Gets the current left analog dead zone threshold
+	 * 
+	 * @returns The current left analog dead zone pValue
+	 */
+	getLeftAnalogDeadZone(): number {
+		return this.leftAnalogDeadZone;
+	}
+	/**
+	 * Gets the current right analog dead zone threshold
+	 * 
+	 * @returns The current right analog dead zone pValue
+	 */
+	getRightAnalogDeadZone(): number {
+		return this.rightAnalogDeadZone;
+	}
+	/**
+	 * Current button states (reactive state)
+	 */
+	private currentButtonStates: Map<string, ButtonState> = new Map();
+	
+	/**
+	 * Current analog states (reactive state)
+	 */
+	private currentAnalogStates: AnalogStates = {
+		leftStick: { x: 0, y: 0, magnitude: 0, angle: 0 },
+		rightStick: { x: 0, y: 0, magnitude: 0, angle: 0 }
+	};
 
-		if (axisName) {
-			if (typeof(this.axisHandlers['axis']) === 'function') (this.axisHandlers['axis'] as (axisName: string, value: number, angle: number, repeat: boolean) => void)(axisName as string, clampedValue, analogAngle, pRepeat);
-		}
+	/**
+	 * Gets the current state of all buttons (cached for performance - no object churn)
+	 * 
+	 * @returns Object with button states and pValues (reuses existing objects)
+	 */
+	getButtonStates(): ButtonStates {
+		// Return reference to existing Map (no object churn)
+		return this.currentButtonStates as any;
 	}
 	/**
-	 * Handles the event for when a analog is grabbed.
+	 * Gets the current state of all analog inputs (cached for performance - no object churn)
 	 * 
-	 * @param pAnalog - Analog that was grabbed
+	 * @returns Object with analog stick states (reuses existing objects)
 	 */
-	handleGrabAnalog(pAnalog: string): void {
-		if (pAnalog) {
-			if (typeof(this.axisHandlers['grab']) === 'function') (this.axisHandlers['grab'] as (analog: string) => void)(pAnalog);
-		}
+	getAnalogStates(): AnalogStates {
+		// Return reference to existing objects (no object churn)
+		return this.currentAnalogStates;
 	}
 	/**
-	 * Handles the event for when a analog is dropped.
+	 * Gets the complete controller state (optimized - no object churn)
 	 * 
-	 * @param pAnalog - Analog that was dropped
+	 * @returns Object with all controller state information (reuses existing objects)
 	 */
-	handleDropAnalog(pAnalog: string): void {
-		if (pAnalog) {
-			if (typeof(this.axisHandlers['drop']) === 'function') (this.axisHandlers['drop'] as (analog: string) => void)(pAnalog);
-		}
+	getState(): ControllerState {
+		// Return references to existing objects (no object churn)
+		return {
+			type: this.type,
+			index: this.index,
+			buttons: this.currentButtonStates as any,
+			analogs: this.currentAnalogStates,
+			deadZones: {
+				leftAnalog: this.leftAnalogDeadZone,
+				rightAnalog: this.rightAnalogDeadZone
+			}
+		};
 	}
 	/**
 	 * Whether the left analog is being held
@@ -529,14 +844,82 @@ class Controller {
 	/**
 	 * Checks whether a button is pressed down or not
 	 * 
-	 * @param pButtonName - The button to check if its pressed
+	 * @param pButtonName - The button to check if its pressed (case agnostic)
 	 * @returns True if button is pressed
+	 * @throws Error if buttonName is not a valid button
 	 */
 	isButtonPressed(pButtonName: string): boolean {
-		return this.pressed[pButtonName];
+		if (!pButtonName) {
+			throw new Error('Button name must be a non-empty string');
+		}
+		
+		// Convert to uppercase for case-insensitive matching
+		const upperButtonName = pButtonName.toUpperCase();
+		
+		// Check if it's a valid button name
+		const validButtons = Object.keys(Controller.BUTTONS_MAP);
+		if (!validButtons.includes(upperButtonName)) {
+			throw new Error(`Invalid button name: ${pButtonName}. Valid buttons: ${validButtons.join(', ')}`);
+		}
+		
+		// Use modern state system
+		const buttonState = this.currentButtonStates.get(upperButtonName);
+		return buttonState ? buttonState.pressed : false;
 	}
 	/**
-	 * Vibrate the controller (experimental)
+	 * Vibrates the controller using a preset pattern
+	 * 
+	 * @param pPreset - The preset name from VIBRATION_PRESETS (case agnostic)
+	 * @param pStartDelay - Optional start delay in ms
+	 * @returns Promise that resolves when vibration completes
+	 */
+	vibratePreset(pPreset: keyof typeof Controller.VIBRATION_PRESETS, pStartDelay: number = 0): Promise<void> {
+		// Convert to lowercase for case matching
+		const lowerPreset = String(pPreset).toLowerCase() as keyof typeof Controller.VIBRATION_PRESETS;
+		const presetConfig = Controller.VIBRATION_PRESETS[lowerPreset];
+		
+		if (!presetConfig) {
+			throw new Error(`Invalid vibration preset: ${pPreset}. Valid presets: ${Object.keys(Controller.VIBRATION_PRESETS).join(', ')}`);
+		}
+		
+		return this.vibrate('dual-rumble', pStartDelay, presetConfig.duration, presetConfig.weak, presetConfig.strong);
+	}
+	/**
+	 * Vibrates the controller with a sequence of patterns
+	 * 
+	 * @param pPattern - Array of vibration patterns
+	 * @returns Promise that resolves when all vibrations complete
+	 */
+	async vibratePattern(pPattern: VibrationStep[]): Promise<void> {
+		for (const step of pPattern) {
+			await this.vibrate('dual-rumble', step.delay, step.duration, step.weak, step.strong);
+		}
+	}
+	/**
+	 * Stops all ongoing vibrations
+	 */
+	stopVibration(): void {
+		if (!this.hasHapticSupport()) {
+			GamepadManager.logger.prefix('Gamepad-Module').warn('Controller does not support vibration');
+			return;
+		}
+
+		// Try new hapticActuators API first
+		if ('hapticActuators' in this.gamepad) {
+			const actuators = (this.gamepad as any).hapticActuators;
+			if (actuators && actuators.length > 0) {
+				actuators.forEach((actuator: any) => actuator.reset());
+				return;
+			}
+		}
+
+		// Fallback to old vibrationActuator API
+		if ('vibrationActuator' in this.gamepad) {
+			(this.gamepad as any).vibrationActuator.reset();
+		}
+	}
+	/**
+	 * Vibrate the controller with validation and Promise support
 	 * 
 	 * dual-rumble: Dual-rumble describes a haptic configuration with an eccentric rotating mass vibration motor in each handle of a standard gamepad. 
 	 * In this configuration, either motor is capable of vibrating the whole gamepad. 
@@ -547,32 +930,45 @@ class Controller {
 	 * @param pDuration - The duration of the vibration in ms
 	 * @param pWeakMagnitude - The magnitude of the weak actuator (between 0 and 1).
 	 * @param pStrongMagnitude - The magnitude of the strong actuator (between 0 and 1).
+	 * @returns Promise that resolves when vibration completes
 	 */
-	vibrate(pVibrationType: string = 'dual-rumble', pStartDelay: number = 0, pDuration: number = 1000, pWeakMagnitude: number = 1, pStrongMagnitude: number = 1): void {
-		if (!('vibrationActuator' in this.gamepad)) {
-			return;
-		}
-		// If a invalid pVibrationType is passed, default it
-		if (pVibrationType !== 'dual-rumble' && pVibrationType !== 'vibration') pVibrationType = 'dual-rumble';
-		// A new call to playEffect() overrides a previous ongoing call.
-		(this.gamepad as any).vibrationActuator.playEffect(pVibrationType, {
-			startDelay: pStartDelay,
-			duration: pDuration,
-			weakMagnitude: pWeakMagnitude,
-			strongMagnitude: pStrongMagnitude,
+	vibrate(pVibrationType: string = 'dual-rumble', pStartDelay: number = 0, pDuration: number = 1000, pWeakMagnitude: number = 1, pStrongMagnitude: number = 1): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (!('vibrationActuator' in this.gamepad)) {
+				reject(new Error('Vibration not supported on this controller'));
+				return;
+			}
+			
+			// Validate parameters
+			if (pVibrationType !== 'dual-rumble' && pVibrationType !== 'vibration') {
+				pVibrationType = 'dual-rumble';
+			}
+			
+			// Clamp magnitudes to valid range
+			pWeakMagnitude = Math.max(0, Math.min(1, pWeakMagnitude));
+			pStrongMagnitude = Math.max(0, Math.min(1, pStrongMagnitude));
+			
+			// Validate duration
+			if (pDuration <= 0) {
+				reject(new Error('Duration must be greater than 0'));
+				return;
+			}
+				
+			try {
+				// A new call to playEffect() overrides a previous ongoing call.
+				(this.gamepad as any).vibrationActuator.playEffect(pVibrationType, {
+							startDelay: Math.max(0, pStartDelay),
+					duration: pDuration,
+					weakMagnitude: pWeakMagnitude,
+					strongMagnitude: pStrongMagnitude,
+				});
+						
+				// Resolve after duration + start delay
+				setTimeout(() => resolve(), pStartDelay + pDuration);
+			} catch (error) {
+				reject(error);
+			}
 		});
-	}
-	/**
-	 * The pulse() method of the GamepadHapticActuator interface makes the hardware pulse at a certain intensity for a specified duration. (From MDN)
-	 * 
-	 * @param pValue - A double representing the intensity of the pulse. This can vary depending on the hardware type, but generally takes a value between 0.0 (no intensity) and 1.0 (full intensity).
-	 * @param pDuration - A double representing the duration of the pulse, in milliseconds.
-	 */
-	pulse(pValue: number = 1, pDuration: number = 200): void {
-		if (!('hapticActuators' in this.gamepad)) {
-			return;
-		}
-		(this.gamepad as any).hapticActuators[0].pulse(pValue, pDuration);
 	}
 }
 

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamepad Test Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #fff;
+            color: #333;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #000;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .status {
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            font-size: 0.95em;
+        }
+
+        .status.connected {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .status.disconnected {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            padding: 15px;
+        }
+
+        .controller-info {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .controller-info p {
+            margin: 4px 0;
+        }
+
+        .controller-info strong {
+            color: #000;
+        }
+
+        .dead-zone-controls {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .dead-zone-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+
+        .dead-zone-control label {
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .dead-zone-control input[type="range"] {
+            flex: 1;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
+        }
+
+        .button {
+            background: #f0f0f0;
+            color: #666;
+            border: 1px solid #ccc;
+            padding: 12px 8px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.15s ease;
+            cursor: default;
+        }
+
+        .button.pressed {
+            background: #0066cc;
+            color: #fff;
+            border-color: #0052a3;
+        }
+
+        .button-value {
+            font-size: 0.75em;
+            margin-top: 4px;
+            font-family: 'Courier New', monospace;
+            opacity: 0.8;
+        }
+
+        .analog-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .analog-section {
+            text-align: center;
+        }
+
+        .analog-section h3 {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .analog-stick {
+            background: #f0f0f0;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 10px auto;
+        }
+
+        .analog-indicator {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #0066cc;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.05s ease;
+        }
+
+        .analog-info {
+            font-size: 0.85em;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        .vibration-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .vibration-btn {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .vibration-btn:hover {
+            background: #e8e8e8;
+            border-color: #999;
+        }
+
+        .vibration-btn:active {
+            background: #ddd;
+        }
+
+        .vibration-btn.stop {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+
+        .vibration-btn.stop:hover {
+            background: #ffcdd2;
+        }
+
+        .event-log {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            padding: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+        }
+
+        .event-log .event {
+            margin: 3px 0;
+            padding: 4px;
+            border-left: 2px solid #ddd;
+            padding-left: 8px;
+        }
+
+        .event-log .event.buttondown {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+
+        .event-log .event.buttonup {
+            border-left-color: #f44336;
+            background: #fef5f5;
+        }
+
+        .event-log .event.axischange {
+            border-left-color: #2196f3;
+            background: #f3f8fd;
+        }
+
+        .event-log .event.grab {
+            border-left-color: #ff9800;
+            background: #fff8f3;
+        }
+
+        .event-log .event.drop {
+            border-left-color: #9e9e9e;
+            background: #f9f9f9;
+        }
+
+        .clear-log {
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+        }
+
+        .clear-log:hover {
+            background: #e8e8e8;
+        }
+
+        .controller-selector {
+            margin-bottom: 15px;
+        }
+
+        .controller-selector select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background: #fff;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .analog-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gamepad Test Suite v3.0.0</h1>
+        
+        <div id="status" class="status disconnected">
+            No controllers connected. Connect a gamepad and press any button.
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h2>Controller Information</h2>
+                <div class="controller-selector">
+                    <label for="controller-select">Controller:</label>
+                    <select id="controller-select">
+                        <option value="">No controllers</option>
+                    </select>
+                </div>
+                <div id="controller-info" class="controller-info">
+                    <p>No controller connected</p>
+                </div>
+                
+                <div class="dead-zone-controls">
+                    <div class="dead-zone-control">
+                        <label for="left-deadzone">Left Dead Zone:</label>
+                        <input type="range" id="left-deadzone" min="0" max="0.5" step="0.01" value="0.0">
+                        <span id="left-deadzone-value">0.00</span>
+                    </div>
+                    <div class="dead-zone-control">
+                        <label for="right-deadzone">Right Dead Zone:</label>
+                        <input type="range" id="right-deadzone" min="0" max="0.5" step="0.01" value="0.0">
+                        <span id="right-deadzone-value">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Buttons</h2>
+                <div class="button-grid" id="buttons-grid"></div>
+            </div>
+
+            <div class="section">
+                <h2>Analog Sticks</h2>
+                <div class="analog-container">
+                    <div class="analog-section">
+                        <h3>Left Stick</h3>
+                        <div class="analog-stick" id="left-stick">
+                            <div class="analog-indicator" id="left-indicator"></div>
+                        </div>
+                        <div class="analog-info" id="left-info">
+                            X: 0.00 | Y: 0.00<br>
+                            Mag: 0.00 | Ang: 0°
+                        </div>
+                    </div>
+                    <div class="analog-section">
+                        <h3>Right Stick</h3>
+                        <div class="analog-stick" id="right-stick">
+                            <div class="analog-indicator" id="right-indicator"></div>
+                        </div>
+                        <div class="analog-info" id="right-info">
+                            X: 0.00 | Y: 0.00<br>
+                            Mag: 0.00 | Ang: 0°
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Vibration Effects</h2>
+                <div class="vibration-controls">
+                    <button class="vibration-btn" onclick="testVibrationPreset('light-tap')">Light Tap</button>
+                    <button class="vibration-btn" onclick="testVibrationPreset('medium-rumble')">Medium</button>
+                    <button class="vibration-btn" onclick="testVibrationPreset('heavy-shake')">Heavy</button>
+                    <button class="vibration-btn" onclick="testVibrationPreset('notification')">Notification</button>
+                    <button class="vibration-btn" onclick="testVibrationPreset('damage')">Damage</button>
+                    <button class="vibration-btn" onclick="testCustomVibration()">Custom</button>
+                    <button class="vibration-btn" onclick="testVibrationSequence()">Sequence</button>
+                    <button class="vibration-btn stop" onclick="stopVibration()">Stop</button>
+                </div>
+            </div>
+
+            <div class="section" style="grid-column: 1 / -1;">
+                <h2>Event Log</h2>
+                <button class="clear-log" onclick="clearEventLog()">Clear Log</button>
+                <div id="event-log" class="event-log">
+                    <div class="event">Waiting for events...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GamepadManager, Controller } from './dist/esm/gamepad.js';
+
+        let currentController = null;
+        let eventLog = [];
+        let controllers = new Map();
+
+        // Initialize button grid
+        function initializeButtons() {
+            const buttonsGrid = document.getElementById('buttons-grid');
+            const buttonNames = Object.keys(Controller.BUTTONS_MAP);
+            
+            buttonNames.forEach(buttonName => {
+                const button = document.createElement('div');
+                button.className = 'button';
+                button.id = `btn-${buttonName}`;
+                
+                // Show both Xbox and PlayStation names for main buttons
+                let displayName = buttonName;
+                if (buttonName === 'A') displayName = 'A (X)';
+                else if (buttonName === 'B') displayName = 'B (O)';
+                else if (buttonName === 'X') displayName = 'X (□)';
+                else if (buttonName === 'Y') displayName = 'Y (△)';
+                
+                button.innerHTML = `
+                    <div>${displayName}</div>
+                    <div class="button-value" id="value-${buttonName}">0.00</div>
+                `;
+                buttonsGrid.appendChild(button);
+            });
+        }
+
+        // Update button display
+        function updateButton(buttonName, pressed, value) {
+            const button = document.getElementById(`btn-${buttonName}`);
+            const valueDisplay = document.getElementById(`value-${buttonName}`);
+            
+            if (button) {
+                button.classList.toggle('pressed', pressed);
+            }
+            
+            if (valueDisplay) {
+                // For triggers (LT, RT), show the actual value (0-1 range)
+                // For other buttons, show 1.00 if pressed, 0.00 if not
+                if (buttonName === 'LT' || buttonName === 'RT') {
+                    valueDisplay.textContent = value.toFixed(2);
+                } else {
+                    valueDisplay.textContent = pressed ? '1.00' : '0.00';
+                }
+            }
+        }
+
+        // Update analog stick display with proper circular clamping
+        function updateAnalogStick(side, position) {
+            const stick = document.getElementById(`${side}-stick`);
+            const indicator = document.getElementById(`${side}-indicator`);
+            const info = document.getElementById(`${side}-info`);
+            
+            if (stick && indicator && info) {
+                // Convert from -1,1 to 0,100 for positioning (already clamped by library)
+                const x = ((position.x + 1) / 2) * 100;
+                const y = ((position.y + 1) / 2) * 100;
+                
+                indicator.style.left = `${x}%`;
+                indicator.style.top = `${y}%`;
+                
+                info.innerHTML = `
+                    X: ${position.x.toFixed(2)} | Y: ${position.y.toFixed(2)}<br>
+                    Mag: ${position.magnitude.toFixed(2)} | Ang: ${(position.angle * 180 / Math.PI).toFixed(0)}°
+                `;
+            }
+        }
+
+        // Log events with filtering to reduce spam
+        function logEvent(type, ...args) {
+            const timestamp = new Date().toLocaleTimeString();
+            const event = { type, args, timestamp };
+            
+            // Filter out spammy axis events
+            if (type === 'axischange' && eventLog.length > 0) {
+                const lastEvent = eventLog[0];
+                if (lastEvent.type === 'axischange' && 
+                    lastEvent.args[0] === args[0] && 
+                    Math.abs(parseFloat(lastEvent.args[1]) - parseFloat(args[1])) < 0.01) {
+                    return; // Skip similar axis events
+                }
+            }
+            
+            eventLog.unshift(event);
+            if (eventLog.length > 50) {
+                eventLog.pop();
+            }
+            
+            updateEventLogDisplay();
+        }
+
+        // Update event log display
+        function updateEventLogDisplay() {
+            const logContainer = document.getElementById('event-log');
+            logContainer.innerHTML = eventLog.map(event => {
+                const argsStr = event.args.map(arg => 
+                    typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+                ).join(', ');
+                
+                return `<div class="event ${event.type}">[${event.timestamp}] ${event.type}: ${argsStr}</div>`;
+            }).join('');
+        }
+
+        // Clear event log
+        window.clearEventLog = function() {
+            eventLog = [];
+            updateEventLogDisplay();
+        };
+
+        // Update controller selector
+        function updateControllerSelector() {
+            const selector = document.getElementById('controller-select');
+            selector.innerHTML = '<option value="">No controllers</option>';
+            
+            controllers.forEach((controller, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `Controller ${index} (${controller.getType()})`;
+                selector.appendChild(option);
+            });
+            
+            if (currentController) {
+                selector.value = currentController.index;
+            }
+        }
+
+        // Update controller info
+        function updateControllerInfo(controller) {
+            const info = document.getElementById('controller-info');
+            if (controller) {
+                const pressed = controller.getPressed();
+                info.innerHTML = `
+                    <p><strong>Index:</strong> ${controller.index}</p>
+                    <p><strong>Type:</strong> ${controller.getType()}</p>
+                    <p><strong>Left Dead Zone:</strong> ${controller.getLeftAnalogDeadZone().toFixed(2)}</p>
+                    <p><strong>Right Dead Zone:</strong> ${controller.getRightAnalogDeadZone().toFixed(2)}</p>
+                    <p><strong>Left Analog:</strong> ${controller.isLeftAnalogHeld() ? 'Held' : 'Released'}</p>
+                    <p><strong>Right Analog:</strong> ${controller.isRightAnalogHeld() ? 'Held' : 'Released'}</p>
+                    <p><strong>Pressed:</strong> ${pressed.length > 0 ? pressed.join(', ') : 'None'}</p>
+                `;
+            } else {
+                info.innerHTML = '<p>No controller connected</p>';
+            }
+        }
+
+        // Setup event listeners for a controller
+        function setupControllerEvents(controller) {
+            controller.addEventListener('buttondown', (buttonName, value) => {
+                let displayName = buttonName;
+                if (buttonName === 'A') displayName = 'A (X)';
+                else if (buttonName === 'B') displayName = 'B (O)';
+                else if (buttonName === 'X') displayName = 'X (□)';
+                else if (buttonName === 'Y') displayName = 'Y (△)';
+                logEvent('buttondown', displayName, value.toFixed(2));
+                
+                // Update button display immediately
+                updateButton(buttonName, true, value);
+                updateControllerInfo(); // Update pressed buttons list
+            });
+
+            controller.addEventListener('buttonup', (buttonName, value) => {
+                let displayName = buttonName;
+                if (buttonName === 'A') displayName = 'A (X)';
+                else if (buttonName === 'B') displayName = 'B (O)';
+                else if (buttonName === 'X') displayName = 'X (□)';
+                else if (buttonName === 'Y') displayName = 'Y (△)';
+                logEvent('buttonup', displayName, value.toFixed(2));
+                
+                // Update button display immediately
+                updateButton(buttonName, false, value);
+                updateControllerInfo(); // Update pressed buttons list
+            });
+
+            controller.addEventListener('axischange', (axisName, value, angle, repeat) => {
+                if (!repeat) { // Only log non-repeat events to reduce spam
+                    logEvent('axischange', axisName, value.toFixed(2));
+                }
+                
+                // Update analog display immediately
+                updateAnalogFromAxis(axisName, value);
+                updateControllerInfo(); // Update analog held state
+            });
+
+            // Handle trigger changes specifically
+            controller.addEventListener('buttonpress', (buttonName, value, wasPressed) => {
+                // Update trigger displays immediately
+                if (buttonName === 'LT' || buttonName === 'RT') {
+                    updateButton(buttonName, value > 0.1, value);
+                    updateControllerInfo(); // Update pressed buttons list
+                }
+            });
+
+            // Global button event - demonstrates the new unified button event
+            controller.addEventListener('button', (buttonName, value, action) => {
+                // Only log for demonstration purposes, avoid spam
+                if (action === 'pressed' || action === 'released') {
+                    let displayName = buttonName;
+                    if (buttonName === 'A') displayName = 'A (X)';
+                    else if (buttonName === 'B') displayName = 'B (O)';
+                    else if (buttonName === 'X') displayName = 'X (□)';
+                    else if (buttonName === 'Y') displayName = 'Y (△)';
+                    else if (buttonName === 'LT') displayName = 'LT (L2)';
+                    else if (buttonName === 'RT') displayName = 'RT (R2)';
+                    
+                    logEvent('button', `${displayName} ${action}`, value.toFixed(2));
+                }
+            });
+
+            controller.addEventListener('grab', (analogName) => {
+                logEvent('grab', analogName);
+                updateControllerInfo(); // Update analog held state display
+            });
+
+            controller.addEventListener('drop', (analogName) => {
+                logEvent('drop', analogName);
+                updateControllerInfo(); // Update analog held state display
+            });
+        }
+
+        // Update analog stick from individual axis changes
+        function updateAnalogFromAxis(axisName, value) {
+            if (!currentController) return;
+            
+            const state = currentController.getState();
+            let leftStick = { ...state.analogs.leftStick };
+            let rightStick = { ...state.analogs.rightStick };
+            
+            if (axisName === 'LEFT_X') {
+                leftStick.x = value;
+                leftStick.magnitude = Math.sqrt(leftStick.x * leftStick.x + leftStick.y * leftStick.y);
+                leftStick.angle = Math.atan2(leftStick.y, leftStick.x);
+                updateAnalogStick('left', leftStick);
+            } else if (axisName === 'LEFT_Y') {
+                leftStick.y = value;
+                leftStick.magnitude = Math.sqrt(leftStick.x * leftStick.x + leftStick.y * leftStick.y);
+                leftStick.angle = Math.atan2(leftStick.y, leftStick.x);
+                updateAnalogStick('left', leftStick);
+            } else if (axisName === 'RIGHT_X') {
+                rightStick.x = value;
+                rightStick.magnitude = Math.sqrt(rightStick.x * rightStick.x + rightStick.y * rightStick.y);
+                rightStick.angle = Math.atan2(rightStick.y, rightStick.x);
+                updateAnalogStick('right', rightStick);
+            } else if (axisName === 'RIGHT_Y') {
+                rightStick.y = value;
+                rightStick.magnitude = Math.sqrt(rightStick.x * rightStick.x + rightStick.y * rightStick.y);
+                rightStick.angle = Math.atan2(rightStick.y, rightStick.x);
+                updateAnalogStick('right', rightStick);
+            }
+        }
+
+        // Modern reactive display updates (now only used for initial setup)
+        function updateDisplays() {
+            try {
+                if (currentController) {
+                    // Get reactive state (cached for performance)
+                    const state = currentController.getState();
+                    
+                    // Update UI reactively
+                    updateButtons(state.buttons);
+                    updateAnalogs(state.analogs);
+                    updateControllerInfo(currentController);
+                }
+            } catch (error) {
+                console.error('Error in updateDisplays:', error);
+            }
+        }
+
+        // Modern reactive button updates
+        function updateButtons(buttons) {
+            Object.entries(buttons).forEach(([buttonName, buttonState]) => {
+                updateButton(buttonName, buttonState.pressed, buttonState.value);
+            });
+        }
+
+        // Modern reactive analog updates
+        function updateAnalogs(analogs) {
+            updateAnalogStick('left', analogs.leftStick);
+            updateAnalogStick('right', analogs.rightStick);
+        }
+
+        // Dead zone controls
+        document.getElementById('left-deadzone').addEventListener('input', (e) => {
+            const value = parseFloat(e.target.value);
+            document.getElementById('left-deadzone-value').textContent = value.toFixed(2);
+            
+            if (currentController) {
+                currentController.setLeftAnalogDeadZone(value);
+            }
+        });
+
+        document.getElementById('right-deadzone').addEventListener('input', (e) => {
+            const value = parseFloat(e.target.value);
+            document.getElementById('right-deadzone-value').textContent = value.toFixed(2);
+            
+            if (currentController) {
+                currentController.setRightAnalogDeadZone(value);
+            }
+        });
+
+        // Controller selector
+        document.getElementById('controller-select').addEventListener('change', (e) => {
+            const selectedIndex = parseInt(e.target.value);
+            if (!isNaN(selectedIndex)) {
+                currentController = controllers.get(selectedIndex);
+                updateControllerInfo(currentController);
+            } else {
+                currentController = null;
+                updateControllerInfo(null);
+            }
+        });
+
+        // Vibration test functions
+        window.testVibrationPreset = async function(preset) {
+            if (currentController) {
+                try {
+                    logEvent('vibration', `Preset: ${preset}`);
+                    await currentController.vibratePreset(preset);
+                } catch (error) {
+                    logEvent('error', error.message);
+                }
+            }
+        };
+
+        window.testCustomVibration = async function() {
+            if (currentController) {
+                try {
+                    logEvent('vibration', 'Custom 500ms');
+                    await currentController.vibrate('dual-rumble', 0, 500, 0.8, 1.0);
+                } catch (error) {
+                    logEvent('error', error.message);
+                }
+            }
+        };
+
+        window.testVibrationSequence = async function() {
+            if (currentController) {
+                try {
+                    logEvent('vibration', 'Sequence');
+                    await currentController.vibratePattern([
+                        { delay: 0, duration: 100, weak: 0.3, strong: 0.3 },
+                        { delay: 150, duration: 150, weak: 0.6, strong: 0.6 },
+                        { delay: 200, duration: 200, weak: 1.0, strong: 1.0 }
+                    ]);
+                } catch (error) {
+                    logEvent('error', error.message);
+                }
+            }
+        };
+
+        window.stopVibration = function() {
+            if (currentController) {
+                currentController.stopVibration();
+                logEvent('vibration', 'Stopped');
+            }
+        };
+
+        // GamepadManager event listeners
+        GamepadManager.on('connect', (controller) => {
+            controllers.set(controller.index, controller);
+            
+            // Set as current if it's the first one
+            if (!currentController) {
+                currentController = controller;
+            }
+            
+            document.getElementById('status').textContent = `${controllers.size} controller(s) connected`;
+            document.getElementById('status').className = 'status connected';
+            
+            logEvent('connect', `Index ${controller.index}`, controller.getType());
+            setupControllerEvents(controller);
+            updateControllerSelector();
+            updateControllerInfo(currentController);
+        });
+
+        GamepadManager.on('disconnect', (controller) => {
+            logEvent('disconnect', `Index ${controller.index}`);
+            controllers.delete(controller.index);
+            
+            // Switch to another controller if current one disconnected
+            if (currentController === controller) {
+                const firstController = controllers.values().next().value;
+                currentController = firstController || null;
+            }
+            
+            if (controllers.size === 0) {
+                document.getElementById('status').textContent = 'No controllers connected. Connect a gamepad and press any button.';
+                document.getElementById('status').className = 'status disconnected';
+                currentController = null;
+            } else {
+                document.getElementById('status').textContent = `${controllers.size} controller(s) connected`;
+            }
+            
+            updateControllerSelector();
+            updateControllerInfo(currentController);
+        });
+
+        // Initialize
+        initializeButtons();
+        updateControllerInfo(null);
+
+        // Check for already connected controllers
+        const existingControllers = GamepadManager.getControllers();
+        existingControllers.forEach(controller => {
+            controllers.set(controller.index, controller);
+            setupControllerEvents(controller);
+        });
+        
+        if (existingControllers.length > 0) {
+            currentController = existingControllers[0];
+            document.getElementById('status').textContent = `${controllers.size} controller(s) connected`;
+            document.getElementById('status').className = 'status connected';
+        }
+        
+        updateControllerSelector();
+        updateControllerInfo(currentController);
+
+        // Initial display update (no more polling - everything is event-driven now)
+        updateDisplays();
+    </script>
+</body>
+</html>

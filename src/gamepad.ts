@@ -1,4 +1,4 @@
-import { Controller } from './controller';
+import { Controller, Point2D } from './controller';
 // @ts-ignore
 import { Logger } from './vendor/logger.min.mjs';
 
@@ -12,9 +12,17 @@ import { Logger } from './vendor/logger.min.mjs';
  */
 class GamepadManagerSingleton {
 	/**
-	 * Object containing all connected controllers
+	 * Object containing all connected controllers mapped by index
 	 */
-	controllers: { [key: string]: Controller } = {};
+	private controllerMap: Map<number, Controller> = new Map();
+	/**
+	 * Array tracking the order controllers were connected
+	 */
+	private connectionOrder: number[] = [];
+	/**
+	 * Index of the main controller (null if none set)
+	 */
+	private mainControllerIndex: number | null = null;
 	/**
 	 * Object containing the callback for when a controller is connected
 	 */
@@ -70,25 +78,70 @@ class GamepadManagerSingleton {
 	 * @param pStartPoint - The starting point
 	 * @param pEndPoint - The ending point
 	 * @returns The angle between the starting point and the ending point
+	 * @deprecated Use Controller.getAngle() instead
 	 */
-	static getAngle(pStartPoint: { x: number; y: number }, pEndPoint: { x: number; y: number }): number {
+	static getAngle(pStartPoint: Point2D, pEndPoint: Point2D): number {
 		const y = pStartPoint.y - pEndPoint.y;
 		const x = pStartPoint.x - pEndPoint.x;
 		return -Math.atan2(y, x) - Math.PI;
 	}
 	/**
-	 * This gets the first controller connected. This controller is dominant
+	 * Sets the main controller by index
 	 * 
-	 * @returns The first controller connected
+	 * @param pIndex - The index of the controller to set as main
+	 * @returns True if successfully set, false if controller not found
 	 */
-	getMainController(): Controller | undefined {
-		return this.controllers['0'];
+	setMainController(pIndex: number): boolean {
+		if (this.controllerMap.has(pIndex)) {
+			this.mainControllerIndex = pIndex;
+			return true;
+		}
+		return false;
 	}
 	/**
-	 * @returns An array of all connected controllers
+	 * Gets the main controller
+	 * 
+	 * @returns The main controller or null if none set
 	 */
-	getControllers(): { [key: string]: Controller } {
-		return { ...this.controllers };
+	getMainController(): Controller | null {
+		if (this.mainControllerIndex !== null) {
+			return this.controllerMap.get(this.mainControllerIndex) || null;
+		}
+		// Default to first connected controller
+		if (this.connectionOrder.length > 0) {
+			return this.controllerMap.get(this.connectionOrder[0]) || null;
+		}
+		return null;
+	}
+	/**
+	 * Gets a specific controller by index
+	 * 
+	 * @param pIndex - The index of the controller
+	 * @returns The controller or null if not found
+	 */
+	getController(pIndex: number): Controller | null {
+		return this.controllerMap.get(pIndex) || null;
+	}
+	/**
+	 * Gets all connected controllers as an array
+	 * 
+	 * @returns Array of all connected controllers
+	 */
+	getControllers(): Controller[] {
+		return Array.from(this.controllerMap.values());
+	}
+	/**
+	 * Gets all controllers with metadata
+	 * 
+	 * @returns Array of controller objects with metadata
+	 */
+	getControllersWithMetadata(): Array<{controller: Controller, index: number, isMain: boolean, connectionOrder: number}> {
+		return Array.from(this.controllerMap.entries()).map(([index, controller]) => ({
+			controller,
+			index,
+			isMain: index === this.mainControllerIndex || (this.mainControllerIndex === null && index === this.connectionOrder[0]),
+			connectionOrder: this.connectionOrder.indexOf(index)
+		}));
 	}
     /**
      * Attaches a callback to the specified event.
@@ -98,25 +151,24 @@ class GamepadManagerSingleton {
      * @return The GamepadManagerSingleton instance
      */
 	on(pEvent: string, pCallback: (controller: Controller) => void): GamepadManagerSingleton {
-		if (typeof(pEvent) === 'string') {
-			if (typeof(pCallback) === 'function') {
-				switch (pEvent) {
-					case 'connect':
-						this.connectHandler[pEvent] = pCallback;
-						this.unassignedControllers!.forEach(pController => this.connectHandler[pEvent](pController));
-						this.unassignedControllers!.clear();
-						break;
+		if (!pCallback) {
+			this.logger.prefix('Gamepad-Module').error(`The callback for event "${pEvent}" is not a function.`);
+			return this;
+		}
+		
+		switch (pEvent) {
+			case 'connect':
+				this.connectHandler[pEvent] = pCallback;
+				this.unassignedControllers!.forEach(pController => this.connectHandler[pEvent](pController));
+				this.unassignedControllers!.clear();
+				break;
 
-					case 'disconnect':
-						this.disconnectHandler[pEvent] = pCallback;
-						break;
+			case 'disconnect':
+				this.disconnectHandler[pEvent] = pCallback;
+				break;
 
-					default:
-						this.logger.prefix('Gamepad-Module').error(`The event "${pEvent}" is not supported.`);
-				}
-			} else {
-				this.logger.prefix('Gamepad-Module').error(`The callback for event "${pEvent}" is not a function.`);
-			}
+			default:
+				this.logger.prefix('Gamepad-Module').error(`The event "${pEvent}" is not supported.`);
 		}
 		return this;
 	}
@@ -130,10 +182,16 @@ class GamepadManagerSingleton {
 		// This controller only saves a snapshot of the data of when it was first created, but we update it based on new polled data
 		const controller = new Controller(pGamepadEvent.gamepad);
 
-		this.controllers[controller.index.toString()] = controller;
+		this.controllerMap.set(controller.index, controller);
+		this.connectionOrder.push(controller.index);
 		this.connectedControllers!.add(controller);
 		
-		if (typeof(this.connectHandler.connect) === 'function') {
+		// Set as main controller if it's the first one connected
+		if (this.mainControllerIndex === null && this.connectionOrder.length === 1) {
+			this.mainControllerIndex = controller.index;
+		}
+		
+		if (this.connectHandler.connect) {
 			this.connectHandler.connect(controller);
 		} else {
 			this.unassignedControllers!.add(controller);
@@ -149,12 +207,25 @@ class GamepadManagerSingleton {
 		// Maybe add a option to save gamepad info for a short while, incase it disconnected due to battery? 
 		// When reconnected it can prompt an alert that says "restore configuration for gamepad". This will restore that configuration to the controller.
 		const index = pGamepadEvent.gamepad.index;
-		const controller = this.controllers[index.toString()];
+		const controller = this.controllerMap.get(index);
 
-		if (typeof(this.disconnectHandler.disconnect) === 'function') this.disconnectHandler.disconnect(controller);
+		if (controller) {
+			if (this.disconnectHandler.disconnect) this.disconnectHandler.disconnect(controller);
 
-		this.connectedControllers!.delete(controller);
-		delete this.controllers[index.toString()];
+			this.connectedControllers!.delete(controller);
+			this.controllerMap.delete(index);
+			
+			// Remove from connection order
+			const orderIndex = this.connectionOrder.indexOf(index);
+			if (orderIndex !== -1) {
+				this.connectionOrder.splice(orderIndex, 1);
+			}
+			
+			// If this was the main controller, set a new one
+			if (this.mainControllerIndex === index) {
+				this.mainControllerIndex = this.connectionOrder.length > 0 ? this.connectionOrder[0] : null;
+			}
+		}
 	}
 	/**
 	 * Get the latest game state of the connected gamepads (Chrome only saves snapshots of the state, we have to keep polling to get updated states)
@@ -166,11 +237,9 @@ class GamepadManagerSingleton {
 		for (const gamepad of gamepads) {
 			// Can be null if disconnected during the session
 			if (gamepad) {
-				for (const controller in this.controllers) {
-					// Make sure we are updating the correct controller with the right data from the gamepad at the same index
-					if (gamepad.index === this.controllers[controller].gamepad.index) {
-						this.controllers[controller].updateState(gamepad);
-					}
+				const controller = this.controllerMap.get(gamepad.index);
+				if (controller) {
+					controller.updateState(gamepad);
 				}
 			}
 		}
