@@ -8,7 +8,7 @@
     <!-- PWA Meta Tags -->
     <meta name="description" content="Test suite for the Gamepad API library">
     <meta name="theme-color" content="#0066cc">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Gamepad">
     <meta name="msapplication-TileColor" content="#0066cc">
@@ -361,6 +361,183 @@
             background: #e8e8e8;
         }
 
+        .pattern-designer {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .pattern-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pattern-btn {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border-radius: 4px;
+        }
+
+        .pattern-btn:hover {
+            background: #e8e8e8;
+            border-color: #999;
+        }
+
+        .pattern-btn.stop {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+
+        .pattern-btn.stop:hover {
+            background: #ffcdd2;
+        }
+
+        .pattern-list {
+            min-height: 200px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            background: #fff;
+        }
+
+        .pattern-placeholder {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .pattern-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .pattern-item:hover {
+            border-color: #0066cc;
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
+        }
+
+
+        .pattern-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .pattern-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .pattern-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .pattern-action-btn {
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 0.8em;
+            transition: background 0.15s ease;
+        }
+
+        .pattern-action-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .pattern-action-btn.remove {
+            color: #f44336;
+            font-size: 1.2em;
+            font-weight: bold;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pattern-action-btn.remove:hover {
+            background: #ffebee;
+        }
+
+        .pattern-properties {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .pattern-property {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .pattern-property label {
+            font-size: 0.8em;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .pattern-property input {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .pattern-property input:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+
+        .code-output {
+            margin-top: 20px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+                padding: 15px;
+            }
+            
+        .code-output h3 {
+            margin: 0 0 10px 0;
+            font-size: 1em;
+            color: #333;
+        }
+
+        .code-output pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            margin: 0 0 10px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+
         @media (max-width: 768px) {
             .analog-container {
                 grid-template-columns: 1fr;
@@ -411,7 +588,7 @@
                 </div>
                 
                 <div class="dead-zone-controls">
-                    <div class="dead-zone-control">
+                <div class="dead-zone-control">
                         <label for="left-deadzone">Left Dead Zone:</label>
                         <input type="range" id="left-deadzone" min="0" max="0.5" step="0.01" value="0.0">
                         <span id="left-deadzone-value">0.00</span>
@@ -466,6 +643,31 @@
                     <button class="vibration-btn" onclick="testCustomVibration()">Custom</button>
                     <button class="vibration-btn" onclick="testVibrationSequence()">Sequence</button>
                     <button class="vibration-btn stop" onclick="stopVibration()">Stop</button>
+                </div>
+            </div>
+
+            <div class="section" style="grid-column: 1 / -1;">
+                <h2>Custom Vibration Pattern Designer</h2>
+                <div class="pattern-designer">
+                    <div class="pattern-controls">
+                        <button id="add-pattern" class="pattern-btn">Add Pattern</button>
+                        <button id="test-pattern" class="pattern-btn">Test Pattern</button>
+                        <button id="stop-pattern" class="pattern-btn stop">Stop</button>
+                        <button id="export-code" class="pattern-btn">Export Code</button>
+                        <button id="clear-patterns" class="pattern-btn">Clear All</button>
+                    </div>
+                    
+                    <div id="pattern-list" class="pattern-list">
+                        <div class="pattern-placeholder">
+                            <p>No patterns yet. Click "Add Pattern" to create your first vibration pattern.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="code-output" class="code-output" style="display: none;">
+                        <h3>Generated TypeScript Code</h3>
+                        <pre id="code-content"></pre>
+                        <button id="copy-code" class="pattern-btn">Copy to Clipboard</button>
+                    </div>
                 </div>
             </div>
 
@@ -531,6 +733,47 @@
             console.log('PWA was installed');
             installPrompt.style.display = 'none';
         });
+
+        // Handle service worker updates
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                // New service worker is controlling the page
+                console.log('Service worker updated');
+                showUpdateNotification();
+            });
+        }
+
+        function showUpdateNotification() {
+            const updateNotification = document.createElement('div');
+            updateNotification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                background: #4caf50;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1001;
+                font-size: 0.9em;
+                max-width: 300px;
+            `;
+            updateNotification.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>✅ App updated successfully!</span>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2em; margin-left: 10px;">×</button>
+                </div>
+            `;
+            document.body.appendChild(updateNotification);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (updateNotification.parentElement) {
+                    updateNotification.remove();
+                }
+            }, 5000);
+        }
     </script>
 
     <script type="module">
@@ -539,6 +782,10 @@
         let currentController = null;
         let eventLog = [];
         let controllers = new Map();
+        
+        // Vibration Pattern Designer
+        let vibrationPatterns = [];
+        let patternIdCounter = 0;
 
         // Initialize button grid
         function initializeButtons() {
@@ -578,7 +825,7 @@
                 // For triggers (LT, RT), show the actual value (0-1 range)
                 // For other buttons, show 1.00 if pressed, 0.00 if not
                 if (buttonName === 'LT' || buttonName === 'RT') {
-                    valueDisplay.textContent = value.toFixed(2);
+                valueDisplay.textContent = value.toFixed(2);
                 } else {
                     valueDisplay.textContent = pressed ? '1.00' : '0.00';
                 }
@@ -900,7 +1147,7 @@
             
             // Set as current if it's the first one
             if (!currentController) {
-                currentController = controller;
+            currentController = controller;
             }
             
             document.getElementById('status').textContent = `${controllers.size} controller(s) connected`;
@@ -924,7 +1171,7 @@
             
             if (controllers.size === 0) {
                 document.getElementById('status').textContent = 'No controllers connected. Connect a gamepad and press any button.';
-                document.getElementById('status').className = 'status disconnected';
+            document.getElementById('status').className = 'status disconnected';
                 currentController = null;
             } else {
                 document.getElementById('status').textContent = `${controllers.size} controller(s) connected`;
@@ -952,10 +1199,207 @@
         }
         
         updateControllerSelector();
-        updateControllerInfo(currentController);
+            updateControllerInfo(currentController);
 
         // Initial display update (no more polling - everything is event-driven now)
         updateDisplays();
+
+        // Vibration Pattern Designer Functions
+        function initializePatternDesigner() {
+            const addPatternBtn = document.getElementById('add-pattern');
+            const testPatternBtn = document.getElementById('test-pattern');
+            const stopPatternBtn = document.getElementById('stop-pattern');
+            const exportCodeBtn = document.getElementById('export-code');
+            const clearPatternsBtn = document.getElementById('clear-patterns');
+            const copyCodeBtn = document.getElementById('copy-code');
+
+            addPatternBtn.addEventListener('click', addPattern);
+            testPatternBtn.addEventListener('click', testPattern);
+            stopPatternBtn.addEventListener('click', stopPattern);
+            exportCodeBtn.addEventListener('click', exportCode);
+            clearPatternsBtn.addEventListener('click', clearPatterns);
+            copyCodeBtn.addEventListener('click', copyCodeToClipboard);
+
+            updatePatternList();
+        }
+
+        function addPattern() {
+            const pattern = {
+                id: patternIdCounter++,
+                delay: 0,
+                duration: 100,
+                weak: 0.5,
+                strong: 0.5
+            };
+            vibrationPatterns.push(pattern);
+            updatePatternList();
+        }
+
+        function removePattern(patternId) {
+            vibrationPatterns = vibrationPatterns.filter(p => p.id !== patternId);
+            updatePatternList();
+        }
+
+        function updatePatternList() {
+            const patternList = document.getElementById('pattern-list');
+            
+            if (vibrationPatterns.length === 0) {
+                patternList.innerHTML = '<div class="pattern-placeholder"><p>No patterns yet. Click "Add Pattern" to create your first vibration pattern.</p></div>';
+                return;
+            }
+
+            patternList.innerHTML = vibrationPatterns.map((pattern, index) => `
+                <div class="pattern-item" data-pattern-id="${pattern.id}">
+                    <div class="pattern-header">
+                        <div class="pattern-title">
+                            Pattern ${index + 1}
+                        </div>
+                        <div class="pattern-actions">
+                            <button class="pattern-action-btn remove" onclick="removePattern(${pattern.id})">×</button>
+                        </div>
+                    </div>
+                    <div class="pattern-properties">
+                        <div class="pattern-property">
+                            <label>Delay (ms)</label>
+                            <input type="number" value="${pattern.delay}" min="0" step="10" 
+                                   onchange="updatePatternProperty(${pattern.id}, 'delay', this.value)">
+                        </div>
+                        <div class="pattern-property">
+                            <label>Duration (ms)</label>
+                            <input type="number" value="${pattern.duration}" min="1" step="10" 
+                                   onchange="updatePatternProperty(${pattern.id}, 'duration', this.value)">
+                        </div>
+                        <div class="pattern-property">
+                            <label>Weak Motor</label>
+                            <input type="range" value="${pattern.weak}" min="0" max="1" step="0.1" 
+                                   onchange="updatePatternProperty(${pattern.id}, 'weak', this.value)">
+                        </div>
+                        <div class="pattern-property">
+                            <label>Strong Motor</label>
+                            <input type="range" value="${pattern.strong}" min="0" max="1" step="0.1" 
+                                   onchange="updatePatternProperty(${pattern.id}, 'strong', this.value)">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updatePatternProperty(patternId, property, value) {
+            const pattern = vibrationPatterns.find(p => p.id === patternId);
+            if (pattern) {
+                pattern[property] = parseFloat(value);
+                updatePatternList();
+            }
+        }
+
+
+        async function testPattern() {
+            if (!currentController) {
+                logEvent('error', 'No controller connected');
+                return;
+            }
+
+            if (vibrationPatterns.length === 0) {
+                logEvent('error', 'No patterns to test');
+                return;
+            }
+
+            try {
+                logEvent('vibration', 'Testing custom pattern');
+                // Convert patterns to the correct format for vibratePattern
+                const patternSteps = vibrationPatterns.map(pattern => ({
+                    delay: pattern.delay,
+                    duration: pattern.duration,
+                    weak: pattern.weak,
+                    strong: pattern.strong
+                }));
+                await currentController.vibratePattern(patternSteps);
+            } catch (error) {
+                logEvent('error', error.message);
+            }
+        }
+
+        function stopPattern() {
+            if (currentController) {
+                currentController.stopVibration();
+                logEvent('vibration', 'Stopped');
+            }
+        }
+
+        function exportCode() {
+            if (vibrationPatterns.length === 0) {
+                logEvent('error', 'No patterns to export');
+                return;
+            }
+
+            const codeOutput = document.getElementById('code-output');
+            const codeContent = document.getElementById('code-content');
+            
+            const code = generateTypeScriptCode();
+            codeContent.textContent = code;
+            codeOutput.style.display = 'block';
+            
+            // Scroll to code output
+            codeOutput.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateTypeScriptCode() {
+            const patternCode = vibrationPatterns.map(pattern => 
+                `    { delay: ${pattern.delay}, duration: ${pattern.duration}, weak: ${pattern.weak}, strong: ${pattern.strong} }`
+            ).join(',\n');
+
+            return `// Generated vibration pattern
+await controller.vibratePattern([
+${patternCode}
+]);`;
+        }
+
+        async function copyCodeToClipboard() {
+            const codeContent = document.getElementById('code-content');
+            const code = codeContent.textContent;
+            
+            try {
+                await navigator.clipboard.writeText(code);
+                logEvent('success', 'Code copied to clipboard');
+                
+                // Show temporary feedback
+                const copyBtn = document.getElementById('copy-code');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.style.background = '#4caf50';
+                copyBtn.style.color = 'white';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = '';
+                    copyBtn.style.color = '';
+                }, 2000);
+            } catch (error) {
+                logEvent('error', 'Failed to copy code');
+            }
+        }
+
+        function clearPatterns() {
+            if (vibrationPatterns.length === 0) {
+                logEvent('info', 'No patterns to clear');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to clear all patterns?')) {
+                vibrationPatterns = [];
+                patternIdCounter = 0;
+                updatePatternList();
+                document.getElementById('code-output').style.display = 'none';
+                logEvent('info', 'All patterns cleared');
+            }
+        }
+
+        // Make functions globally available
+        window.removePattern = removePattern;
+        window.updatePatternProperty = updatePatternProperty;
+
+        // Initialize pattern designer
+        initializePatternDesigner();
     </script>
 </body>
 </html>

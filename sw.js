@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gamepad-test-suite-v1';
+const CACHE_NAME = 'gamepad-test-suite-v2';
 const urlsToCache = [
   '/',
   '/index.html',
