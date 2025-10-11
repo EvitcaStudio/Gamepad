@@ -538,6 +538,418 @@
         }
 
 
+        .theme-toggle {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 0;
+        }
+
+        .theme-toggle:hover {
+            background: #e9ecef;
+            transform: scale(1.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .theme-toggle.dark {
+            background: #343a40;
+            border-color: #495057;
+            color: #f8f9fa;
+        }
+
+        .theme-toggle.dark:hover {
+            background: #495057;
+        }
+
+        /* Dark theme styles */
+        body.dark {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        body.dark .container {
+            background: #2d2d2d;
+            border-color: #404040;
+        }
+
+        body.dark .status {
+            background: #404040;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark .status.connected {
+            background: #1b5e20;
+            border-color: #2e7d32;
+        }
+
+        body.dark .controller-info {
+            background: #404040;
+            border-color: #555;
+        }
+
+        body.dark .analog-container {
+            background: #404040;
+            border-color: #555;
+        }
+
+        body.dark .analog-display {
+            background: #333;
+            border-color: #555;
+        }
+
+        body.dark .analog-info {
+            color: #999;
+        }
+
+        body.dark .button-grid {
+            background: #404040;
+            border-color: #555;
+        }
+
+        body.dark .button {
+            background: #333;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark .button:hover {
+            background: #404040;
+        }
+
+        body.dark .button.pressed {
+            background: #0066cc;
+            border-color: #0080ff;
+            color: white;
+        }
+
+        body.dark .vibration-controls {
+            background: #404040;
+            border-color: #555;
+        }
+
+        body.dark .vibration-btn {
+            background: #333;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark .vibration-btn:hover {
+            background: #404040;
+        }
+
+        body.dark .vibration-btn.stop {
+            background: #4a1a1a;
+            border-color: #6d2424;
+            color: #ff6b6b;
+        }
+
+        body.dark .vibration-btn.stop:hover {
+            background: #5d2020;
+        }
+
+        body.dark .event-log {
+            background: #333;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark .pattern-designer {
+            background: #404040;
+            border-color: #555;
+        }
+
+        body.dark .pattern-controls {
+            background: #333;
+            border-color: #555;
+        }
+
+        body.dark .pattern-btn {
+            background: #333;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark .pattern-btn:hover {
+            background: #404040;
+        }
+
+        body.dark .pattern-btn.stop {
+            background: #4a1a1a;
+            border-color: #6d2424;
+            color: #ff6b6b;
+        }
+
+        body.dark .pattern-btn.stop:hover {
+            background: #5d2020;
+        }
+
+        body.dark .pattern-item {
+            background: #333;
+            border-color: #555;
+        }
+
+        body.dark .pattern-item:hover {
+            border-color: #0066cc;
+        }
+
+        body.dark .pattern-property input {
+            background: #404040;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark .pattern-property input:focus {
+            border-color: #0066cc;
+        }
+
+        body.dark .code-output {
+            background: #333;
+            border-color: #555;
+        }
+
+        body.dark .code-output pre {
+            background: #1a1a1a;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark .install-prompt {
+            background: #0066cc;
+            border-color: #0080ff;
+        }
+
+        body.dark .install-prompt:hover {
+            background: #0052a3;
+        }
+
+        body.dark .header h1 {
+            color: #e0e0e0;
+        }
+
+        body.dark .analog-stick {
+            background: #333;
+            border-color: #555;
+        }
+
+        body.dark .analog-stick::before {
+            background: #555;
+        }
+
+        body.dark .analog-stick.grabbed::before {
+            background: #0066cc;
+        }
+
+        body.dark .pattern-list {
+            background: #333;
+            border-color: #555;
+        }
+
+        body.dark .pattern-placeholder {
+            color: #999;
+        }
+
+        body.dark .pattern-property label {
+            color: #e0e0e0;
+        }
+
+        body.dark select {
+            background: #404040;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark select:focus {
+            border-color: #0066cc;
+        }
+
+        body.dark select option {
+            background: #404040;
+            color: #e0e0e0;
+        }
+
+        body.dark .section {
+            background: #404040;
+            border-color: #555;
+        }
+
+        body.dark .section h2 {
+            color: #e0e0e0;
+        }
+
+        body.dark .section h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark .controller-selector {
+            background: #333;
+            border-color: #555;
+        }
+
+        body.dark .controller-selector label {
+            color: #e0e0e0;
+        }
+
+        body.dark .dead-zone-controls {
+            background: #333;
+            border-color: #555;
+        }
+
+        body.dark .dead-zone-control label {
+            color: #e0e0e0;
+        }
+
+        body.dark .dead-zone-control input[type="range"] {
+            background: #404040;
+        }
+
+        body.dark .dead-zone-control span {
+            color: #e0e0e0;
+        }
+
+        body.dark .analog-section {
+            background: #333;
+            border-color: #555;
+        }
+
+        body.dark .analog-section h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark .analog-indicator {
+            background: #0066cc;
+        }
+
+        body.dark .pattern-action-btn {
+            background: #dc3545;
+            border-color: #c82333;
+            color: white;
+        }
+
+        body.dark .pattern-action-btn:hover {
+            background: #c82333;
+        }
+
+        body.dark .clear-log {
+            background: #333;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark .clear-log:hover {
+            background: #404040;
+        }
+
+        body.dark .install-content {
+            background: #404040;
+            border-color: #555;
+        }
+
+        body.dark .install-content h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark .install-content p {
+            color: #e0e0e0;
+        }
+
+        body.dark .install-btn {
+            background: #28a745;
+            border-color: #1e7e34;
+            color: white;
+        }
+
+        body.dark .install-btn:hover {
+            background: #1e7e34;
+        }
+
+        body.dark .dismiss-btn {
+            background: #6c757d;
+            border-color: #545b62;
+            color: white;
+        }
+
+        body.dark .dismiss-btn:hover {
+            background: #545b62;
+        }
+
+        body.dark .event-log .event {
+            color: #e0e0e0;
+        }
+
+        body.dark .event-log .event.buttondown {
+            background: #1b5e20;
+            border-color: #2e7d32;
+            color: #c8e6c9;
+        }
+
+        body.dark .event-log .event.buttonup {
+            background: #b71c1c;
+            border-color: #d32f2f;
+            color: #ffcdd2;
+        }
+
+        body.dark .event-log .event.buttonpress {
+            background: #e65100;
+            border-color: #ff9800;
+            color: #ffe0b2;
+        }
+
+        body.dark .event-log .event.axischange {
+            background: #1565c0;
+            border-color: #1976d2;
+            color: #bbdefb;
+        }
+
+        body.dark .event-log .event.grab {
+            background: #4a148c;
+            border-color: #7b1fa2;
+            color: #e1bee7;
+        }
+
+        body.dark .event-log .event.drop {
+            background: #bf360c;
+            border-color: #d84315;
+            color: #ffccbc;
+        }
+
+        body.dark .event-log .event.connect {
+            background: #1b5e20;
+            border-color: #2e7d32;
+            color: #c8e6c9;
+        }
+
+        body.dark .event-log .event.disconnect {
+            background: #b71c1c;
+            border-color: #d32f2f;
+            color: #ffcdd2;
+        }
+
+        body.dark .event-log .event.error {
+            background: #b71c1c;
+            border-color: #d32f2f;
+            color: #ffcdd2;
+        }
+
         @media (max-width: 768px) {
             .analog-container {
                 grid-template-columns: 1fr;
@@ -553,12 +965,27 @@
                 left: 10px;
                 max-width: none;
             }
+
+            .theme-toggle {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Gamepad Test Suite v3.0.0</h1>
+        <div class="header">
+            <h1>Gamepad Test Suite v3.0.0</h1>
+            <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        </div>
         
         <div id="status" class="status disconnected">
             No controllers connected. Connect a gamepad and press any button.
@@ -774,6 +1201,40 @@
                 }
             }, 5000);
         }
+
+        // Theme Management
+        let isDarkMode = false;
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+            
+            if (isDarkMode) {
+                body.classList.add('dark');
+                themeToggle.classList.add('dark');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark');
+                themeToggle.classList.remove('dark');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                isDarkMode = true;
+                document.body.classList.add('dark');
+                document.getElementById('theme-toggle').classList.add('dark');
+                document.getElementById('theme-toggle').textContent = '☀️';
+            }
+        }
     </script>
 
     <script type="module">
@@ -977,21 +1438,6 @@
                 }
             });
 
-            // Global button event - demonstrates the new unified button event
-            controller.addEventListener('button', (buttonName, value, action) => {
-                // Only log for demonstration purposes, avoid spam
-                if (action === 'pressed' || action === 'released') {
-                    let displayName = buttonName;
-                    if (buttonName === 'A') displayName = 'A (X)';
-                    else if (buttonName === 'B') displayName = 'B (O)';
-                    else if (buttonName === 'X') displayName = 'X (□)';
-                    else if (buttonName === 'Y') displayName = 'Y (△)';
-                    else if (buttonName === 'LT') displayName = 'LT (L2)';
-                    else if (buttonName === 'RT') displayName = 'RT (R2)';
-                    
-                    logEvent('button', `${displayName} ${action}`, value.toFixed(2));
-                }
-            });
 
             controller.addEventListener('grab', (analogName) => {
                 logEvent('grab', analogName);
@@ -1182,6 +1628,7 @@
         });
 
         // Initialize
+        loadTheme();
         initializeButtons();
         updateControllerInfo(null);
 
