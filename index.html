@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gamepad Test Suite</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Test suite for the Gamepad API library">
+    <meta name="theme-color" content="#0066cc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Gamepad">
+    <meta name="msapplication-TileColor" content="#0066cc">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/gamepad-icon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/gamepad-icon.svg">
+    <link rel="shortcut icon" href="/icons/gamepad-icon.svg">
     <style>
         * {
             margin: 0;
@@ -291,6 +308,59 @@
             font-size: 0.9em;
         }
 
+        .install-prompt {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ffffff;
+            border: 2px solid #0066cc;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .install-content h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.1em;
+            color: #0066cc;
+        }
+
+        .install-content p {
+            margin: 0 0 12px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .install-btn, .dismiss-btn {
+            padding: 8px 16px;
+            margin-right: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .install-btn {
+            background: #0066cc;
+            color: white;
+        }
+
+        .install-btn:hover {
+            background: #0052a3;
+        }
+
+        .dismiss-btn {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .dismiss-btn:hover {
+            background: #e8e8e8;
+        }
+
         @media (max-width: 768px) {
             .analog-container {
                 grid-template-columns: 1fr;
@@ -298,6 +368,13 @@
             
             .button-grid {
                 grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+            
+            .install-prompt {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
             }
         }
     </style>
@@ -308,6 +385,16 @@
         
         <div id="status" class="status disconnected">
             No controllers connected. Connect a gamepad and press any button.
+        </div>
+        
+        <!-- PWA Install Prompt -->
+        <div id="install-prompt" class="install-prompt" style="display: none;">
+            <div class="install-content">
+                <h3>Install Gamepad Test Suite</h3>
+                <p>Install this app for a better experience and offline access.</p>
+                <button id="install-btn" class="install-btn">Install</button>
+                <button id="dismiss-install" class="dismiss-btn">Not now</button>
+            </div>
         </div>
 
         <div class="grid">
@@ -391,6 +478,60 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installPrompt = document.getElementById('install-prompt');
+        const installBtn = document.getElementById('install-btn');
+        const dismissBtn = document.getElementById('dismiss-install');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show the install prompt
+            installPrompt.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                // Clear the deferredPrompt
+                deferredPrompt = null;
+                // Hide the install prompt
+                installPrompt.style.display = 'none';
+            }
+        });
+
+        dismissBtn.addEventListener('click', () => {
+            installPrompt.style.display = 'none';
+        });
+
+        // Handle app installed
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('PWA was installed');
+            installPrompt.style.display = 'none';
+        });
+    </script>
 
     <script type="module">
         import { GamepadManager, Controller } from './dist/esm/gamepad.js';
