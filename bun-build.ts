@@ -25,8 +25,8 @@ await Promise.all([
     // ES Module version
     Bun.build({
         entrypoints: ['./src/index.ts'],
-        outdir: './dist/esm/',
-        naming: `${packageJson.name}.js`,
+        outdir: './dist',
+        naming: `index.js`,
         banner: banner,
         target: 'browser',
         splitting: false,
@@ -38,7 +38,7 @@ await Promise.all([
     Bun.build({
         entrypoints: ['./src/index.ts'],
         outdir: './dist/min/',
-        naming: `${packageJson.name}.min.js`,
+        naming: `index.min.js`,
         minify: true,
         banner: banner,
         target: 'browser',
@@ -74,8 +74,8 @@ await Promise.all([
 
 // Replace VERSION_REPLACE_ME with actual version in all generated files
 const filesToUpdate = [
-    `dist/esm/${packageJson.name}.js`,
-    `dist/min/${packageJson.name}.min.js`,
+    `dist/index.js`,
+    `dist/min/index.min.js`,
     `dist/iife/${packageJson.name}-iife.js`,
     `dist/iife/${packageJson.name}-iife.min.js`
 ];
