@@ -7,7 +7,7 @@ A modern TypeScript library for handling gamepad input in web applications.
 ### Module
 
 ```javascript
-import { GamepadManager } from './dist/esm/gamepad.js';
+import { GamepadManager } from './dist/index.js';
 ```
 
 

@@ -2,8 +2,8 @@ const CACHE_NAME = 'gamepad-test-suite-v2';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/dist/esm/gamepad.js',
-  '/dist/esm/gamepad.js.map',
+  '/dist/index.js',
+  '/dist/index.js.map',
   '/icons/gamepad-icon.svg',
   '/manifest.json'
 ];

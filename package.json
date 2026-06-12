@@ -2,8 +2,8 @@
   "name": "gamepad",
   "version": "3.0.0",
   "description": "A gamepadmanager to help with games / handling input from a controller",
-  "main": "dist/gamepad.js",
-  "types": "dist/gamepad.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist/**/*",
     "docs/**/*"

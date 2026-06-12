@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gamepad Test Suite</title>
-    
+
     <!-- PWA Meta Tags -->
     <meta name="description" content="Test suite for the Gamepad API library">
     <meta name="theme-color" content="#0066cc">
@@ -13,10 +14,10 @@
     <meta name="apple-mobile-web-app-title" content="Gamepad">
     <meta name="msapplication-TileColor" content="#0066cc">
     <meta name="msapplication-config" content="/browserconfig.xml">
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
-    
+
     <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" href="/icons/gamepad-icon.svg">
     <link rel="icon" type="image/svg+xml" href="/icons/gamepad-icon.svg">
@@ -333,7 +334,8 @@
             color: #666;
         }
 
-        .install-btn, .dismiss-btn {
+        .install-btn,
+        .dismiss-btn {
             padding: 8px 16px;
             margin-right: 8px;
             border: none;
@@ -515,9 +517,9 @@
             background: #f8f9fa;
             border: 1px solid #ddd;
             border-radius: 6px;
-                padding: 15px;
-            }
-            
+            padding: 15px;
+        }
+
         .code-output h3 {
             margin: 0 0 10px 0;
             font-size: 1em;
@@ -954,11 +956,11 @@
             .analog-container {
                 grid-template-columns: 1fr;
             }
-            
+
             .button-grid {
                 grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
             }
-            
+
             .install-prompt {
                 top: 10px;
                 right: 10px;
@@ -980,17 +982,18 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>Gamepad Test Suite v3.0.0</h1>
             <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙</button>
         </div>
-        
+
         <div id="status" class="status disconnected">
             No controllers connected. Connect a gamepad and press any button.
         </div>
-        
+
         <!-- PWA Install Prompt -->
         <div id="install-prompt" class="install-prompt" style="display: none;">
             <div class="install-content">
@@ -1013,9 +1016,9 @@
                 <div id="controller-info" class="controller-info">
                     <p>No controller connected</p>
                 </div>
-                
+
                 <div class="dead-zone-controls">
-                <div class="dead-zone-control">
+                    <div class="dead-zone-control">
                         <label for="left-deadzone">Left Dead Zone:</label>
                         <input type="range" id="left-deadzone" min="0" max="0.5" step="0.01" value="0.0">
                         <span id="left-deadzone-value">0.00</span>
@@ -1083,13 +1086,13 @@
                         <button id="export-code" class="pattern-btn">Export Code</button>
                         <button id="clear-patterns" class="pattern-btn">Clear All</button>
                     </div>
-                    
+
                     <div id="pattern-list" class="pattern-list">
                         <div class="pattern-placeholder">
                             <p>No patterns yet. Click "Add Pattern" to create your first vibration pattern.</p>
                         </div>
                     </div>
-                    
+
                     <div id="code-output" class="code-output" style="display: none;">
                         <h3>Generated TypeScript Code</h3>
                         <pre id="code-content"></pre>
@@ -1193,7 +1196,7 @@
                 </div>
             `;
             document.body.appendChild(updateNotification);
-            
+
             // Auto-remove after 5 seconds
             setTimeout(() => {
                 if (updateNotification.parentElement) {
@@ -1209,7 +1212,7 @@
             isDarkMode = !isDarkMode;
             const body = document.body;
             const themeToggle = document.getElementById('theme-toggle');
-            
+
             if (isDarkMode) {
                 body.classList.add('dark');
                 themeToggle.classList.add('dark');
@@ -1227,7 +1230,7 @@
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
+
             if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
                 isDarkMode = true;
                 document.body.classList.add('dark');
@@ -1238,12 +1241,12 @@
     </script>
 
     <script type="module">
-        import { GamepadManager, Controller } from './dist/esm/gamepad.js';
+        import { GamepadManager, Controller } from './dist/min/index.min.js';
 
         let currentController = null;
         let eventLog = [];
         let controllers = new Map();
-        
+
         // Vibration Pattern Designer
         let vibrationPatterns = [];
         let patternIdCounter = 0;
@@ -1252,19 +1255,19 @@
         function initializeButtons() {
             const buttonsGrid = document.getElementById('buttons-grid');
             const buttonNames = Object.keys(Controller.BUTTONS_MAP);
-            
+
             buttonNames.forEach(buttonName => {
                 const button = document.createElement('div');
                 button.className = 'button';
                 button.id = `btn-${buttonName}`;
-                
+
                 // Show both Xbox and PlayStation names for main buttons
                 let displayName = buttonName;
                 if (buttonName === 'A') displayName = 'A (X)';
                 else if (buttonName === 'B') displayName = 'B (O)';
                 else if (buttonName === 'X') displayName = 'X (□)';
                 else if (buttonName === 'Y') displayName = 'Y (△)';
-                
+
                 button.innerHTML = `
                     <div>${displayName}</div>
                     <div class="button-value" id="value-${buttonName}">0.00</div>
@@ -1277,16 +1280,16 @@
         function updateButton(buttonName, pressed, value) {
             const button = document.getElementById(`btn-${buttonName}`);
             const valueDisplay = document.getElementById(`value-${buttonName}`);
-            
+
             if (button) {
                 button.classList.toggle('pressed', pressed);
             }
-            
+
             if (valueDisplay) {
                 // For triggers (LT, RT), show the actual value (0-1 range)
                 // For other buttons, show 1.00 if pressed, 0.00 if not
                 if (buttonName === 'LT' || buttonName === 'RT') {
-                valueDisplay.textContent = value.toFixed(2);
+                    valueDisplay.textContent = value.toFixed(2);
                 } else {
                     valueDisplay.textContent = pressed ? '1.00' : '0.00';
                 }
@@ -1298,15 +1301,15 @@
             const stick = document.getElementById(`${side}-stick`);
             const indicator = document.getElementById(`${side}-indicator`);
             const info = document.getElementById(`${side}-info`);
-            
+
             if (stick && indicator && info) {
                 // Convert from -1,1 to 0,100 for positioning (already clamped by library)
                 const x = ((position.x + 1) / 2) * 100;
                 const y = ((position.y + 1) / 2) * 100;
-                
+
                 indicator.style.left = `${x}%`;
                 indicator.style.top = `${y}%`;
-                
+
                 info.innerHTML = `
                     X: ${position.x.toFixed(2)} | Y: ${position.y.toFixed(2)}<br>
                     Mag: ${position.magnitude.toFixed(2)} | Ang: ${(position.angle * 180 / Math.PI).toFixed(0)}°
@@ -1318,22 +1321,22 @@
         function logEvent(type, ...args) {
             const timestamp = new Date().toLocaleTimeString();
             const event = { type, args, timestamp };
-            
+
             // Filter out spammy axis events
             if (type === 'axischange' && eventLog.length > 0) {
                 const lastEvent = eventLog[0];
-                if (lastEvent.type === 'axischange' && 
-                    lastEvent.args[0] === args[0] && 
+                if (lastEvent.type === 'axischange' &&
+                    lastEvent.args[0] === args[0] &&
                     Math.abs(parseFloat(lastEvent.args[1]) - parseFloat(args[1])) < 0.01) {
                     return; // Skip similar axis events
                 }
             }
-            
+
             eventLog.unshift(event);
             if (eventLog.length > 50) {
                 eventLog.pop();
             }
-            
+
             updateEventLogDisplay();
         }
 
@@ -1341,16 +1344,16 @@
         function updateEventLogDisplay() {
             const logContainer = document.getElementById('event-log');
             logContainer.innerHTML = eventLog.map(event => {
-                const argsStr = event.args.map(arg => 
+                const argsStr = event.args.map(arg =>
                     typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
                 ).join(', ');
-                
+
                 return `<div class="event ${event.type}">[${event.timestamp}] ${event.type}: ${argsStr}</div>`;
             }).join('');
         }
 
         // Clear event log
-        window.clearEventLog = function() {
+        window.clearEventLog = function () {
             eventLog = [];
             updateEventLogDisplay();
         };
@@ -1359,14 +1362,14 @@
         function updateControllerSelector() {
             const selector = document.getElementById('controller-select');
             selector.innerHTML = '<option value="">No controllers</option>';
-            
+
             controllers.forEach((controller, index) => {
                 const option = document.createElement('option');
                 option.value = index;
                 option.textContent = `Controller ${index} (${controller.getType()})`;
                 selector.appendChild(option);
             });
-            
+
             if (currentController) {
                 selector.value = currentController.index;
             }
@@ -1400,7 +1403,7 @@
                 else if (buttonName === 'X') displayName = 'X (□)';
                 else if (buttonName === 'Y') displayName = 'Y (△)';
                 logEvent('buttondown', displayName, value.toFixed(2));
-                
+
                 // Update button display immediately
                 updateButton(buttonName, true, value);
                 updateControllerInfo(); // Update pressed buttons list
@@ -1413,7 +1416,7 @@
                 else if (buttonName === 'X') displayName = 'X (□)';
                 else if (buttonName === 'Y') displayName = 'Y (△)';
                 logEvent('buttonup', displayName, value.toFixed(2));
-                
+
                 // Update button display immediately
                 updateButton(buttonName, false, value);
                 updateControllerInfo(); // Update pressed buttons list
@@ -1423,7 +1426,7 @@
                 if (!repeat) { // Only log non-repeat events to reduce spam
                     logEvent('axischange', axisName, value.toFixed(2));
                 }
-                
+
                 // Update analog display immediately
                 updateAnalogFromAxis(axisName, value);
                 updateControllerInfo(); // Update analog held state
@@ -1453,11 +1456,11 @@
         // Update analog stick from individual axis changes
         function updateAnalogFromAxis(axisName, value) {
             if (!currentController) return;
-            
+
             const state = currentController.getState();
             let leftStick = { ...state.analogs.leftStick };
             let rightStick = { ...state.analogs.rightStick };
-            
+
             if (axisName === 'LEFT_X') {
                 leftStick.x = value;
                 leftStick.magnitude = Math.sqrt(leftStick.x * leftStick.x + leftStick.y * leftStick.y);
@@ -1487,7 +1490,7 @@
                 if (currentController) {
                     // Get reactive state (cached for performance)
                     const state = currentController.getState();
-                    
+
                     // Update UI reactively
                     updateButtons(state.buttons);
                     updateAnalogs(state.analogs);
@@ -1515,7 +1518,7 @@
         document.getElementById('left-deadzone').addEventListener('input', (e) => {
             const value = parseFloat(e.target.value);
             document.getElementById('left-deadzone-value').textContent = value.toFixed(2);
-            
+
             if (currentController) {
                 currentController.setLeftAnalogDeadZone(value);
             }
@@ -1524,7 +1527,7 @@
         document.getElementById('right-deadzone').addEventListener('input', (e) => {
             const value = parseFloat(e.target.value);
             document.getElementById('right-deadzone-value').textContent = value.toFixed(2);
-            
+
             if (currentController) {
                 currentController.setRightAnalogDeadZone(value);
             }
@@ -1543,7 +1546,7 @@
         });
 
         // Vibration test functions
-        window.testVibrationPreset = async function(preset) {
+        window.testVibrationPreset = async function (preset) {
             if (currentController) {
                 try {
                     logEvent('vibration', `Preset: ${preset}`);
@@ -1554,7 +1557,7 @@
             }
         };
 
-        window.testCustomVibration = async function() {
+        window.testCustomVibration = async function () {
             if (currentController) {
                 try {
                     logEvent('vibration', 'Custom 500ms');
@@ -1565,7 +1568,7 @@
             }
         };
 
-        window.testVibrationSequence = async function() {
+        window.testVibrationSequence = async function () {
             if (currentController) {
                 try {
                     logEvent('vibration', 'Sequence');
@@ -1580,7 +1583,7 @@
             }
         };
 
-        window.stopVibration = function() {
+        window.stopVibration = function () {
             if (currentController) {
                 currentController.stopVibration();
                 logEvent('vibration', 'Stopped');
@@ -1590,15 +1593,15 @@
         // GamepadManager event listeners
         GamepadManager.on('connect', (controller) => {
             controllers.set(controller.index, controller);
-            
+
             // Set as current if it's the first one
             if (!currentController) {
-            currentController = controller;
+                currentController = controller;
             }
-            
+
             document.getElementById('status').textContent = `${controllers.size} controller(s) connected`;
             document.getElementById('status').className = 'status connected';
-            
+
             logEvent('connect', `Index ${controller.index}`, controller.getType());
             setupControllerEvents(controller);
             updateControllerSelector();
@@ -1608,21 +1611,21 @@
         GamepadManager.on('disconnect', (controller) => {
             logEvent('disconnect', `Index ${controller.index}`);
             controllers.delete(controller.index);
-            
+
             // Switch to another controller if current one disconnected
             if (currentController === controller) {
                 const firstController = controllers.values().next().value;
                 currentController = firstController || null;
             }
-            
+
             if (controllers.size === 0) {
                 document.getElementById('status').textContent = 'No controllers connected. Connect a gamepad and press any button.';
-            document.getElementById('status').className = 'status disconnected';
+                document.getElementById('status').className = 'status disconnected';
                 currentController = null;
             } else {
                 document.getElementById('status').textContent = `${controllers.size} controller(s) connected`;
             }
-            
+
             updateControllerSelector();
             updateControllerInfo(currentController);
         });
@@ -1638,15 +1641,15 @@
             controllers.set(controller.index, controller);
             setupControllerEvents(controller);
         });
-        
+
         if (existingControllers.length > 0) {
             currentController = existingControllers[0];
             document.getElementById('status').textContent = `${controllers.size} controller(s) connected`;
             document.getElementById('status').className = 'status connected';
         }
-        
+
         updateControllerSelector();
-            updateControllerInfo(currentController);
+        updateControllerInfo(currentController);
 
         // Initial display update (no more polling - everything is event-driven now)
         updateDisplays();
@@ -1689,7 +1692,7 @@
 
         function updatePatternList() {
             const patternList = document.getElementById('pattern-list');
-            
+
             if (vibrationPatterns.length === 0) {
                 patternList.innerHTML = '<div class="pattern-placeholder"><p>No patterns yet. Click "Add Pattern" to create your first vibration pattern.</p></div>';
                 return;
@@ -1781,17 +1784,17 @@
 
             const codeOutput = document.getElementById('code-output');
             const codeContent = document.getElementById('code-content');
-            
+
             const code = generateTypeScriptCode();
             codeContent.textContent = code;
             codeOutput.style.display = 'block';
-            
+
             // Scroll to code output
             codeOutput.scrollIntoView({ behavior: 'smooth' });
         }
 
         function generateTypeScriptCode() {
-            const patternCode = vibrationPatterns.map(pattern => 
+            const patternCode = vibrationPatterns.map(pattern =>
                 `    { delay: ${pattern.delay}, duration: ${pattern.duration}, weak: ${pattern.weak}, strong: ${pattern.strong} }`
             ).join(',\n');
 
@@ -1804,18 +1807,18 @@ ${patternCode}
         async function copyCodeToClipboard() {
             const codeContent = document.getElementById('code-content');
             const code = codeContent.textContent;
-            
+
             try {
                 await navigator.clipboard.writeText(code);
                 logEvent('success', 'Code copied to clipboard');
-                
+
                 // Show temporary feedback
                 const copyBtn = document.getElementById('copy-code');
                 const originalText = copyBtn.textContent;
                 copyBtn.textContent = 'Copied!';
                 copyBtn.style.background = '#4caf50';
                 copyBtn.style.color = 'white';
-                
+
                 setTimeout(() => {
                     copyBtn.textContent = originalText;
                     copyBtn.style.background = '';
@@ -1831,7 +1834,7 @@ ${patternCode}
                 logEvent('info', 'No patterns to clear');
                 return;
             }
-            
+
             if (confirm('Are you sure you want to clear all patterns?')) {
                 vibrationPatterns = [];
                 patternIdCounter = 0;
@@ -1849,4 +1852,5 @@ ${patternCode}
         initializePatternDesigner();
     </script>
 </body>
+
 </html>
