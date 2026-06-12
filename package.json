@@ -1,6 +1,6 @@
 {
   "name": "gamepad",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A gamepadmanager to help with games / handling input from a controller",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,13 @@
     "build:docs": "npx typedoc",
     "build:dist": "bun run build && bun run build:docs"
   },
-  "keywords": ["gamepad", "controller", "input", "typescript", "browser"],
+  "keywords": [
+    "gamepad",
+    "controller",
+    "input",
+    "typescript",
+    "browser"
+  ],
   "author": "https://github.com/doubleactii",
   "license": "MIT",
   "repository": {
