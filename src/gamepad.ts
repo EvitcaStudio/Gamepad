@@ -156,15 +156,16 @@ class GamepadManagerSingleton {
 			return this;
 		}
 		
-		switch (pEvent) {
+		const lowerEvent = pEvent.toLowerCase();
+		switch (lowerEvent) {
 			case 'connect':
-				this.connectHandler[pEvent] = pCallback;
-				this.unassignedControllers!.forEach(pController => this.connectHandler[pEvent](pController));
+				this.connectHandler[lowerEvent] = pCallback;
+				this.unassignedControllers!.forEach(pController => this.connectHandler[lowerEvent](pController));
 				this.unassignedControllers!.clear();
 				break;
 
 			case 'disconnect':
-				this.disconnectHandler[pEvent] = pCallback;
+				this.disconnectHandler[lowerEvent] = pCallback;
 				break;
 
 			default:

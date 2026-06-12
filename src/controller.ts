@@ -114,16 +114,16 @@ class Controller {
 	})()
 	/**
 	 * User-configurable dead zone threshold (0.0 - 1.0)
-	 * Default is 0.0 (no dead zone) following industry standards.
+	 * Default is 0.15 following industry standards.
 	 * Developers should configure this based on their application needs.
 	 * Typical pValues: 0.0 (none), 0.15 (light), 0.25 (medium)
 	 */
-	deadZone: number = 0.0;
+	deadZone: number = 0.15;
 	/**
 	 * Separate dead zones for left and right analog sticks
 	 */
-	leftAnalogDeadZone: number = 0.0;
-	rightAnalogDeadZone: number = 0.0;
+	leftAnalogDeadZone: number = 0.15;
+	rightAnalogDeadZone: number = 0.15;
 	/**
 	 * Stick drift compensation pValues per axis
 	 */
@@ -423,20 +423,23 @@ class Controller {
 					}
 				}
 				
-				// Handle triggers as analog axes
-				if (buttonName === 'LT' || buttonName === 'RT') {
+				// Handle triggers as analog axes safely (only as a fallback if button value is zero)
+				if ((buttonName === 'LT' || buttonName === 'RT') && value === 0) {
 					const triggerAxisIndex = buttonName === 'LT' ? 4 : 5;
-					if (this.info.axes?.[triggerAxisIndex] !== undefined) {
-						value = Math.abs(this.info.axes[triggerAxisIndex]);
-						isPressed = value > 0.1;
+					if (this.info.axes && this.info.axes[triggerAxisIndex] !== undefined) {
+						const axisValue = Math.abs(this.info.axes[triggerAxisIndex]);
+						if (axisValue > 0.05) {
+							value = axisValue;
+							isPressed = value > 0.1;
+						}
 					}
 				}
 				
 				// Get or create cached state (reuse existing object)
-				let currentState = this.currentButtonStates.get(buttonName);
+				let currentState = this.currentButtonStates.get(actualButtonName);
 				if (!currentState) {
 					currentState = { pressed: false, value: 0 };
-					this.currentButtonStates.set(buttonName, currentState);
+					this.currentButtonStates.set(actualButtonName, currentState);
 				}
 				
 				// Only fire events if state changed (update in place to avoid object churn)
@@ -447,11 +450,11 @@ class Controller {
 					
 					// Fire appropriate events
 					if (isPressed && !wasPressed) {
-						this.fireEvent('buttondown', buttonName, value);
+						this.fireEvent('buttondown', actualButtonName, value);
 					} else if (!isPressed && wasPressed) {
-						this.fireEvent('buttonup', buttonName, value);
+						this.fireEvent('buttonup', actualButtonName, value);
 					}
-					this.fireEvent('buttonpress', buttonName, value, wasPressed);
+					this.fireEvent('buttonpress', actualButtonName, value, wasPressed);
 					
 					// Fire global button event for all button changes
 					let action: ButtonAction;
@@ -462,7 +465,7 @@ class Controller {
 					} else {
 						action = 'held';
 					}
-					this.fireEvent('button', buttonName, value, action);
+					this.fireEvent('button', actualButtonName, value, action);
 				} else {
 					// Update the cached state even if no events are fired
 					currentState.pressed = isPressed;
@@ -551,18 +554,18 @@ class Controller {
 		const id = this.gamepad.id.toLowerCase();
 		const mapping = this.gamepad.mapping;
 		
-		// Use standard mapping if available
+		// Detect specific controller types from ID first
+		if (id.includes('xbox') || id.includes('microsoft')) {
+			return 'Xbox';
+		} else if (id.includes('playstation') || id.includes('sony') || id.includes('dualshock') || id.includes('dualsense')) {
+			return 'PS';
+		} else if (id.includes('nintendo') || id.includes('switch')) {
+			return 'NS';
+		} else if (id.includes('logitech')) {
+			return 'PC';
+		}
+		
 		if (mapping === 'standard') {
-			// Detect specific controller types from ID
-			if (id.includes('xbox') || id.includes('microsoft')) {
-				return 'Xbox';
-			} else if (id.includes('playstation') || id.includes('sony') || id.includes('dualshock') || id.includes('dualsense')) {
-				return 'PS';
-			} else if (id.includes('nintendo') || id.includes('switch')) {
-				return 'NS';
-			} else if (id.includes('logitech')) {
-				return 'PC';
-			}
 			return 'Standard';
 		}
 		
@@ -841,25 +844,33 @@ class Controller {
 	isRightAnalogHeld(): boolean {
 		return this.rightAnalogHeld;
 	}
-	/**
-	 * Checks whether a button is pressed down or not
-	 * 
-	 * @param pButtonName - The button to check if its pressed (case agnostic)
-	 * @returns True if button is pressed
-	 * @throws Error if buttonName is not a valid button
-	 */
 	isButtonPressed(pButtonName: string): boolean {
 		if (!pButtonName) {
 			throw new Error('Button name must be a non-empty string');
 		}
 		
 		// Convert to uppercase for case-insensitive matching
-		const upperButtonName = pButtonName.toUpperCase();
+		let upperButtonName = pButtonName.toUpperCase();
+		
+		// Support cross-mapping between PlayStation and Standard names
+		if (this.type === 'PS') {
+			if (upperButtonName === 'A') upperButtonName = 'CROSS';
+			else if (upperButtonName === 'B') upperButtonName = 'CIRCLE';
+			else if (upperButtonName === 'X') upperButtonName = 'SQUARE';
+			else if (upperButtonName === 'Y') upperButtonName = 'TRIANGLE';
+		} else {
+			if (upperButtonName === 'CROSS') upperButtonName = 'A';
+			else if (upperButtonName === 'CIRCLE') upperButtonName = 'B';
+			else if (upperButtonName === 'SQUARE') upperButtonName = 'X';
+			else if (upperButtonName === 'TRIANGLE') upperButtonName = 'Y';
+		}
 		
 		// Check if it's a valid button name
-		const validButtons = Object.keys(Controller.BUTTONS_MAP);
-		if (!validButtons.includes(upperButtonName)) {
-			throw new Error(`Invalid button name: ${pButtonName}. Valid buttons: ${validButtons.join(', ')}`);
+		const validStandardButtons = Object.keys(Controller.BUTTONS_MAP);
+		const validPSButtons = Object.values(Controller.PS4_REMAPPED);
+		
+		if (!validStandardButtons.includes(upperButtonName) && !validPSButtons.includes(upperButtonName)) {
+			throw new Error(`Invalid button name: ${pButtonName}. Valid buttons: ${validStandardButtons.join(', ')} / ${validPSButtons.join(', ')}`);
 		}
 		
 		// Use modern state system

@@ -1020,13 +1020,13 @@
                 <div class="dead-zone-controls">
                     <div class="dead-zone-control">
                         <label for="left-deadzone">Left Dead Zone:</label>
-                        <input type="range" id="left-deadzone" min="0" max="0.5" step="0.01" value="0.0">
-                        <span id="left-deadzone-value">0.00</span>
+                        <input type="range" id="left-deadzone" min="0" max="0.5" step="0.01" value="0.15">
+                        <span id="left-deadzone-value">0.15</span>
                     </div>
                     <div class="dead-zone-control">
                         <label for="right-deadzone">Right Dead Zone:</label>
-                        <input type="range" id="right-deadzone" min="0" max="0.5" step="0.01" value="0.0">
-                        <span id="right-deadzone-value">0.00</span>
+                        <input type="range" id="right-deadzone" min="0" max="0.5" step="0.01" value="0.15">
+                        <span id="right-deadzone-value">0.15</span>
                     </div>
                 </div>
             </div>
@@ -1115,13 +1115,24 @@
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    // Unregister service worker during local development to avoid caching issues
+                    navigator.serviceWorker.getRegistrations().then((registrations) => {
+                        for (let registration of registrations) {
+                            registration.unregister().then((success) => {
+                                if (success) console.log('Local SW unregistered for development');
+                            });
+                        }
                     });
+                } else {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then((registration) => {
+                            console.log('SW registered: ', registration);
+                        })
+                        .catch((registrationError) => {
+                            console.log('SW registration failed: ', registrationError);
+                        });
+                }
             });
         }
 
@@ -1278,8 +1289,14 @@
 
         // Update button display
         function updateButton(buttonName, pressed, value) {
-            const button = document.getElementById(`btn-${buttonName}`);
-            const valueDisplay = document.getElementById(`value-${buttonName}`);
+            let lookupName = buttonName;
+            if (buttonName === 'CROSS') lookupName = 'A';
+            else if (buttonName === 'CIRCLE') lookupName = 'B';
+            else if (buttonName === 'SQUARE') lookupName = 'X';
+            else if (buttonName === 'TRIANGLE') lookupName = 'Y';
+
+            const button = document.getElementById(`btn-${lookupName}`);
+            const valueDisplay = document.getElementById(`value-${lookupName}`);
 
             if (button) {
                 button.classList.toggle('pressed', pressed);
@@ -1288,7 +1305,7 @@
             if (valueDisplay) {
                 // For triggers (LT, RT), show the actual value (0-1 range)
                 // For other buttons, show 1.00 if pressed, 0.00 if not
-                if (buttonName === 'LT' || buttonName === 'RT') {
+                if (lookupName === 'LT' || lookupName === 'RT') {
                     valueDisplay.textContent = value.toFixed(2);
                 } else {
                     valueDisplay.textContent = pressed ? '1.00' : '0.00';

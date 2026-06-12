@@ -34,6 +34,11 @@ self.addEventListener('install', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  // Only handle HTTP and HTTPS requests, ignore chrome-extension, data, etc.
+  if (!event.request.url.startsWith('http') && !event.request.url.startsWith('https')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {

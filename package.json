@@ -9,7 +9,7 @@
     "docs/**/*"
   ],
   "scripts": {
-    "test": "npm run build && npx http-server -p 3000 -o",
+    "test": "npm run build && npx http-server -p 3000 -c-1 -o",
     "build": "bun run bun-build.ts && npx tsc --declaration --emitDeclarationOnly --declarationMap false --sourceMap false",
     "build:docs": "npx typedoc",
     "build:dist": "bun run build && bun run build:docs"
