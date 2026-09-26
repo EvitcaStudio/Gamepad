@@ -1,4 +1,4 @@
-# GamepadManager v3.0.0
+# GamepadManager v3.1.0
 
 A modern TypeScript library for handling gamepad input in web applications.
 
@@ -9,6 +9,30 @@ A modern TypeScript library for handling gamepad input in web applications.
 ```javascript
 import { GamepadManager } from './dist/index.js';
 ```
+
+## Polling ownership
+
+`GamepadManager` automatically starts one `requestAnimationFrame` polling loop when the module is created. This is the simplest option and is a good fit for menus, tools, and smaller applications.
+
+If your game already owns one authoritative frame loop, stop the library loop and poll exactly once from that loop:
+
+```javascript
+GamepadManager.stopPolling();
+
+function gameLoop() {
+  GamepadManager.pollGamepadStateOnce();
+  // Update input, simulation, and rendering in your chosen order.
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+```
+
+Choose one polling owner. Do not leave automatic polling enabled while also calling `pollGamepadStateOnce()` or `pollGamepadState()` yourself. Two polling loops read the same device twice, repeat callback work, and can make controller input arrive out of order relative to the game's simulation.
+
+Automatic polling is easier to integrate. Host-controlled polling is better when the game needs deterministic update ordering or already has a frame loop, but the game then owns the responsibility to poll once per frame. `stopPolling()` pauses only the library's loop; it does not disconnect controllers or clear their cached state.
+
+The library owns device normalization, dead zones, connection state, and low-level events. The game should own higher-level questions such as which device currently controls the player, whether input is allowed in the current menu/gameplay context, and how competing devices are arbitrated.
 
 
 ## Quick Start
@@ -23,8 +47,8 @@ GamepadManager.on('connect', (controller) => {
     console.log(`${button} pressed with value: ${value}`);
   });
   
-  controller.addEventListener('axischange', (axis, value, angle) => {
-    console.log(`${axis} moved to ${value} at angle ${angle}`);
+  controller.addEventListener('analogchange', (analog, position) => {
+    console.log(`${analog} moved to`, position);
   });
   
   // Test vibration
@@ -61,7 +85,7 @@ const metadata = GamepadManager.getControllersWithMetadata();
 
 ### Event System
 
-The library uses an event system:
+The library uses an event system. Events are emitted while controller state is being processed, so callbacks should stay lightweight and should avoid unnecessary allocations or logging in high-frequency paths.
 
 ```javascript
 controller.addEventListener('buttondown', (buttonName, value) => {
@@ -70,7 +94,8 @@ controller.addEventListener('buttondown', (buttonName, value) => {
 });
 
 controller.addEventListener('buttonpress', (buttonName, value, repeat) => {
-  // Fired continuously while button is held
+  // Fired when a held button's reported value changes.
+  // It is not called every polling frame when the value is unchanged.
   console.log(`${buttonName} held: ${value} (repeat: ${repeat})`);
 });
 
@@ -79,8 +104,15 @@ controller.addEventListener('buttonup', (buttonName, value) => {
   console.log(`${buttonName} released: ${value}`);
 });
 
+controller.addEventListener('analogchange', (analogName, position) => {
+  // Preferred gameplay event: one callback for a changed stick.
+  // The position object is reused and updated by the library; copy it if you
+  // need to retain a snapshot after this callback returns.
+  console.log(`${analogName}:`, position);
+});
+
 controller.addEventListener('axischange', (axisName, value, angle, repeat) => {
-  // Fired when analog axis value changes
+  // Legacy/axis-specific event: X and Y are reported separately.
   console.log(`${axisName}: ${value} at angle ${angle}`);
 });
 
@@ -94,7 +126,7 @@ controller.addEventListener('drop', (analogName) => {
   console.log(`${analogName} analog dropped`);
 });
 
-// Global button event - fires for all button changes
+// Unified button event - an alternative to buttondown/buttonpress/buttonup
 controller.addEventListener('button', (buttonName, value, action) => {
   console.log(`${buttonName}: ${value} (${action})`);
   
@@ -109,6 +141,20 @@ controller.addEventListener('button', (buttonName, value, action) => {
 });
 ```
 
+### Choosing event families
+
+Use one event family for one piece of behavior. Do not register both the unified event and the corresponding specific events for the same action.
+
+| Need | Preferred event | Why |
+| --- | --- | --- |
+| Different press, hold, and release behavior | `buttondown` / `buttonpress` / `buttonup` | Precise lifecycle control |
+| One handler for all button transitions | `button` | Simpler dispatch, but less explicit |
+| Gameplay movement from a stick | `analogchange` | One coalesced callback per changed stick |
+| Logic tied to individual X/Y axes | `axischange` | Axis-level detail, but usually two callbacks per stick update |
+| Detect when a stick starts/stops being used | `grab` / `drop` | Low-frequency transition events |
+
+For example, subscribing to `buttondown` and `button` and making both callbacks trigger `jump()` can fire duplicate gameplay work. Likewise, subscribing to both `analogchange` and `axischange` and writing movement from both will process one physical stick movement more than once. Pick the narrowest event family that covers the behavior.
+
 **Note:** Event names are case agnostic - `'buttondown'`, `'ButtonDown'`, `'BUTTONDOWN'` all work the same way.
 
 ### ButtonAction Type
@@ -116,7 +162,7 @@ controller.addEventListener('button', (buttonName, value, action) => {
 The `ButtonAction` type defines the possible actions for the global button event:
 
 - **`'pressed'`** - Button was just pressed (transition from not pressed to pressed)
-- **`'held'`** - Button is being held down (continuous while pressed)  
+- **`'held'`** - A held button's reported value changed while it remained pressed; it is not emitted every polling frame when unchanged
 - **`'released'`** - Button was just released (transition from pressed to not pressed)
 
 ### Controller Information
@@ -317,16 +363,27 @@ PlayStation controllers automatically map to PlayStation button names:
 
 ### Events
 
+#### Manager events
+
+Register these with `GamepadManager.on(...)`:
+
 | Event | Description | Parameters |
 |-------|-------------|------------|
 | `connect` | Controller connected | `(controller: Controller)` |
 | `disconnect` | Controller disconnected | `(controller: Controller)` |
-| `button` | All button changes (global) | `(button: string, value: number, action: ButtonAction)` |
+
+#### Controller events
+
+Register these with `controller.addEventListener(...)`:
+
+| Event | Description | Parameters |
+|-------|-------------|------------|
+| `button` | Unified button changes for this controller | `(button: string, value: number, action: ButtonAction)` |
 | `buttondown` | Button initially pressed | `(button: string, value: number)` |
-| `buttonpress` | Button held (continuous) | `(button: string, value: number, repeat: boolean)` |
+| `buttonpress` | Held button value changed | `(button: string, value: number, repeat: boolean)` |
 | `buttonup` | Button released | `(button: string, value: number)` |
+| `analogchange` | Coalesced stick position changed | `(analog: 'LEFT' \| 'RIGHT', position: AnalogPosition, repeat: boolean)` |
 | `axischange` | Analog axis changed | `(axis: string, value: number, angle: number, repeat: boolean)` |
-| `analogmove` | Alias for axischange | `(axis: string, value: number, angle: number, repeat: boolean)` |
 | `grab` | Analog stick grabbed | `(analog: string)` |
 | `drop` | Analog stick released | `(analog: string)` |
 

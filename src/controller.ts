@@ -7,7 +7,9 @@ import { GamepadManager } from './gamepad';
 // Point/Position types
 export type Point2D = { x: number; y: number };
 
-// Analog stick position with metadata
+// Analog stick position with metadata. Instances are cached and updated in
+// place, so event consumers should copy values if they need to retain a
+// snapshot beyond the callback.
 export type AnalogPosition = { x: number; y: number; magnitude: number; angle: number };
 
 // Button state with pressed status and value
@@ -15,7 +17,12 @@ export type ButtonState = { pressed: boolean; value: number };
 
 // Button action types for the global button event
 /**
- * Button action types for the global 'button' event
+ * Button action types for the unified 'button' event.
+ *
+ * The unified event is convenient when a consumer wants one callback for all
+ * button transitions. It is an alternative to the more specific
+ * `buttondown`/`buttonpress`/`buttonup` events, not an additional event family
+ * to register alongside them for the same behavior.
  * 
  * @typedef {Object} ButtonAction
  * @property {'pressed'} pressed - Button was just pressed (transition from not pressed to pressed)
@@ -173,6 +180,8 @@ class Controller {
 		'HOME': 16, // Home button (not available on all controllers)
 		'OPTION': 17 // Option button (not available on all controllers)
 	}
+	/** Cached button names so polling does not allocate Object.keys() every frame. */
+	static BUTTON_NAMES: string[] = Object.keys(Controller.BUTTONS_MAP);
 	/**
 	 * A reverse map of the button names
 	 */
@@ -398,7 +407,7 @@ class Controller {
 	 * Updates button states reactively (Optimized - no object churn)
 	 */
 	private updateButtonStates(pButtons: readonly GamepadButton[]): void {
-		Object.keys(Controller.BUTTONS_MAP).forEach(buttonName => {
+		Controller.BUTTON_NAMES.forEach(buttonName => {
 			const buttonIndex = Controller.BUTTONS_MAP[buttonName];
 			const button = pButtons[buttonIndex];
 			
@@ -507,6 +516,11 @@ class Controller {
 			currentLeft.y = leftFiltered.y;
 			currentLeft.magnitude = leftFiltered.magnitude;
 			currentLeft.angle = leftAngle;
+
+			// One coalesced event per stick update for consumers that want to
+			// apply movement once per poll. The legacy axischange events below
+			// remain available for backwards compatibility.
+			this.fireEvent('analogchange', 'LEFT', currentLeft, true);
 			
 			this.fireEvent('axischange', 'LEFT_X', leftFiltered.x, leftAngle, true);
 			this.fireEvent('axischange', 'LEFT_Y', leftFiltered.y, leftAngle, true);
@@ -540,6 +554,7 @@ class Controller {
 			currentRight.y = rightFiltered.y;
 			currentRight.magnitude = rightFiltered.magnitude;
 			currentRight.angle = rightAngle;
+			this.fireEvent('analogchange', 'RIGHT', currentRight, true);
 			
 			this.fireEvent('axischange', 'RIGHT_X', rightFiltered.x, rightAngle, true);
 			this.fireEvent('axischange', 'RIGHT_Y', rightFiltered.y, rightAngle, true);
@@ -631,15 +646,28 @@ class Controller {
 		}
 		return buttonsDown;
 	}
-    /**
-     * Attaches a callback to the specified event.
-	 * 
-     * @param pEvent - The event to attach the callback to
-     * @param pCallback - The function to be called when the event is triggered
-     * @return The Controller instance
-     */
 	/**
-	 * Adds an event listener with optional configuration
+	 * Adds an event listener with optional configuration.
+	 *
+	 * Supported event families:
+	 *
+	 * - `buttondown`, `buttonpress`, and `buttonup` provide precise button
+	 *   lifecycle events. Use these when different phases need different logic.
+	 * - `button` is a unified alternative that reports `pressed`, `held`, or
+	 *   `released`. Choose it instead of the three specific button events when
+	 *   one callback is sufficient.
+	 * - `analogchange` reports one coalesced update per changed stick and is the
+	 *   preferred event for gameplay movement.
+	 * - `axischange` reports separate X and Y callbacks for a stick. It remains
+	 *   available for legacy or axis-specific consumers, but one physical stick
+	 *   update can produce two callbacks. Do not subscribe to both
+	 *   `analogchange` and `axischange` for the same movement logic.
+	 * - `grab` and `drop` report analog-use transitions rather than every frame.
+	 *
+	 * Registering overlapping events is not free: callbacks run during the poll,
+	 * so subscribing to both the unified and specific button events can duplicate
+	 * gameplay work, allocations, logs, or movement writes. Pick the narrowest
+	 * event family that covers the behavior you need.
 	 * 
 	 * @param pEvent - The event name (case agnostic)
 	 * @param pCallback - The callback function

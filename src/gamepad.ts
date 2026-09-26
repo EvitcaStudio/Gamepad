@@ -3,7 +3,40 @@ import { Controller, Point2D } from './controller';
 import { Logger } from './vendor/logger.min.mjs';
 
 /**
- * A gamepadmanager to help with games / handling input from a controller
+ * A Gamepad API manager for games and interactive applications.
+ *
+ * ## Polling ownership
+ *
+ * The manager starts an internal `requestAnimationFrame` polling loop when it
+ * is constructed. This is the easiest option for menus, tools, and small
+ * applications: connect/disconnect events are handled automatically and
+ * controller state changes are delivered without any setup beyond registering
+ * listeners.
+ *
+ * Games that already own a single authoritative frame loop should use the
+ * host-controlled option instead:
+ *
+ * ```ts
+ * GamepadManager.stopPolling();
+ * gameLoop.onFrame(() => GamepadManager.pollGamepadStateOnce());
+ * ```
+ *
+ * Do not use both polling modes. Running the library loop and calling
+ * `pollGamepadStateOnce()` from another loop reads and processes the same
+ * controller state twice per frame. That creates redundant work, can duplicate
+ * event callbacks, and can make input race the host's simulation order.
+ *
+ * The tradeoff is simple:
+ *
+ * - Automatic polling is simpler and is usually correct for UI or small apps.
+ * - Host-controlled polling gives a game deterministic update ordering and
+ *   avoids a second animation-frame loop, at the cost of one more integration
+ *   step and responsibility for polling once per frame.
+ *
+ * The library normalizes device state and emits controller events. It does not
+ * decide whether mouse, touch, or another controller owns a game's input; that
+ * arbitration belongs in the host game's input manager.
+ *
  * @class GamepadManagerSingleton
  * @license GamepadManager does not have a license at this time. For licensing contact the author
  * @author https://github.com/doubleactii
@@ -39,6 +72,9 @@ class GamepadManagerSingleton {
 	 * Object containing the callback for when a controller is disconnected
 	 */
 	disconnectHandler: { [key: string]: (controller: Controller) => void } = {};
+	/** Whether this manager owns an internal requestAnimationFrame poll loop. */
+	private polling: boolean = false;
+	private pollRequestId: number | null = null;
 	/**
 	 * The version of the module.
 	 */
@@ -67,7 +103,7 @@ class GamepadManagerSingleton {
 		if ('getGamepads' in navigator) {
 			window.addEventListener('gamepadconnected', this.handleGamepadConnected);
 			window.addEventListener('gamepaddisconnected', this.handleGamepadDisconnected);
-			requestAnimationFrame(this.pollGamepadState);
+			this.startPolling();
 		} else {
 			this.logger.prefix('Gamepad-Module').warn('Gamepad API not supported in this browser.');
 		}
@@ -229,9 +265,48 @@ class GamepadManagerSingleton {
 		}
 	}
 	/**
-	 * Get the latest game state of the connected gamepads (Chrome only saves snapshots of the state, we have to keep polling to get updated states)
+	 * Starts the library-owned `requestAnimationFrame` polling loop.
+	 *
+	 * Use this for the library-managed polling mode. It is idempotent, so calling
+	 * it while polling is already active does not create another loop. Do not
+	 * call this if the host is polling with `pollGamepadStateOnce()`.
 	 */
-	pollGamepadState(): void {
+	startPolling(): void {
+		if (this.polling || !('getGamepads' in navigator)) return;
+		this.polling = true;
+		this.pollRequestId = requestAnimationFrame(this.pollGamepadState);
+	}
+
+	/**
+	 * Stops the library-owned `requestAnimationFrame` polling loop.
+	 *
+	 * This does not disconnect controllers or clear their cached state. It only
+	 * transfers polling responsibility to the host. Pair it with one
+	 * `pollGamepadStateOnce()` call per host frame when the game owns its loop.
+	 */
+	stopPolling(): void {
+		this.polling = false;
+		if (this.pollRequestId !== null) {
+			cancelAnimationFrame(this.pollRequestId);
+			this.pollRequestId = null;
+		}
+	}
+
+	/** Returns whether the library-owned polling loop is active. */
+	isPolling(): boolean {
+		return this.polling;
+	}
+
+	/**
+	 * Polls controller state exactly once.
+	 *
+	 * Hosts with an existing game loop should call `stopPolling()` once and then
+	 * call this method once per frame. It reads `navigator.getGamepads()`, updates
+	 * every connected controller, and may emit button/analog events. Avoid doing
+	 * expensive work or allocating heavily inside those callbacks because this
+	 * method normally runs at frame rate.
+	 */
+	pollGamepadStateOnce(): void {
 		const gamepads = navigator.getGamepads();
 		if (!gamepads) return;
 		// Loop through all connected controllers and update their state
@@ -244,7 +319,21 @@ class GamepadManagerSingleton {
 				}
 			}
 		}
-		requestAnimationFrame(this.pollGamepadState);
+	}
+
+	/**
+	 * Poll callback for the library-owned loop.
+	 *
+	 * Prefer `startPolling()`/`stopPolling()`/`pollGamepadStateOnce()` in host
+	 * code. Calling this method directly is unnecessary and can be confusing
+	 * because it also schedules the next automatic poll while polling is active.
+	 */
+	pollGamepadState(): void {
+		this.pollRequestId = null;
+		this.pollGamepadStateOnce();
+		if (this.polling) {
+			this.pollRequestId = requestAnimationFrame(this.pollGamepadState);
+		}
 	}
 }
 
